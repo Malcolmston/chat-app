@@ -1,9 +1,92 @@
+var sqlite3 = require('sqlite3').verbose();
+	var db = new sqlite3.Database('uses.sqlite');
+var Promise = require('promise');
+
+function addNewuser(fname,lname,username,password){
+		    return new Promise((resolve, reject) => {
+db.serialize(function() {
+  db.run("CREATE TABLE IF NOT EXISTS  users  (person_id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT NOT NULL, last_name TEXT NOT NULL, username TEXT NOT NULL, password TEXT NOT NULL)");
+
+
+	
+  var stmt = db.prepare("INSERT INTO users VALUES (?,?,?,?,?)");
+
+  stmt.run(null,fname,lname,username,password);
+  
+  stmt.finalize();
+
+	db.all("SELECT * FROM users", [], (err, rows) => {
+
+	
+          resolve( rows )
+        
+		
+
+});
+		})
+				
+
+	/*
+  db.each("SELECT * FROM users", function(err, row) {
+      console.log(row);
+  });
+*/
+});
+
+}
+
+function getNewlogIn(username,password){
+	    return new Promise((resolve, reject) => {
+
+			
+	db.all("SELECT * FROM users", [], (err, rows) => {
+
+		 if (err) {
+          reject(err)
+        } else {
+          resolve( rows.filter(function(x) {
+		return x['username'] == username  && x['password'] == password
+	}) )
+        }
+		
+
+});
+		})
+}
+
+	/*
+	
+	db.all("SELECT * FROM users", [], (err, rows) => {
+  if (err) {
+    throw err;
+  }
+  rows.forEach((row) => {
+    console.log(row);
+  });
+		
+});
+
+*/
+
+
+
+
+
+
+//getNewlogIn('Malca','d').then(console.log)  
+
+
+
 // all the imports
+
+
 const express = require('express');
 const bodyParser = require('body-parser')
 const app = express();
 
 const fetch = require('node-fetch')
+
+
 
 
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
@@ -13,16 +96,26 @@ app.get('/', (req, res) => {
 });
     
 app.post('/login', urlencodedParser, (req, res) => {
-    console.log('login:', req.body);
-    res.sendStatus(200);
+let  {Fame, Lame, ussername, pswd} = req.body
+
+getNewlogIn(ussername,pswd ).then(function(x) {
+}).catch(function(x) {
+})
+
+	
 });
 
 app.post('/signup', urlencodedParser, (req, res) => {
-    console.log('signup:', req.body);
 
-	const {Fame, Lame, ussername, pswd} = req.body
-	var adr = `http://malcolm.great-site.net/index.php?Fame=${Fame}&Lame=${Lame}&ussername=${ussername}&pswd=${pswd}`
-
+	let  {Fame, Lame, ussername, pswd} = req.body
+getNewlogIn(ussername,pswd ).then(function(x) {
+if( !x ){
+addNewuser(Fame,Lame,ussername,pswd).then(console.log)
+}else{
+	
+}
+});
+	
 //console.log(adr)
 
 //open(adr);
@@ -30,9 +123,11 @@ app.post('/signup', urlencodedParser, (req, res) => {
 
 });
 
-var server = app.listen(5000, function () {
+var server = app.listen(8080, function () {
     console.log('Server is listening at port 5000...');
+	console.log('http://192.168.0.104/5000/')
 });
+
 
 
 //http://malcolm.great-site.net/index.php?Fame=malcolm&Lame=stone&ussername=Malca&pswd=MAlcolmstone1s
