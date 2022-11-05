@@ -1,159 +1,104 @@
-var sqlite3 = require('sqlite3').verbose();
-var db = new sqlite3.Database('uses.sqlite');
-var Promise = require('promise');
 
-function addNewuser(fname, lname, username, password) {
-	return new Promise((resolve, reject) => {
-		db.serialize(function() {
-			db.run("CREATE TABLE IF NOT EXISTS  users  (person_id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT NOT NULL, last_name TEXT NOT NULL, username TEXT NOT NULL, password TEXT NOT NULL)");
+const {MassagelogIn, MassagesignIn} = require('./notification.js')
+const {addNewuser,getNewlogIn,validate,isEmpty} = require('./sql.js');
+var {express,bodyParser,fetch,urlencodedParser} = require('./modules.js');
 
-
-
-			var stmt = db.prepare("INSERT INTO users VALUES (?,?,?,?,?)");
-
-			stmt.run(null, fname, lname, username, password);
-
-			stmt.finalize();
-
-			db.all("SELECT * FROM users", [], (err, rows) => {
-				resolve(err || rows)
-
-			});
-		})
-
-	});
-
-}
-
-function getNewlogIn(username, password) {
-	return new Promise((resolve, reject) => {
-
-
-		db.all("SELECT * FROM users", [], (err, rows) => {
-
-			if (err) {
-				reject(err)
-			} else {
-				console.log(rows.filter(function(x) {
-					return x['username'] == username && x['password'] == password
-				}))
-
-				resolve(rows.filter(function(x) {
-					return x['username'] == username && x['password'] == password
-				}))
-
-				/*
-			 resolve( rows.filter(function(x) {
-		   return x['username'] == username  && x['password'] == password
-	   }) )
-	*/
-			}
-
-
-		});
-	})
-}
-
-
-function validate(username, password) {
-	return new Promise((resolve, reject) => {
-
-
-		db.all("SELECT * FROM users", [], (err, rows) => {
-
-			if (err) {
-				reject(err)
-			} else {
-				resolve( rows.filter(function(x) {
-					return x['username'] == username && x['password'] == password
-				}).length > 0  )
-
-				/*
-			 resolve( rows.filter(function(x) {
-		   return x['username'] == username  && x['password'] == password
-	   }) )
-	*/
-			}
-
-
-		});
-	})
-}
-/*
-	
-db.all("SELECT * FROM users", [], (err, rows) => {
-if (err) {
-throw err;
-}
-rows.forEach((row) => {
-console.log(row);
-});
-	
-});
-
-*/
+const app = require('express')();
+var fs = require('fs');
 
 
 
+const login = '/login/main.html'
+const chat  = '/chat/main.html'
+
+var path = require('path');
 
 
-
-//getNewlogIn('Malca','d').then(console.log)  
-
-
-
-// all the imports
-
-
-const express = require('express');
-const bodyParser = require('body-parser')
-const app = express();
-
-const fetch = require('node-fetch')
-
-
-
-
-var urlencodedParser = bodyParser.urlencoded({ extended: false })
-
-app.get('/', (req, res) => {
-	res.sendFile(__dirname + '/login/main.html');
+// just one string with the path
+app.get('/', function(req, res) {
+    res.sendFile( path.resolve(__dirname +login) );
 });
 
 
 app.post('/login', urlencodedParser, (req, res) => {
 	let { Fame, Lame, ussername, pswd } = req.body
 
-	getNewlogIn(ussername, pswd).then(console.log)
 
+	getNewlogIn(ussername, pswd).then(function(params) {
+	   // res.end('Hi!')
+res.sendFile(__dirname + chat);
+			})
 
 });
-
 
 app.post('/signup', urlencodedParser, (req, res) => {
 
 
 	let { Fame, Lame, ussername, pswd } = req.body
-
-	validate(ussername,pswd).then(function (p ) {
-		if(!p){
+	
+	isEmpty().then(function(ans){
+		console.log( ans )
+	    if(ans){
+	        	addNewuser(Fame,Lame,ussername,pswd).then(function(params) {
+res.sendFile(__dirname + chat);
 				
-addNewuser(Fame,Lame,ussername,pswd).then(function(p) {
-	console.log(p )
-})
-		}
+			})
+	    }else{
+	      validate(ussername,pswd).then(function (p ) {
+if(!p){
+			addNewuser(Fame,Lame,ussername,pswd).then(function(params) {
+res.sendFile(__dirname + chat);
+				
+			})
+}else{
+	console.log( 'fail' )
+}
+
+			})
+	    }
 	})
 
-
-
-});
-
-
-var server = app.listen(8080, function() {
-	console.log('Server is listening at port 5000...');
-	console.log('http://192.168.0.104/5000/')
 });
 
 
 
-//http://malcolm.great-site.net/index.php?Fame=malcolm&Lame=stone&ussername=Malca&pswd=MAlcolmstone1s
+
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+const port = process.env.PORT || 3000;
+
+// server (back-end)
+
+
+
+
+
+io.on('connection', function(socket){
+		console.log( io.engine.clientsCount )
+
+	
+  socket.on('login', function(data){
+    console.log('a user ' + data.username + ' connected login');
+   
+  });
+
+	socket.on('signup', function(data){
+    console.log('a user ' + data.username + ' connected signup');
+   
+  });
+
+})
+
+
+io.on('connection', (socket) => {
+  socket.on('chat message', msg => {
+    io.emit('chat message', msg);
+  });
+});
+
+
+http.listen(port, () => {
+  console.log(`Socket.IO server running at http://localhost:${port}/`);
+});
+
+

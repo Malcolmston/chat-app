@@ -2,6 +2,9 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
+	    <script src="/socket.io/socket.io.js"></script>
+
+
 
 <style>
 	
@@ -26,7 +29,7 @@
 }
 </style>
 
-<form action='/signup' method="post"  class='signup show'>
+<form action='/signup' method="post"  class='signup show' id='signup'>
   <h1>create a new account</h1>
   
     <label for="Fame" class="form-label">First Name:</label>
@@ -37,16 +40,18 @@
   
   
     <label for="ussername" class="form-label">Ussername:</label>
-    <input type="text" class="form-control" id="ussername" placeholder="Enter ussername" name="ussername" reqired>
+    <input type="text" class="form-control" id="ussername1" placeholder="Enter ussername" name="ussername" reqired>
     <label for="pwd" class="form-label">Password:</label>
-    <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="pswd" reqired>
+    <input type="password" class="form-control" id="pwd1" placeholder="Enter password" name="pswd" reqired>
 
   <button type="submit" class="btn btn-primary">Submit</button>
   <br>
    <a class="" href="#">I alredy have an account</a>
 </form>
 
-<form action='/login' method="post" class='login hide'>
+
+
+<form action='/login' method="post" class='login hide' id='login'>
   <h1>LogIn Up</h1>
     <label for="ussername" class="form-label">Ussername:</label>
     <input type="ussername" class="form-control" id="ussername" placeholder="Enter Ussername" name="ussername" reqired>
@@ -59,6 +64,44 @@
   <br>
    <a class="" href="#">dont have an account yet</a>
 </form>
+
+
+<script>
+ const socket = io();
+	
+      var login = document.getElementById('login');
+var signup = document.getElementById('signup');
+	
+      login.addEventListener('submit', function(e) {
+		  
+	      var ussername = document.getElementById('ussername');
+      var pwd = document.getElementById('pwd');
+
+		  
+//        e.preventDefault();
+        socket.emit('login',{
+			username: ussername.value,
+			password: pwd.value
+		});
+      });
+
+	 signup.addEventListener('submit', function(e) {
+		  
+	      var Fame = document.getElementById('Fame');
+      var Lame = document.getElementById('Lame');
+	var ussername1 = document.getElementById('ussername1');
+		 var rsw1  = document.getElementById('pwd1');
+
+		  
+//        e.preventDefault();
+        socket.emit('signup',{
+			first_name: Fame.value,
+			last_name: Lame.value,
+			ussername: ussername1.value,
+			password: rsw1.value
+		});
+      });
+</script>
 
 
 <script>
