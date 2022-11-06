@@ -1,15 +1,122 @@
+
+
+<div class='bar'>
+	  
+  
+  <table>
+  <tr>
+    <th>first name</th>
+    <th>last name</th>
+    <th>user name</th>
+	  <th>send</th>
+  </tr>
+ 
+
+</table>
+</div>
+
+
+<div class="chats">
+   	<ul id="messages"></ul>
+<input id="input" autocomplete="off" /><button>Send</button>	
+
+	    <script src="/socket.io/socket.io.js"></script>
+
+
+<script>
+      var socket = io();
+
+      var messages = document.getElementById('messages');
+      var form = document.getElementById('form');
+      var input = document.getElementById('input');
+
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (input.value) {
+          socket.emit('chat message', input.value);
+          input.value = '';
+        }
+      });
+//<a href="#" data-bs-toggle="tooltip" data-bs-placement="left" title="Hooray!">Hover</a>
+
+      socket.on('chat message', function(msg) {
+        var item = document.createElement('li');
+		
+        item.textContent = msg;
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+    </script>
+
+</div>	
+
+
+
 <style>
-	      body {
-margin: 0; 
-padding-bottom: 3rem; 
-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-		  }
+	/*
+this hadeles the css for UI in chat
+*/
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+.bar {
+  width: 300px;
+  height: 100%;
+  background: #d3d3d3;
+  display: static;
+  
+  overflow-y: auto;
+}
+.bar > table {
+  width: 100%;
+}
+table,
+th,
+td {
+  border: 1px solid #fff;
+  border-collapse: collapse;
+}
+th,
+td {
+  background-color: #96d4d4;
+}
+td > button {
+  width: 100%;
+  height: 100%;
+  background-color: #73c6aa;
+  display: static;
+  border: none;
+}
+
+
+.chats {
+position: absolute;
+
+left: 400px;
+}
+
+
+
+
+
+/*
+this handles the styling for the chat window
+*/
+
+
+
+
+
+
       #form { 
+          margin-bottom: -0rem;
 		  background: rgba(0, 0, 0, 0.15); 
 		  padding: 0.25rem; 
 		  position: fixed; 
 		  bottom: 0; 
-		  left: 0; 
+		  left: 300; 
 		  right: 0; 
 		  display: flex; 
 		  height: 3rem; 
@@ -47,50 +154,80 @@ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, A
       #messages > li:nth-child(odd) { 
 		  background: #efefef; 
 	  }
-
-
 </style>
 
 
-	
-	<ul id="messages"></ul>
-<form id="form" action="">
-<input id="input" autocomplete="off" /><button>Send</button>
-</form>
-	
-
-	    <script src="/socket.io/socket.io.js"></script>
+<script type = "text/javascript">
 
 
-<script>
-      var socket = io();
+function addPeple(fname, lname,username) {
+  let table = document.querySelector("table");
 
-      var messages = document.getElementById('messages');
-      var form = document.getElementById('form');
-      var input = document.getElementById('input');
+  let tr = document.createElement("tr");
 
-      form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        if (input.value) {
-          socket.emit('chat message', input.value);
-          input.value = '';
-        }
-      });
-//<a href="#" data-bs-toggle="tooltip" data-bs-placement="left" title="Hooray!">Hover</a>
+  let arr = [fname, lname, username, "open"];
 
-      socket.on('chat message', function(msg) {
-        var item = document.createElement('li');
-		
-        item.textContent = msg;
-        messages.appendChild(item);
-        window.scrollTo(0, document.body.scrollHeight);
-      });
-    </script>
-	
+  let button = document.createElement("button");
+  button.innerHTML = "open";
+
+  arr.map(function (x) {
+    if (x == "open") {
+      let td = document.createElement("td");
+button.addEventListener("click", function () {
+alert( fname+' '+lname+' '+username )
+  });
+      td.append(button);
+
+      tr.append(td);
+    } else {
+      let td = document.createElement("td");
+      let txt = document.createTextNode(x);
+
+      td.append(txt);
+
+      tr.append(td);
+    }
+  });
+
+  table.append(tr);
+}
+
+addPeple("malcolm", "stone", "user");
+//addPeple("bill", "stone");
 
 
 
+const buttons = document.querySelectorAll("button");
+let you = "malcolm stone user";
+
+	/*
+buttons.forEach(function (e, i) {
+  e.addEventListener("click", function () {
+    let person = [...document.querySelectorAll("tr")[i + 1].cells]
+      .map((x) => [...x.childNodes][0].textContent)
+      .join(" ")
+      .replace("open", "");
 
 
+    if( person.split(' ')[0] == you.split(' ')[0] && person.split(' ')[1] == you.split(' ')[1] && person.split(' ')[2] == you.split(' ')[2] ){
+        //alert('you')
+    }else{
+        document.querySelector('input').setAttribute('placeholder',`send a message to ${person.split(' ')[0] } ${person.split(' ')[1] } with the username ${person.split(' ')[2] }` )
+        alert(person);
+    }
+    
+  });
+});
+*/
+	      var socket = io();
 
+	      socket.on('dataTransvor', function(msg) {
+			  
+			  msg.forEach(function(p) {
+			  	addPeple(p.first_name,p.last_name,p.username)
+			  })
+			  
+			  socket.off('dataTransvor');
+		  })
+	</script>
 
