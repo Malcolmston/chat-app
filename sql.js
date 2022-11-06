@@ -3,6 +3,7 @@ const {MassagelogIn, MassagesignIn} = require('./notification.js')
 
 var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database('uses.sqlite');
+var chats = new sqlite3.Database('chats.sqlite');
 var Promise = require('promise');
 const fetch = require('node-fetch');
 
@@ -103,7 +104,59 @@ function validate(username, password) {
 	})
 }
 
+function getAll() {
+	return new Promise((resolve, reject) => {
+		db.all("SELECT * FROM users", [], (err, rows) => {
+
+			if (err) {
+				reject(err)
+			} else {
+				resolve(rows)
+			}
+
+
+		});
+	})
+}
+
+// this function adds users to the chat server
+function addNewChat(messageCode, message) {
+	return new Promise((resolve, reject) => {
+		chats.serialize(function() {
+			chats.run("CREATE TABLE IF NOT EXISTS  chats  (message_id INTEGER PRIMARY KEY AUTOINCREMENT, messageCode TEXT NOT NULL, message TEXT NOT NULL)");
+
+
+
+			var stmt = chats.prepare("INSERT INTO users VALUES (?,?,?)");
+
+			stmt.run(null,messageCode, message);
+
+			stmt.finalize();
+
+			chats.all("SELECT * FROM chats", [], (err, rows) => {
+			    if( !err && !rows ){
+
+			    }
+			    if( err ){
+
+			        reject(err)
+			    }
+
+				resolve( rows)
+
+			});
+		})
+
+	});
+
+}
+
+//db
 exports.addNewuser = addNewuser;
 exports.getNewlogIn = getNewlogIn;
 exports.validate = validate;
 exports.isEmpty = isEmpty;
+exports.getAll = getAll;
+
+//chat
+exports.addNewChat = addNewChat;

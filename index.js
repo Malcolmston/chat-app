@@ -5,7 +5,9 @@ var {express,bodyParser,fetch,urlencodedParser} = require('./modules.js');
 
 const app = require('express')();
 var fs = require('fs');
-
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+const port = process.env.PORT || 3000;
 
 
 const login = '/login/main.html'
@@ -62,10 +64,6 @@ res.sendFile(__dirname + chat);
 
 
 
-
-const http = require('http').Server(app);
-const io = require('socket.io')(http);
-const port = process.env.PORT || 3000;
 
 // server (back-end)
 
