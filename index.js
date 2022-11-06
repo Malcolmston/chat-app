@@ -42,7 +42,7 @@ app.post('/signup', urlencodedParser, (req, res) => {
 	you = Fame + " " + Lame + " " + ussername
 	
 	isEmpty().then(function(ans) {
-		console.log(ans)
+		console.log(you)
 		if (ans) {
 			addNewuser(Fame, Lame, ussername, pswd).then(function(params) {
 				res.sendFile(__dirname + chat);
@@ -93,12 +93,12 @@ io.on('connection', function(socket) {
 
 
 	socket.on('login', function(data) {
-		console.log('a user ' + data.username + ' connected login');
+		console.log('a user ' + data.ussername + ' connected login');
 
 	});
 
 	socket.on('signup', function(data) {
-		console.log('a user ' + data.username + ' connected signup');
+		console.log('a user ' + data.ussername + ' connected signup');
 
 	});
 

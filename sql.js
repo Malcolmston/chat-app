@@ -7,6 +7,20 @@ var chats = new sqlite3.Database('chats.sqlite');
 var Promise = require('promise');
 const fetch = require('node-fetch');
 
+function crateTable(name ='users'){
+		return new Promise((resolve, reject) => {
+		db.serialize(function() {
+			db.run("CREATE TABLE IF NOT EXISTS  "+name+"  (person_id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT NOT NULL, last_name TEXT NOT NULL, username TEXT NOT NULL, password TEXT NOT NULL)");
+resolve( 'done')
+		
+		})
+
+			
+		})
+}
+
+
+
 function addNewuser(fname, lname, username, password) {
 	return new Promise((resolve, reject) => {
 		db.serialize(function() {
@@ -69,20 +83,23 @@ MassagesignIn(true);
 	})
 }
 
-function isEmpty(){
-    return new Promise((resolve, reject) => {
-	    db.all("SELECT * FROM users", [], (err, rows) => {
+ async function isEmpty() {
+	 var a;
+	 try {
+	 	a = await getAll()
+		 	return ( a.length >= 1 )
 
-			if (err) {
-				reject(err)
-			} else {
-				resolve(rows.length >= 1 )
-			}
+	 } catch (error) {
+	 	 a = 'error'
+		 crateTable().then(isEmpty)
 
+	 }
+		
 
-		});
-	})
+	 
+
 }
+
 
 function validate(username, password) {
 	return new Promise((resolve, reject) => {

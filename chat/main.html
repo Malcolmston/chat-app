@@ -221,6 +221,15 @@ buttons.forEach(function (e, i) {
 */
 	      var socket = io();
 
+	socket.on('whoAreyou', function(msg) {
+			  
+			  msg.forEach(function(p) {
+			  	addPeple(...you+'1'.split(' '))
+			  })
+			  
+			  socket.off('whoAreyou');
+		  })
+	
 	      socket.on('dataTransvor', function(msg) {
 			  
 			  msg.forEach(function(p) {
@@ -229,5 +238,8 @@ buttons.forEach(function (e, i) {
 			  
 			  socket.off('dataTransvor');
 		  })
+
+
+	//whoAreyou
 	</script>
 
