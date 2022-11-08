@@ -7,6 +7,21 @@ var chats = new sqlite3.Database('chats.sqlite');
 var Promise = require('promise');
 const fetch = require('node-fetch');
 
+ function getAll() {
+	return new Promise((resolve, reject) => {
+		db.all("SELECT * FROM users", [], (err, rows) => {
+
+			if (err) {
+				reject(err)
+			} else {
+				resolve(rows)
+			}
+
+
+		});
+	})
+}
+
 function crateTable(name ='users'){
 		return new Promise((resolve, reject) => {
 		db.serialize(function() {
@@ -18,8 +33,6 @@ resolve( 'done')
 			
 		})
 }
-
-
 
 function addNewuser(fname, lname, username, password) {
 	return new Promise((resolve, reject) => {
@@ -34,18 +47,27 @@ function addNewuser(fname, lname, username, password) {
 
 			stmt.finalize();
 
-			db.all("SELECT * FROM users", [], (err, rows) => {
+			validate(username, password).then(function(ask){
+				if(!ask){
+								db.all("SELECT * FROM users", [], (err, rows) => {
 			    if( !err && !rows ){
 			        MassagesignIn(undefined);
+					resolve( false)
 			    }
 			    if( err ){
-			        MassagesignIn(false);
-			        reject(err)
+			       MassagesignIn(false);
+					resolve( false)
+			        //reject(err)
 			    }
-			     MassagesignIn(true);
-				resolve( rows)
+			    MassagesignIn(true);
+				resolve( true)
 
 			});
+				}else{
+					resolve( false )
+				}
+			})
+
 		})
 
 	});
@@ -83,7 +105,7 @@ MassagesignIn(true);
 	})
 }
 
- async function isEmpty() {
+async function isEmpty() {
 	 var a;
 	 try {
 	 	a = await getAll()
@@ -91,7 +113,9 @@ MassagesignIn(true);
 
 	 } catch (error) {
 	 	 a = 'error'
-		 crateTable().then(isEmpty)
+		 crateTable().then(function() {
+		 	isEmpty()
+		 })
 
 	 }
 		
@@ -100,41 +124,26 @@ MassagesignIn(true);
 
 }
 
+async function validate(username, password) {
+	var ans =  await getAll()
 
-function validate(username, password) {
-	return new Promise((resolve, reject) => {
-
-
-		db.all("SELECT * FROM users", [], (err, rows) => {
-
-			if (err) {
-				reject(err)
-			} else {
-				resolve( rows.filter(function(x) {
+	//console.log( username, password )
+	 try {
+		 	return ans.filter(function(x) {
 					return x['username'] == username && x['password'] == password
-				}).length > 0  )
+				}).length >= 1
+		 
 
-			}
+	 } catch (error) {
 
-
-		});
-	})
-}
-
-function getAll() {
-	return new Promise((resolve, reject) => {
-		db.all("SELECT * FROM users", [], (err, rows) => {
-
-			if (err) {
-				reject(err)
-			} else {
-				resolve(rows)
-			}
+		 crateTable().then(function() {
+		 	validate(username, password)
+		 })
+	 }
+	 }
 
 
-		});
-	})
-}
+
 
 // this function adds users to the chat server
 function addNewChat(messageCode, message) {

@@ -18,7 +18,9 @@
 
 <div class="chats">
    	<ul id="messages"></ul>
-<input id="input" autocomplete="off" /><button>Send</button>	
+	<form id='form' action='/signup' method="">
+<input id="input" autocomplete="off" /><button>Send</button>			
+	</form>
 
 	    <script src="/socket.io/socket.io.js"></script>
 
@@ -158,6 +160,7 @@ this handles the styling for the chat window
 
 
 <script type = "text/javascript">
+	      var socket = io();
 
 
 function addPeple(fname, lname,username) {
@@ -174,7 +177,12 @@ function addPeple(fname, lname,username) {
     if (x == "open") {
       let td = document.createElement("td");
 button.addEventListener("click", function () {
-alert( fname+' '+lname+' '+username )
+
+	socket.emit('sendingPERSON', fname+' '+lname+' '+username);
+	
+	
+//alert( fname+' '+lname+' '+username )
+	//input.placeholder = `${you}`
   });
       td.append(button);
 
@@ -192,43 +200,26 @@ alert( fname+' '+lname+' '+username )
   table.append(tr);
 }
 
-addPeple("malcolm", "stone", "user");
+//addPeple("malcolm", "stone", "user");
 //addPeple("bill", "stone");
 
 
 
 const buttons = document.querySelectorAll("button");
-let you = "malcolm stone user";
+//let you = "malcolm stone user";
 
-	/*
-buttons.forEach(function (e, i) {
-  e.addEventListener("click", function () {
-    let person = [...document.querySelectorAll("tr")[i + 1].cells]
-      .map((x) => [...x.childNodes][0].textContent)
-      .join(" ")
-      .replace("open", "");
-
-
-    if( person.split(' ')[0] == you.split(' ')[0] && person.split(' ')[1] == you.split(' ')[1] && person.split(' ')[2] == you.split(' ')[2] ){
-        //alert('you')
-    }else{
-        document.querySelector('input').setAttribute('placeholder',`send a message to ${person.split(' ')[0] } ${person.split(' ')[1] } with the username ${person.split(' ')[2] }` )
-        alert(person);
-    }
-    
-  });
-});
-*/
-	      var socket = io();
 
 	socket.on('whoAreyou', function(msg) {
-			  
-			  msg.forEach(function(p) {
-			  	addPeple(...you+'1'.split(' '))
-			  })
-			  
+			//  msg.forEach(function(p) {
+			  	addPeple(...msg.split(' '))
+			//  })
+
+				input.placeholder = `send from ${msg}`
+
+		
 			  socket.off('whoAreyou');
 		  })
+
 	
 	      socket.on('dataTransvor', function(msg) {
 			  

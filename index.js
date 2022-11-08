@@ -15,7 +15,74 @@ const chat = '/chat/main.html'
 
 var path = require('path');
 
+
+app.get('/', function(req, res) {
+	res.sendFile(path.resolve(__dirname + login));
+});
+
+app.post('/login', urlencodedParser, (req, res) => {
+let { ussername, pswd } = req.body
+
+	
+validate(ussername, pswd).then(function(data){
+		if(data){
+			res.sendFile(__dirname + chat);
+
+getNewlogIn(ussername, pswd).then(function(p) {
+	let {first_name, last_name, username, password} = ( p[0] )
+
+	you = first_name +' '+ last_name +' '+  username
+
+	io.on('connection', (socket) => {
+			io.emit('whoAreyou', you);
+						});
+	res.redirect('/chat');
+})
+
+			
+	
+			
+		}else{
+			console.log('fail')
+		}
+})
+
+	
+	
+});
+
+app.post('/signup', urlencodedParser, (req, res) => {
+	let { Fame, Lame, ussername, pswd } = req.body
+	you = Fame + " " + Lame + " " + ussername
+
+	addNewuser(Fame, Lame, ussername, pswd ).then(function(data) {
+		if(data){
+			res.sendFile(__dirname + chat);
+
+				io.on('connection', (socket) => {
+							io.emit('whoAreyou', you);
+						});
+			 res.redirect('/chat');
+			
+		}else{
+			console.log('fail')
+		}
+	})
+	
+});
+
+
+
+
+http.listen(port, () => {
+	console.log(`Socket.IO server running at http://localhost:${port}/`);
+});
+
+
+
+/*
 var you;
+
 
 // just one string with the path
 app.get('/', function(req, res) {
@@ -102,6 +169,10 @@ io.on('connection', function(socket) {
 
 	});
 
+	socket.on('sendingPERSON', function(msg1) {
+console.log( msg1 )
+	})
+	
 })
 
 
@@ -117,3 +188,4 @@ http.listen(port, () => {
 });
 
 
+*/
