@@ -1,8 +1,15 @@
+<script src="https://kit.fontawesome.com/fd76b8450f.js" crossorigin="anonymous"></script>
+	    <script src="/socket.io/socket.io.js"></script>
+
 
 
 <div class='bar'>
-	  
-  
+	<form id='home' action='/home' method="get">
+	    <i class="fa-solid fa-house" onclick=''></i>
+		<a>Log out</a>  
+
+		
+	</form>
   <table>
   <tr>
     <th>first name</th>
@@ -15,6 +22,13 @@
 </table>
 </div>
 
+<script>
+	const home = document.getElementById('home')
+
+	home.addEventListener('click',function(params) {
+		home.submit()
+	})
+</script>
 
 <div class="chats">
    	<ul id="messages"></ul>
@@ -22,7 +36,6 @@
 <input id="input" autocomplete="off" /><button>Send</button>			
 	</form>
 
-	    <script src="/socket.io/socket.io.js"></script>
 
 
 <script>
@@ -55,6 +68,10 @@
 
 
 <style>
+	.fa-house {
+		    width: 30px;
+    height: 30px;
+	}
 	/*
 this hadeles the css for UI in chat
 */
@@ -161,7 +178,6 @@ this handles the styling for the chat window
 
 <script type = "text/javascript">
 	      var socket = io();
-
 
 function addPeple(fname, lname,username) {
   let table = document.querySelector("table");

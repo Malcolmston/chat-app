@@ -14,6 +14,7 @@
     "better-sqlite3": "^7.6.2",
     "body-parser": "^1.20.1",
     "express": "^4.18.2",
+    "express-redirect": "^1.2.2",
     "mssql": "^9.0.1",
     "node-fetch": "^3.2.6",
     "node-notifier": "^10.0.1",

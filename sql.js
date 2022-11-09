@@ -8,11 +8,17 @@ var Promise = require('promise');
 const fetch = require('node-fetch');
 
  function getAll() {
+	
 	return new Promise((resolve, reject) => {
 		db.all("SELECT * FROM users", [], (err, rows) => {
 
 			if (err) {
-				reject(err)
+				//reject(err)
+
+				 crateTable().then(function() {
+					return getAll()
+	 	 })
+				
 			} else {
 				resolve(rows)
 			}
