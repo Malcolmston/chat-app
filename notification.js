@@ -2,7 +2,7 @@ const notifier = require('node-notifier');
 
 
 const logIn = (type) => {
-    if(type === false){
+if(type === false){
     notifier.notify({
   title: 'You have not seccsesfully logged in',
   message: 'try again'
@@ -50,6 +50,7 @@ if( type === undefined ){
 
 
 }
+
 
 
 exports.MassagelogIn = logIn

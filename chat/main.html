@@ -3,9 +3,20 @@
 
 
 
+
+
+<div class="chats">
+   	<ul id="messages"></ul>
+	<form id='form' action='/signup' method="">
+<input id="input" autocomplete="off" /><button>Send</button>			
+	</form>
+
+</div>	
+
+
 <div class='bar'>
 	<form id='home' action='/home' method="get">
-	    <i class="fa-solid fa-house" onclick=''></i>
+	    <i class="fa-solid fa-house" ></i>
 		<a>Log out</a>  
 
 		
@@ -29,43 +40,6 @@
 		home.submit()
 	})
 </script>
-
-<div class="chats">
-   	<ul id="messages"></ul>
-	<form id='form' action='/signup' method="">
-<input id="input" autocomplete="off" /><button>Send</button>			
-	</form>
-
-
-
-<script>
-      var socket = io();
-
-      var messages = document.getElementById('messages');
-      var form = document.getElementById('form');
-      var input = document.getElementById('input');
-
-      form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        if (input.value) {
-          socket.emit('chat message', input.value);
-          input.value = '';
-        }
-      });
-//<a href="#" data-bs-toggle="tooltip" data-bs-placement="left" title="Hooray!">Hover</a>
-
-      socket.on('chat message', function(msg) {
-        var item = document.createElement('li');
-		
-        item.textContent = msg;
-        messages.appendChild(item);
-        window.scrollTo(0, document.body.scrollHeight);
-      });
-    </script>
-
-</div>	
-
-
 
 <style>
 	.fa-house {
@@ -176,9 +150,11 @@ this handles the styling for the chat window
 </style>
 
 
-<script type = "text/javascript">
-	      var socket = io();
 
+
+<script type = "text/javascript">
+var socket = io();
+var you;
 function addPeple(fname, lname,username) {
   let table = document.querySelector("table");
 
@@ -193,12 +169,10 @@ function addPeple(fname, lname,username) {
     if (x == "open") {
       let td = document.createElement("td");
 button.addEventListener("click", function () {
+socket.emit('dos',`from: ${you} to: ${fname} ${lname} ${username}`)
 
-	socket.emit('sendingPERSON', fname+' '+lname+' '+username);
-	
-	
-//alert( fname+' '+lname+' '+username )
-	//input.placeholder = `${you}`
+
+		  
   });
       td.append(button);
 
@@ -216,28 +190,25 @@ button.addEventListener("click", function () {
   table.append(tr);
 }
 
-//addPeple("malcolm", "stone", "user");
-//addPeple("bill", "stone");
-
-
-
 const buttons = document.querySelectorAll("button");
-//let you = "malcolm stone user";
 
-
-	socket.on('whoAreyou', function(msg) {
+socket.on('whoAreyou', function(msg) {
 			//  msg.forEach(function(p) {
 			  	addPeple(...msg.split(' '))
 			//  })
-
+you = msg;
 				input.placeholder = `send from ${msg}`
 
-		
+try{
+console.log( input.placeholder )
+}catch(e){
+console.log('the chat will not work until you login')
+}
+
 			  socket.off('whoAreyou');
 		  })
 
-	
-	      socket.on('dataTransvor', function(msg) {
+socket.on('dataTransvor', function(msg) {
 			  
 			  msg.forEach(function(p) {
 			  	addPeple(p.first_name,p.last_name,p.username)
@@ -246,7 +217,35 @@ const buttons = document.querySelectorAll("button");
 			  socket.off('dataTransvor');
 		  })
 
+socket.on('messageChanel', function(msg) {
+ alert(msg)
+})
+	
 
 	//whoAreyou
-	</script>
 
+
+      var messages = document.getElementById('messages');
+      var form = document.getElementById('form');
+      var input = document.getElementById('input');
+
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (input.value) {
+          socket.emit('chat message', input.value);
+          input.value = '';
+        }
+      });
+//<a href="#" data-bs-toggle="tooltip" data-bs-placement="left" title="Hooray!">Hover</a>
+
+      socket.on('chat message', function(msg) {
+        var item = document.createElement('li');
+		
+        item.textContent = `message: ${msg} from: ${input.placeholder.split('send from ')[1]}`;
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+      
+      
+      
+    </script>

@@ -3,7 +3,7 @@ const {MassagelogIn, MassagesignIn} = require('./notification.js')
 
 var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database('uses.sqlite');
-var chats = new sqlite3.Database('chats.sqlite');
+//var chats = new sqlite3.Database('chats.sqlite');
 var Promise = require('promise');
 const fetch = require('node-fetch');
 
@@ -152,36 +152,73 @@ async function validate(username, password) {
 
 
 // this function adds users to the chat server
-function addNewChat(messageCode, message) {
+
+async function crateChats(name ='chats'){
+	var e = await crateTable(name)
+	return e
+}
+
+function addNewChat(chatRoom, message, messageCode) {
 	return new Promise((resolve, reject) => {
-		chats.serialize(function() {
-			chats.run("CREATE TABLE IF NOT EXISTS  chats  (message_id INTEGER PRIMARY KEY AUTOINCREMENT, messageCode TEXT NOT NULL, message TEXT NOT NULL)");
+		db.serialize(function() {
+			db.run("CREATE TABLE IF NOT EXISTS chats (person_id INTEGER PRIMARY KEY AUTOINCREMENT, chatRoom TEXT NOT NULL, message TEXT NOT NULL, time TEXT NOT NULL, messageCode TEXT NOT NULL)");
 
 
 
-			var stmt = chats.prepare("INSERT INTO users VALUES (?,?,?)");
+			var stmt = db.prepare("INSERT INTO chats VALUES (?,?,?,?,?)");
 
-			stmt.run(null,messageCode, message);
+			stmt.run( null,chatRoom, message, (new Date()).toUTCString().toString(), messageCode);
 
 			stmt.finalize();
+		resolve( chatRoom )
 
-			chats.all("SELECT * FROM chats", [], (err, rows) => {
-			    if( !err && !rows ){
-
-			    }
-			    if( err ){
-
-			        reject(err)
-			    }
-
-				resolve( rows)
-
-			});
 		})
 
 	});
 
 }
+
+
+
+
+function getAllRooms() {
+	
+	return new Promise((resolve, reject) => {
+		db.all("SELECT chatRoom FROM chats", [], (err, rows) => {
+
+			if (err) {
+				 crateChats().then(function() {
+					 getAllRooms()
+	 	 })
+				
+			} else {
+				resolve(rows)
+			}
+
+
+		});
+	})
+}
+
+function getAllchats() {
+	
+	return new Promise((resolve, reject) => {
+		db.all("SELECT * FROM chats", [], (err, rows) => {
+
+			if (err) {
+				 crateChats().then(function() {
+					 getAllRooms()
+	 	 })
+				
+			} else {
+				resolve(rows)
+			}
+
+
+		});
+	})
+}
+
 
 //db
 exports.addNewuser = addNewuser;
@@ -191,4 +228,7 @@ exports.isEmpty = isEmpty;
 exports.getAll = getAll;
 
 //chat
+exports.crateChats = crateChats;
 exports.addNewChat = addNewChat;
+exports.getAllRooms = getAllRooms;
+exports.getAllchats = getAllchats;

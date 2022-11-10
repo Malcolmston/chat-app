@@ -1,6 +1,6 @@
 
-const { MassagelogIn, MassagesignIn } = require('./notification.js')
-const { addNewuser, getNewlogIn, validate, isEmpty, getAll } = require('./sql.js');
+const { MassagelogIn, MassagesignIn,costom } = require('./notification.js')
+const { addNewuser, getNewlogIn, validate, isEmpty, getAll, crateChats, addNewChat, getAllchats,getAllRooms} = require('./sql.js');
 var { express, bodyParser, fetch, urlencodedParser } = require('./modules.js');
 
 const app = require('express')();
@@ -66,7 +66,6 @@ app.post('/signup', urlencodedParser, (req, res) => {
 	})
 	
 });
-
 app.get('/chat', function(req, res){
     //res.send("Redirected to User Page");
 	res.sendFile(__dirname + chat);
@@ -80,6 +79,7 @@ app.get('/home',function(req, res) {
 
 //logout
 http.listen(port, () => {
+	crateChats()
 	console.log(`Socket.IO server running at http://localhost:${port}/`);
 });
 
@@ -88,10 +88,9 @@ http.listen(port, () => {
 
 
 getAll().then(function(e) {
-	io.on('connection', (socket) => {
+io.on('connection', (socket) => {
 		io.emit('dataTransvor', e);
 	});
-
 })
 
 io.on('connection', function(socket) {
@@ -107,10 +106,6 @@ io.on('connection', function(socket) {
 		console.log('a user ' + data.ussername + ' connected signup');
 
 	});
-
-	socket.on('sendingPERSON', function(msg1) {
-console.log( msg1 )
-	})
 	
 })
 
@@ -121,115 +116,63 @@ io.on('connection', (socket) => {
 	});
 });
 
-
-
-
-/*
-var you;
-
-
-// just one string with the path
-app.get('/', function(req, res) {
-	res.sendFile(path.resolve(__dirname + login));
-});
-
-
-app.post('/login', urlencodedParser, (req, res) => {
-	let { Fame, Lame, ussername, pswd } = req.body
-
-
-	getNewlogIn(ussername, pswd).then(function(params) {
-		// res.end('Hi!')
-		res.sendFile(__dirname + chat);
-	})
-
-});
-
-app.post('/signup', urlencodedParser, (req, res) => {
-
-
-	let { Fame, Lame, ussername, pswd } = req.body
-
-	you = Fame + " " + Lame + " " + ussername
-	
-	isEmpty().then(function(ans) {
-		console.log(you)
-		if (ans) {
-			addNewuser(Fame, Lame, ussername, pswd).then(function(params) {
-				res.sendFile(__dirname + chat);
-
-				io.on('connection', (socket) => {
-					io.emit('whoAreyou', you);
-				});
-
-			})
-		} else {
-			validate(ussername, pswd).then(function(p) {
-				if (!p) {
-					addNewuser(Fame, Lame, ussername, pswd).then(function(params) {
-						res.sendFile(__dirname + chat);
-
-						io.on('connection', (socket) => {
-							io.emit('whoAreyou', you);
-						});
-					})
-
-
-				} else {
-					console.log('fail')
-				}
-
-			})
-		}
-	})
-
-});
-
-
-
-
-// server (back-end)
-
-
-
-getAll().then(function(e) {
-	io.on('connection', (socket) => {
-		io.emit('dataTransvor', e);
-	});
-
-})
-
-io.on('connection', function(socket) {
-	console.log(io.engine.clientsCount)
-
-
-	socket.on('login', function(data) {
-		console.log('a user ' + data.ussername + ' connected login');
-
-	});
-
-	socket.on('signup', function(data) {
-		console.log('a user ' + data.ussername + ' connected signup');
-
-	});
+io.on('connection', (socket) => {
 
 	socket.on('sendingPERSON', function(msg1) {
-console.log( msg1 )
+	    console.log(msg1)
 	})
-	
-})
+});
 
 
 io.on('connection', (socket) => {
-	socket.on('chat message', msg => {
-		io.emit('chat message', msg);
-	});
+	socket.on('dos', function(msg1) {
+	    createID(msg1).then(function(s){
+	        if(s){
+	            console.log(' done ')
+	        }else{
+	            getAllRooms().then(function(x){
+	                let ee = x.map(x => x.chatRoom).filter( x => x == pos[0] || x == pos[1] )[0].chatRoom
+	                
+	                
+	                
+	                io.on("connection", (socket) => {
+	                    	                console.log( ee )
+	                    socket.emit('messageChanel',ee);
+ // socket.to(ee).emit("some event");
+});
+
+	            })
+	        }
+	    })
+	})
 });
 
 
-http.listen(port, () => {
-	console.log(`Socket.IO server running at http://localhost:${port}/`);
-});
+
+async function createID(id){
+	let pos = [
+		id.split('to:')[0] + 'to:'+id.split('to:')[1],
+		'from:'+id.split('to:')[1] +id.split('to:')[0].replace('from',' to')
+	]
+
+	if(pos[0] === pos[1]){
+		console.log('you can not send messages to yourself')
+	}
+	
+		var rooms = await getAllRooms()
+		
+    	let rest = rooms.map(x => x.chatRoom).filter( x => x == pos[0] || x == pos[1] ) 
 
 
-*/
+	if( rest.length >= 1 ){
+		return false
+	}
+	if( rest.length === 0 ){
+	    let r = await crateChats()
+		let a = await addNewChat(id, 0, 0)
+		
+		return true
+	}
+	
+	
+}
