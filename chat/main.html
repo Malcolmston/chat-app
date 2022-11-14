@@ -1,37 +1,62 @@
 <script src="https://kit.fontawesome.com/fd76b8450f.js" crossorigin="anonymous"></script>
 	    <script src="/socket.io/socket.io.js"></script>
 
+<script src='https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js'></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<script src="https://cdn.pubnub.com/pubnub.min.js"></script>
 
 
 
-
-<div class="chats">
-   	<ul id="messages"></ul>
-	<form id='form' action='/signup' method="">
-<input id="input" autocomplete="off" /><button>Send</button>			
-	</form>
-
-</div>	
-
-
-<div class='bar'>
-	<form id='home' action='/home' method="get">
+<body>
+    <div class='bar'>
+        	<form id='home' action='/home' method="get">
 	    <i class="fa-solid fa-house" ></i>
 		<a>Log out</a>  
 
 		
 	</form>
-  <table>
-  <tr>
-    <th>first name</th>
-    <th>last name</th>
-    <th>user name</th>
-	  <th>send</th>
-  </tr>
- 
 
-</table>
+
+    </div>
+ 
+ 
+ <div id="info">
+<input id='Name'></input>
+ <button id="setname" onclick="set_name(document.getElementById('Name').value )">Name</button>
 </div>
+
+<div id="all">
+<br>
+  <div id="inputs">
+ <input id="login" readonly></input> 
+<button id="host"  onclick="host()">host</button>
+<br>
+<input id="joins" required></input> 
+<button id="join" onclick="join(document.getElementById('joins').value,true )" >join</button>
+</div>
+
+  <p class="presence"></p>
+
+
+<div id="users">
+</div>
+
+<lable for'box' id='boxTXT'>Chat Output</lable>
+<div id="box" ></div>
+
+
+Enter Chat and press enter
+<div><input id="input" placeholder="type message here" /></div>
+</div>
+
+
+
+</body>
+
+
+
+
 
 <script>
 	const home = document.getElementById('home')
@@ -39,168 +64,124 @@
 	home.addEventListener('click',function(params) {
 		home.submit()
 	})
+	
+	
+function generatePass(pLength){
+        charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+        retVal = "";
+    for (var i = 0, n = charset.length; i < pLength; ++i) {
+        retVal += charset.charAt(Math.floor(Math.random() * n));
+    }
+    return retVal;
+  
+}
+
 </script>
 
+
+<script>
+const time_out_time = 100000
+
+window.addEventListener('click',reset_time_out);
+window.addEventListener('mousemove',reset_time_out);
+window.addEventListener('keydown',reset_time_out);
+//window.addEventListener('click',reset_time_out);
+setTimeout(function(){
+    if(document.getElementById('Name').value == ''){
+        time_out()
+    }
+
+},3000)
+// times out after 100 seconds
+var myTimeout = setTimeout(time_out, time_out_time);
+
+function time_out() {
+sessionStorage.removeItem("passwordIn");
+
+ home.click()
+}
+
+function reset_time_out(){
+      clearTimeout(myTimeout);
+       myTimeout = setTimeout(time_out, time_out_time)
+}
+</script>
+
+
 <style>
-	.fa-house {
-		    width: 30px;
-    height: 30px;
-	}
-	/*
-this hadeles the css for UI in chat
-*/
-html,
+@import "https://fonts.googleapis.com/icon?family=Material+Icons";
+
+
 body {
-  height: 100%;
-  margin: 0;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 }
-.bar {
-  width: 300px;
-  height: 100%;
-  background: #d3d3d3;
-  display: static;
-  
+
+#box {
+  border: 2px solid #efefef;
+  width: 700px;
+  height: 80%;
   overflow-y: auto;
-}
-.bar > table {
-  width: 100%;
-}
-table,
-th,
-td {
-  border: 1px solid #fff;
-  border-collapse: collapse;
-}
-th,
-td {
-  background-color: #96d4d4;
-}
-td > button {
-  width: 100%;
-  height: 100%;
-  background-color: #73c6aa;
-  display: static;
-  border: none;
+  margin-bottom: 20px;
+  
+  position: absolute;
+  
+  top: 40px;
+  left: 400px; 
 }
 
+.avatar {
+	width: 80px;
+	height: 80px;
+  border-radius: 40px; /* половина ширины и высоты */
+  margin: 10px;
+}
 
-.chats {
-position: absolute;
+#input {
+  position: absolute;
+ 
+  top: 20px;
+  left: 400px;
+  
+}
 
-left: 400px;
+#boxTXT {
+  position: absolute;
+  
+  top: 0;
+  
+  left: 400px;
+}
+
+input {
+  width: 300px;
+}
+
+button {
+  width: 70px;
 }
 
 
-
-
-
-/*
-this handles the styling for the chat window
-*/
-
-
-
-
-
-
-      #form { 
-          margin-bottom: -0rem;
-		  background: rgba(0, 0, 0, 0.15); 
-		  padding: 0.25rem; 
-		  position: fixed; 
-		  bottom: 0; 
-		  left: 300; 
-		  right: 0; 
-		  display: flex; 
-		  height: 3rem; 
-		  box-sizing: border-box; 
-		  backdrop-filter: blur(10px); 
-	  }
-      #input { 
-		  border: none; 
-		  padding: 0 1rem; 
-		  flex-grow: 1; 
-		  border-radius: 2rem; 
-		  margin: 0.25rem; 
-	  }
-      #input:focus { 
-		  outline: none; 
-	  }
-      #form > button { 
-		  background: #333; 
-		  border: none; 
-		  padding: 0 1rem; 
-		  margin: 0.25rem; 
-		  border-radius: 3px; 
-		  outline: none; 
-		  color: #fff; 
-	  }
-
-      #messages { 
-		  list-style-type: none; 
-				 margin: 0; 
-				 padding: 0; 
-	  }
-      #messages > li { 
-		  padding: 0.5rem 1rem; 
-	  }
-      #messages > li:nth-child(odd) { 
-		  background: #efefef; 
-	  }
+* {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
 </style>
 
-
-
-
 <script type = "text/javascript">
+
 var socket = io();
-var you;
-function addPeple(fname, lname,username) {
-  let table = document.querySelector("table");
 
-  let tr = document.createElement("tr");
+//socket.emit('create', 'room1');
 
-  let arr = [fname, lname, username, "open"];
-
-  let button = document.createElement("button");
-  button.innerHTML = "open";
-
-  arr.map(function (x) {
-    if (x == "open") {
-      let td = document.createElement("td");
-button.addEventListener("click", function () {
-socket.emit('dos',`from: ${you} to: ${fname} ${lname} ${username}`)
-
-
-		  
-  });
-      td.append(button);
-
-      tr.append(td);
-    } else {
-      let td = document.createElement("td");
-      let txt = document.createTextNode(x);
-
-      td.append(txt);
-
-      tr.append(td);
-    }
-  });
-
-  table.append(tr);
-}
-
-const buttons = document.querySelectorAll("button");
-
+// this will ask the client who they are 
 socket.on('whoAreyou', function(msg) {
-			//  msg.forEach(function(p) {
-			  	addPeple(...msg.split(' '))
-			//  })
-you = msg;
-				input.placeholder = `send from ${msg}`
+
+$('#Name').val(msg)
+$('#setname').click()
 
 try{
-console.log( input.placeholder )
+console.log( msg )
 }catch(e){
 console.log('the chat will not work until you login')
 }
@@ -208,44 +189,135 @@ console.log('the chat will not work until you login')
 			  socket.off('whoAreyou');
 		  })
 
-socket.on('dataTransvor', function(msg) {
-			  
-			  msg.forEach(function(p) {
-			  	addPeple(p.first_name,p.last_name,p.username)
-			  })
-			  
-			  socket.off('dataTransvor');
-		  })
 
-socket.on('messageChanel', function(msg) {
- alert(msg)
+</script>
+
+<script type = "text/javascript">
+var names,
+presence = document.querySelector('.presence');
+
+$("#all").hide()
+
+$("#setname").click(function(){
+  if( $("#Name").val().trim().length == 0 ){
+ 
+  }else{
+    $("#info").hide('slow',function(){
+      $("#info").hide()
+    })
+    $("#all").show()
+
+  }
 })
-	
-
-	//whoAreyou
 
 
-      var messages = document.getElementById('messages');
-      var form = document.getElementById('form');
-      var input = document.getElementById('input');
 
-      form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        if (input.value) {
-          socket.emit('chat message', input.value);
-          input.value = '';
-        }
-      });
-//<a href="#" data-bs-toggle="tooltip" data-bs-placement="left" title="Hooray!">Hover</a>
+set_name = function(a){
+   names = a
+}
 
-      socket.on('chat message', function(msg) {
-        var item = document.createElement('li');
-		
-        item.textContent = `message: ${msg} from: ${input.placeholder.split('send from ')[1]}`;
-        messages.appendChild(item);
-        window.scrollTo(0, document.body.scrollHeight);
-      });
-      
-      
-      
+
+function host(){
+           socket.removeAllListeners( $("#login").val() )
+
+
+    if($("#login").val() != '' && $('#joins').val() != ''){
+        $('#joins').val('')
+    }
+    
+            $("#login").val('')
+        
+
+  $("#login").val(generatePass(9) )
+
+
+  join(  $("#login").val(),false )
+     
+
+
+
+}
+
+// Get the input field
+var input = $("#input");
+
+
+function join(e,first){
+if( first ){
+     if($("#login").val() != '' && $('#joins').val() != ''){
+        $('#login').val('')
+    } 
+}
+  socket.emit('room name',e)
+
+// Execute a function when the user presses a key on the keyboard
+input.on("keypress", function(event) {
+  // If the user presses the "Enter" key on the keyboard
+  if (event.key === "Enter") {
+    // Cancel the default action, if needed
+    event.preventDefault();
+    // Trigger the button element with a click
+    var is = e == $("#login").val() ^ e == $('#joins').val()
+    if( is != 1 ) return; 
+     socket.emit('chat message',event.target.value ,e)
+  }
+});
+
+
+
+socket.on(e, function(text){
+    if( text.split(' :')[0] !=  e ) return
+    if( box.innerHTML == ''){
+         box.innerHTML =  (''+text).replace( /[<>]/g, '' ) 
+    }else{
+         box.innerHTML = box.innerHTML + "<br>"+ (''+text).replace( /[<>]/g, '' ) 
+    }
+  input.val('')
+})
+
+/*  
+(function(){
+  
+  var 
+  box = PUBNUB.$('box'), 
+  input = PUBNUB.$('input'), 
+  channel = e
+  
+    PUBNUB.subscribe({
+    channel: channel,
+   callback : function(text) {
+    box.innerHTML = box.innerHTML + "<br>"+ (''+text).replace( /[<>]/g, '' ) 
+  },
+    presence: function(text) {
+      console.log(text)
+        if (text.occupancy > 0) {
+        presence.textContent = text.occupancy + ' people online';
+      } else {
+        presence.textContent = 'Nobody else is online';
+      }
+    
+    }
+  });
+
+PUBNUB.bind('keyup', input, function(e) {
+    
+    var a = names+": "+ input.value;
+  
+  if(input.value === ''){
+    
+  }else{
+  (e.keyCode || e.charCode) === 13 &&   PUBNUB.publish({
+    channel : channel, message : a, x : (input.value='')
+  })
+  }
+})
+
+
+})()
+*/  
+  
+    
+}
+
     </script>
+    

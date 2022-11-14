@@ -1,4 +1,3 @@
-
 const { MassagelogIn, MassagesignIn,costom } = require('./notification.js')
 const { addNewuser, getNewlogIn, validate, isEmpty, getAll, crateChats, addNewChat, getAllchats,getAllRooms} = require('./sql.js');
 var { express, bodyParser, fetch, urlencodedParser } = require('./modules.js');
@@ -11,10 +10,30 @@ const port = process.env.PORT || 3000;
 
 const login = '/login/main.html'
 const chat = '/chat/main.html'
-
+//const redirect = '/redirect/main.html'
 
 var path = require('path');
 var you;
+
+function time(hours,minutes,seconds){
+    var d;
+d = new Date();
+
+if(hours){
+     d.setHours(d.getHours() + hours);
+}
+if(minutes){
+   d.setMinutes(d.getMinutes() + minutes);
+ 
+}
+if(seconds){
+   d.setSeconds(d.getSeconds() + seconds);
+ 
+}
+
+//alert(d.getMinutes() + ':' + d.getSeconds()); //11:55
+return d 
+}
 
 app.get('/', function(req, res) {
 	res.sendFile(path.resolve(__dirname + login));
@@ -66,11 +85,12 @@ app.post('/signup', urlencodedParser, (req, res) => {
 	})
 	
 });
-app.get('/chat', function(req, res){
-    //res.send("Redirected to User Page");
-	res.sendFile(__dirname + chat);
 
+app.get('/chat', function(req, res){
+res.sendFile(__dirname + chat);
 });
+
+
 
 app.get('/home',function(req, res) {
 	res.redirect('/');
@@ -79,7 +99,7 @@ app.get('/home',function(req, res) {
 
 //logout
 http.listen(port, () => {
-	crateChats()
+	//crateChats()
 	console.log(`Socket.IO server running at http://localhost:${port}/`);
 });
 
@@ -98,56 +118,40 @@ io.on('connection', function(socket) {
 
 	
 	socket.on('login', function(data) {
-		console.log('a user ' + data.ussername + ' connected login');
+		console.log('a user ' + data.username + ' connected login');
 
 	});
 
 	socket.on('signup', function(data) {
-		console.log('a user ' + data.ussername + ' connected signup');
+		console.log('a user ' + data.username + ' connected signup');
 
 	});
 	
 })
 
 
-io.on('connection', (socket) => {
-	socket.on('chat message', msg => {
-		io.emit('chat message', msg);
+io.on('connection',  async function(socket) {
+   var msg1 = await getRoomName(socket); 
+   
+	socket.on('chat message', (msg,room) => {
+//if( room == msg1){
+io.emit(room, room+' :'+msg);    
+//}
+
+		
 	});
 });
 
-io.on('connection', (socket) => {
 
-	socket.on('sendingPERSON', function(msg1) {
-	    console.log(msg1)
-	})
-});
-
-
-io.on('connection', (socket) => {
-	socket.on('dos', function(msg1) {
-	    createID(msg1).then(function(s){
-	        if(s){
-	            console.log(' done ')
-	        }else{
-	            getAllRooms().then(function(x){
-	                let ee = x.map(x => x.chatRoom).filter( x => x == pos[0] || x == pos[1] )[0].chatRoom
-	                
-	                
-	                
-	                io.on("connection", (socket) => {
-	                    	                console.log( ee )
-	                    socket.emit('messageChanel',ee);
- // socket.to(ee).emit("some event");
-});
-
-	            })
-	        }
-	    })
-	})
-});
+async function getRoomName(socket){
+return new Promise((resolve, reject) => {
+        	socket.on('room name', function(msg1) {
+        	   resolve(msg1)
+        	})
+})
 
 
+}
 
 async function createID(id){
 	let pos = [
