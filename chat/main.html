@@ -243,6 +243,20 @@ var input = $("#input");
 
 
 function join(e,first){
+	box.innerHTML = ''
+	socket.emit('persistence',e)
+
+	socket.on('persistence',function (params) {
+
+	
+params.filter(res => {
+	var {message_id,messageCode,message,who} = res
+	return messageCode == e
+}).map(x =>{
+	var {message_id,messageCode,message,who} = x
+		box.innerHTML +=  `<br>${who} : ${message}`
+}) 
+	
 if( first ){
      if($("#login").val() != '' && $('#joins').val() != ''){
         $('#login').val('')
@@ -266,7 +280,7 @@ input.on("keypress", function(event) {
 
 
 socket.on(e, function(text){
-    if( text.split(' :')[0] !=  e ) return
+//    if( text.split(' :')[0] !=  e ) return
     if( box.innerHTML == ''){
          box.innerHTML =  (''+text).replace( /[<>]/g, '' ) 
     }else{
@@ -275,48 +289,7 @@ socket.on(e, function(text){
   input.val('')
 })
 
-/*  
-(function(){
-  
-  var 
-  box = PUBNUB.$('box'), 
-  input = PUBNUB.$('input'), 
-  channel = e
-  
-    PUBNUB.subscribe({
-    channel: channel,
-   callback : function(text) {
-    box.innerHTML = box.innerHTML + "<br>"+ (''+text).replace( /[<>]/g, '' ) 
-  },
-    presence: function(text) {
-      console.log(text)
-        if (text.occupancy > 0) {
-        presence.textContent = text.occupancy + ' people online';
-      } else {
-        presence.textContent = 'Nobody else is online';
-      }
-    
-    }
-  });
-
-PUBNUB.bind('keyup', input, function(e) {
-    
-    var a = names+": "+ input.value;
-  
-  if(input.value === ''){
-    
-  }else{
-  (e.keyCode || e.charCode) === 13 &&   PUBNUB.publish({
-    channel : channel, message : a, x : (input.value='')
-  })
-  }
-})
-
-
-})()
-*/  
-  
-    
+		}) 
 }
 
     </script>

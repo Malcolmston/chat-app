@@ -1,5 +1,5 @@
 const { MassagelogIn, MassagesignIn,costom } = require('./notification.js')
-const { addNewuser, getNewlogIn, validate, isEmpty, getAll, crateChats, addNewChat, getAllchats,getAllRooms} = require('./sql.js');
+const { addNewuser, getNewlogIn, validate, isEmpty, getAll, createChat, addNewChat,getChats} = require('./sql.js');
 var { express, bodyParser, fetch, urlencodedParser } = require('./modules.js');
 
 const app = require('express')();
@@ -87,6 +87,8 @@ app.post('/signup', urlencodedParser, (req, res) => {
 });
 
 app.get('/chat', function(req, res){
+	// creats the chat table 
+	createChat();
 res.sendFile(__dirname + chat);
 });
 
@@ -133,9 +135,11 @@ io.on('connection', function(socket) {
 io.on('connection',  async function(socket) {
    var msg1 = await getRoomName(socket); 
    
-	socket.on('chat message', (msg,room) => {
+	socket.on('chat message',  async function(msg,room){
 //if( room == msg1){
-io.emit(room, room+' :'+msg);    
+	
+	let ans = await addNewChat(room,msg,you)
+	io.emit(room, you+' : '+msg+' : '+(new Date() ));    
 //}
 
 		
@@ -153,30 +157,19 @@ return new Promise((resolve, reject) => {
 
 }
 
-async function createID(id){
-	let pos = [
-		id.split('to:')[0] + 'to:'+id.split('to:')[1],
-		'from:'+id.split('to:')[1] +id.split('to:')[0].replace('from',' to')
-	]
 
-	if(pos[0] === pos[1]){
-		console.log('you can not send messages to yourself')
-	}
-	
-		var rooms = await getAllRooms()
-		
-    	let rest = rooms.map(x => x.chatRoom).filter( x => x == pos[0] || x == pos[1] ) 
+io.on('connection', function(socket) {
+	socket.on('persistence', async function(data) {
+	var d = await getChats(data)
+		console.log( d )
+		socket.emit('persistence', d)
+	});
 
 
-	if( rest.length >= 1 ){
-		return false
-	}
-	if( rest.length === 0 ){
-	    let r = await crateChats()
-		let a = await addNewChat(id, 0, 0)
-		
-		return true
-	}
 	
-	
-}
+})
+
+
+//addNewChat()
+
+//percistance

@@ -3,7 +3,6 @@ const {MassagelogIn, MassagesignIn} = require('./notification.js')
 
 var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database('uses.sqlite');
-var chats = new sqlite3.Database('chats.sqlite');
 var Promise = require('promise');
 const fetch = require('node-fetch');
 
@@ -152,25 +151,34 @@ async function validate(username, password) {
 
 
 // this function adds users to the chat server
-function addNewChat(messageCode, message) {
+function createChat(name ='chat'){
+		return new Promise((resolve, reject) => {
+		db.serialize(function() {
+			db.run("CREATE TABLE IF NOT EXISTS "+name+" (messageCode INTEGER PRIMARY KEY AUTOINCREMENT, message TEXT NOT NULL, who TEXT NOT NULL)");
+resolve( 'done')
+		
+		})
+
+			
+		})
+}
+
+function addNewChat(code,message, who) {
 	return new Promise((resolve, reject) => {
-		chats.serialize(function() {
-			chats.run("CREATE TABLE IF NOT EXISTS  chats  (message_id INTEGER PRIMARY KEY AUTOINCREMENT, messageCode TEXT NOT NULL, message TEXT NOT NULL)");
+		db.serialize(function() {
+			db.run("CREATE TABLE IF NOT EXISTS chats (message_id INTEGER PRIMARY KEY AUTOINCREMENT, messageCode TEXT NOT NULL, message TEXT NOT NULL, who TEXT NOT NULL)");
 
 
 
-			var stmt = chats.prepare("INSERT INTO users VALUES (?,?,?)");
+			var stmt = db.prepare("INSERT INTO chats VALUES (?,?,?,?)");
 
-			stmt.run(null,messageCode, message);
+			stmt.run(null,code,message, who);
 
 			stmt.finalize();
 
-			chats.all("SELECT * FROM chats", [], (err, rows) => {
-			    if( !err && !rows ){
-
-			    }
+			db.all("SELECT * FROM chats", [], (err, rows) => {
+		
 			    if( err ){
-
 			        reject(err)
 			    }
 
@@ -183,6 +191,31 @@ function addNewChat(messageCode, message) {
 
 }
 
+async function getChats(code) {
+	var t = await createChat()
+	return new Promise((resolve, reject) => {
+		db.serialize(function() {
+			db.run("CREATE TABLE IF NOT EXISTS chats (message_id INTEGER PRIMARY KEY AUTOINCREMENT, messageCode TEXT NOT NULL, message TEXT NOT NULL, who TEXT NOT NULL)");
+
+
+			db.all(`SELECT * FROM chats WHERE messageCode = '${code}'`  , [], (err, rows) => {
+				if(err){
+					createChat().then(function(params) {
+						console.log('fix??')
+						getChats(code)
+					})					
+				}else{
+				resolve( rows)
+				}
+
+			});
+		})
+
+	});
+
+}
+
+
 //db
 exports.addNewuser = addNewuser;
 exports.getNewlogIn = getNewlogIn;
@@ -191,4 +224,6 @@ exports.isEmpty = isEmpty;
 exports.getAll = getAll;
 
 //chat
+exports.createChat = createChat;
 exports.addNewChat = addNewChat;
+exports.getChats = getChats;
