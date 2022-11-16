@@ -4,7 +4,9 @@ const app = express();
 
 const fetch = require('node-fetch')
 
-var urlencodedParser = bodyParser.urlencoded({ extended: false })
+var urlencodedParser = bodyParser.urlencoded({
+    extended: false
+})
 
 
 exports.express = express;

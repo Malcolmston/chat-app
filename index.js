@@ -1,6 +1,24 @@
-const { MassagelogIn, MassagesignIn,costom } = require('./notification.js')
-const { addNewuser, getNewlogIn, validate, isEmpty, getAll, createChat, addNewChat,getChats} = require('./sql.js');
-var { express, bodyParser, fetch, urlencodedParser } = require('./modules.js');
+const {
+    MassagelogIn,
+    MassagesignIn,
+    costom
+} = require('./notification.js')
+const {
+    addNewuser,
+    getNewlogIn,
+    validate,
+    isEmpty,
+    getAll,
+    createChat,
+    addNewChat,
+    getChats
+} = require('./sql.js');
+var {
+    express,
+    bodyParser,
+    fetch,
+    urlencodedParser
+} = require('./modules.js');
 
 const app = require('express')();
 var fs = require('fs');
@@ -15,161 +33,149 @@ const chat = '/chat/main.html'
 var path = require('path');
 var you;
 
-function time(hours,minutes,seconds){
-    var d;
-d = new Date();
+/*
+true => DD/MM/YY
+false => AM/PM + (00:00)
+*/
+Date.prototype.toFormat = function(){
+    let r = this.toISOString().split('T')[0].replace(/-/g,'/').split('/')
+    let data = (this.getHours() > 12 ? 'PM '+(this.getHours()-12) : 'AM '+this.getHours())   +':'+ this.getMinutes();
+    data = data.split(':')[0] +':'+ (data.split(':')[1].length === 1 ? '0'+data.split(':')[1] : data.split(':')[1])
 
-if(hours){
-     d.setHours(d.getHours() + hours);
-}
-if(minutes){
-   d.setMinutes(d.getMinutes() + minutes);
- 
-}
-if(seconds){
-   d.setSeconds(d.getSeconds() + seconds);
- 
-}
+    let a =  r[2] +'/'+r[1]+'/'+r[0] +' '+  data
 
-//alert(d.getMinutes() + ':' + d.getSeconds()); //11:55
-return d 
+    return a;
+  
 }
 
+//the innitial file loader
 app.get('/', function(req, res) {
-	res.sendFile(path.resolve(__dirname + login));
+    //get login file
+    res.sendFile(path.resolve(__dirname + login));
 });
-
+//gets the login html form
 app.post('/login', urlencodedParser, (req, res) => {
-let { ussername, pswd } = req.body
+    let {
+        ussername,
+        pswd
+    } = req.body
 
-	
-validate(ussername, pswd).then(function(data){
-		if(data){
-getNewlogIn(ussername, pswd).then(function(p) {
-	let {first_name, last_name, username, password} = ( p[0] )
 
-	you = first_name +' '+ last_name +' '+  username
+    validate(ussername, pswd).then(function(data) {
+        if (data) {
+            getNewlogIn(ussername, pswd).then(function(p) {
+                let {
+                    first_name,
+                    last_name,
+                    username,
+                    password
+                } = (p[0])
 
-	io.on('connection', (socket) => {
-			io.emit('whoAreyou', you);
-						});
-	res.redirect('/chat');
-})
+                you = first_name + ' ' + last_name + ' ' + username
 
-			
-	
-			
-		}else{
-			console.log('fail')
-		}
-})
+                io.on('connection', (socket) => {
+                    io.emit('whoAreyou', you);
+                });
+                res.redirect('/chat');
+            })
 
-	
-	
+
+
+
+        } else {
+            console.log('fail')
+        }
+    })
+
+
+
 });
-
+//gets the signup html form
 app.post('/signup', urlencodedParser, (req, res) => {
-	let { Fame, Lame, ussername, pswd } = req.body
-	you = Fame + " " + Lame + " " + ussername
+    let {
+        Fame,
+        Lame,
+        ussername,
+        pswd
+    } = req.body
+    you = Fame + " " + Lame + " " + ussername
 
-	addNewuser(Fame, Lame, ussername, pswd ).then(function(data) {
-		if(!data){
-				io.on('connection', (socket) => {
-							io.emit('whoAreyou', you);
-						});
-			 res.redirect('/chat');
-			
-		}else{
-			console.log('fail')
-		}
-	})
-	
+    addNewuser(Fame, Lame, ussername, pswd).then(function(data) {
+        if (!data) {
+            io.on('connection', (socket) => {
+                io.emit('whoAreyou', you);
+            });
+            res.redirect('/chat');
+
+        } else {
+            console.log('fail')
+        }
+    })
+
 });
-
-app.get('/chat', function(req, res){
-	// creats the chat table 
-	createChat();
-res.sendFile(__dirname + chat);
+//opens the chat html
+app.get('/chat', function(req, res) {
+    // creats the chat table 
+    createChat();
+    res.sendFile(__dirname + chat);
 });
-
-
-
-app.get('/home',function(req, res) {
-	res.redirect('/');
-	res.sendFile(path.resolve(__dirname + login));
+//returns the user home if there is a time out
+app.get('/home', function(req, res) {
+    res.redirect('/');
+    res.sendFile(path.resolve(__dirname + login));
 })
-
-//logout
+/* 
+gets the server as from http 
+use could use app.js socket.io http for listening to the server
+*/
 http.listen(port, () => {
-	//crateChats()
-	console.log(`Socket.IO server running at http://localhost:${port}/`);
+    console.log(`Socket.IO server running at http://localhost:${port}/`);
 });
 
-// server (back-end)
-
-
-
-getAll().then(function(e) {
-io.on('connection', (socket) => {
-		io.emit('dataTransvor', e);
-	});
-})
-
+//gets user connection
 io.on('connection', function(socket) {
-	console.log(io.engine.clientsCount)
+    socket.on('login', function(data) {
+        console.log('a user ' + data.username + ' connected login');
 
-	
-	socket.on('login', function(data) {
-		console.log('a user ' + data.username + ' connected login');
+    });
 
-	});
+    socket.on('signup', function(data) {
+        console.log('a user ' + data.username + ' connected signup');
 
-	socket.on('signup', function(data) {
-		console.log('a user ' + data.username + ' connected signup');
+    });
 
-	});
-	
 })
 
-
-io.on('connection',  async function(socket) {
-   var msg1 = await getRoomName(socket); 
-   
-	socket.on('chat message',  async function(msg,room){
-//if( room == msg1){
-	
-	let ans = await addNewChat(room,msg,you)
-	io.emit(room, you+' : '+msg+' : '+(new Date() ));    
-//}
-
-		
-	});
+io.on('connection', async function(socket) {
+    var msg1 = await getRoomName(socket);
+    //gets your chat room
+    socket.on('chat message', async function(msg, room) {
+        let ans = await addNewChat(room, msg, you)
+		let d = new Date()
+		//sends your message (person : message : date <==> time )
+        io.emit(room, you + ' : ' + msg + ' : ' + d.toFormat() );
+    });
 });
 
-
-async function getRoomName(socket){
-return new Promise((resolve, reject) => {
-        	socket.on('room name', function(msg1) {
-        	   resolve(msg1)
-        	})
-})
+//gets the room name using web sockets
+async function getRoomName(socket) {
+    return new Promise((resolve, reject) => {
+        socket.on('room name', function(msg1) {
+            resolve(msg1)
+        })
+    })
 
 
 }
 
 
 io.on('connection', function(socket) {
-	socket.on('persistence', async function(data) {
-	var d = await getChats(data)
-		console.log( d )
-		socket.emit('persistence', d)
-	});
+    //persistence allows for the chats to save
+    socket.on('persistence', async function(data) {
+        var d = await getChats(data)
+        socket.emit('persistence', d)
+    });
 
 
-	
+
 })
-
-
-//addNewChat()
-
-//percistance
