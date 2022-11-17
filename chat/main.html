@@ -1,3 +1,5 @@
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script src="https://kit.fontawesome.com/fd76b8450f.js" crossorigin="anonymous"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js'></script>
@@ -224,6 +226,8 @@ var i = 0
 	    	
 	    	i++
 	    	
+	    	set_roomsTable()
+ 
 		box.innerHTML = ''
 		socket.emit('persistence',e)
 	
@@ -280,17 +284,117 @@ var i = 0
 			}) 
 	}
 	
-	function roomThing(){
-	    let max = Math.max(...Object.entries(loadALL()).map(x => x[1] ))
-let v = Object.entries(loadALL()).filter(x => x[1] == max )[0] === undefined ? false : Object.entries(loadALL()).filter(x => x[1] == max )[0][0]
+	
+	function add_row(people){
+var tr = document.createElement('tr')
 
-return v 
-	} 
-	
-	
-	if( roomThing() ){
-	    document.getElementById('joins').value = roomThing()
-	    
-	    $('#join').click()
-	}
+for(let i of people){
+var td = document.createElement('td')
+
+td.innerHTML = i
+
+tr.append(td) 
+}
+
+ document.querySelector('table').append(tr)
+}
+
+function set_roomsTable(){
+     document.querySelector('table').innerHTML = ''
+Object.entries(loadALL()).map(x => {
+    add_row([`<a>${x[0]}</a>`,'<button class="open">open</button>','<button class="delet">delet</button>'])
+})
+}
+
 </script>
+
+
+<table>
+
+</table>
+
+
+<style>
+    table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: auto;
+}
+
+td, th {
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+
+
+table button {
+  background-color: Transparent;
+background-repeat:no-repeat;
+border: none;
+}
+
+.open {
+  background-color: #64DD17;
+}
+
+.delet {
+  background-color: #D50000;
+}
+</style>
+<script>
+ function roomThing(room){
+	  	    document.getElementById('joins').value = room
+	  	    
+	  	    $('#join').click()
+
+	} 
+
+function delet_roomThing(room,place){
+    Swal.fire({
+  title: 'Do you realy want to remove this room',
+  showDenyButton: true,
+  showCancelButton: false,
+  confirmButtonText: 'remove',
+  denyButtonText: `Don't remove`,
+}).then((result) => {
+  /* Read more about isConfirmed, isDenied below */
+  if (result.isConfirmed) {
+    Swal.fire('Deleted!', '', 'success')
+    
+       sessionStorage.removeItem(room)
+       try{[...document.querySelectorAll('tr')][place].remove()}catch(e){}
+ 
+  } else if (result.isDenied) {
+    Swal.fire('Room is save', '', 'success')
+  }
+})
+
+   
+}
+	
+
+set_roomsTable();
+
+
+$('table').find('tr').click( function(){
+    var place =  ($(this).index())
+    let open = [...document.querySelectorAll('.open')][place]
+    let delet = [...document.querySelectorAll('.delet')][place]
+    let key = [...document.querySelectorAll('tr')][place]
+    
+    open.addEventListener('click',function(){
+   roomThing( $($(key).find('td')[0]).find('a')[0].innerText   )
+  })
+  
+  delet.addEventListener('click',function(){
+   delet_roomThing( $($(key).find('td')[0]).find('a')[0].innerText, place )
+  })
+});
+
+
+</script>
+
