@@ -9,7 +9,7 @@
 	<div class='bar'>
 		<form id='home' action='/home' method="get">
 			<i class="fa-solid fa-house" ></i>
-			<a>Log out</a>  
+			<a>Log out</a>
 		</form>
 	</div>
 	<div id="info">
@@ -19,10 +19,10 @@
 	<div id="all">
 		<br>
 		<div id="inputs">
-			<input id="login" readonly></input> 
+			<input id="login" readonly></input>
 			<button id="host"  onclick="host()">host</button>
 			<br>
-			<input id="joins" required></input> 
+			<input id="joins" required></input>
 			<button id="join" >join</button>
 		</div>
 		<p class="presence"></p>
@@ -35,12 +35,12 @@
 </body>
 <script>
  home = document.getElementById('home')
-	
+
 	home.addEventListener('click',function(params) {
 		home.submit()
 	})
-	
-	
+
+
 	function generatePass(pLength){
 	       charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
 	       retVal = "";
@@ -48,9 +48,9 @@
 	       retVal += charset.charAt(Math.floor(Math.random() * n));
 	   }
 	   return retVal;
-	 
+
 	}
-	
+
 </script>
 <script>
 // times out after 100,000 seconds or 1.66667 minits
@@ -64,22 +64,22 @@
 	    if(document.getElementById('Name').value == ''){
 	        time_out()
 	    }
-	
+
 	},3000)
 
 	var myTimeout = setTimeout(time_out, time_out_time);
-	
+
 	function time_out() {
 	sessionStorage.removeItem("passwordIn");
-	
+
 	 home.click()
 	}
-	
+
 	function reset_time_out(){
 	      clearTimeout(myTimeout);
 	       myTimeout = setTimeout(time_out, time_out_time)
 	}
-	
+
 </script>
 <style>
 	@import "https://fonts.googleapis.com/icon?family=Material+Icons";
@@ -94,12 +94,12 @@
 	margin-bottom: 20px;
 	position: absolute;
 	top: 40px;
-	left: 400px; 
+	left: 400px;
 	}
 	.avatar {
 	width: 80px;
 	height: 80px;
-	border-radius: 40px; /* половина ширины и высоты */
+	border-radius: 40px; 
 	margin: 10px;
 	}
 	#input {
@@ -126,13 +126,13 @@
 </style>
 <script type = "text/javascript">
 	var socket = io();
-	
-	// this will ask the client who they are 
+
+	// this will ask the client who they are
 	socket.on('whoAreyou', function(msg) {
-	
+
 	$('#Name').val(msg)
 	$('#setname').click()
-	
+
 	try{
 	console.log( msg )
 	}catch(e){
@@ -140,10 +140,41 @@
 	}
 	socket.off('whoAreyou');
 	})
-	
-	
+
+
 </script>
 <script type = "text/javascript">
+ function roomThing(room){
+	  	    document.getElementById('joins').value = room
+
+	  	    //$('#join').click()
+
+	}
+
+function delet_roomThing(room){
+    Swal.fire({
+  title: 'Do you realy want to remove this room',
+  showDenyButton: true,
+  showCancelButton: false,
+  confirmButtonText: 'remove',
+  denyButtonText: `Don't remove`,
+}).then((result) => {
+  /* Read more about isConfirmed, isDenied below */
+  if (result.isConfirmed) {
+    Swal.fire('Deleted!', '', 'success')
+
+       sessionStorage.removeItem(room)
+      document.getElementById(room).remove()
+      set_roomsTable()
+
+  } else if (result.isDenied) {
+    Swal.fire('Room is save', '', 'success')
+  }
+})
+
+
+}
+
 
 $('#join').on('click',function(){
     join(document.getElementById('joins').value,true )
@@ -163,81 +194,81 @@ Date.prototype.toFormat = function(){
     let a =  r[2] +'/'+r[1]+'/'+r[0] +' '+  data
 
     return a;
-  
+
 }
 
 	var names,
 	presence = document.querySelector('.presence');
-	
+
 	$("#all").hide()
-	
+
 	$("#setname").click(function(){
 	  if( $("#Name").val().trim().length == 0 ){
-	 
+
 	  }else{
 	    $("#info").hide('slow',function(){
 	      $("#info").hide()
 	    })
 	    $("#all").show()
-	
+
 	  }
 	})
-	
-	
-	
+
+
+
 	 function set_name(a){
 	   names = a
 	}
-	
+
 	// hosts the room
 	function host(){
 	    $('#joins').val('')
 	           socket.removeAllListeners( $("#login").val() )
-	
-	
+
+
 	    if($("#login").val() != '' && $('#joins').val() != ''){
 	        $('#joins').val('')
 	    }
-	    
+
 	            $("#login").val('')
-	        
-	
+
+
 	  $("#login").val(generatePass(9) )
-	
-	
+
+
 	  join(  $("#login").val(),false )
-	     
-	
-	
-	
+
+
+
+
 	}
-	
+
 	// Get the input field
 	var input = $("#input");
 var i = 0
 // alows you to join the room
-// if it is the first time then the join seqence is diffrent 
+// if it is the first time then the join seqence is diffrent
 	function join(e,first){
 	     if($("#login").val() != '' && $('#joins').val() != ''){
 	        $('#login').val('')
 	    }
-	    
+
 	    	sessionStorage.setItem(e,i);
-	    	
+
 	    	i++
-	    	
+
 	    	set_roomsTable()
- 
+
 		box.innerHTML = ''
 		socket.emit('persistence',e)
-	
+
 		socket.on('persistence',function (params) {
-	
+
 		socket.off('persistence')
-        
+
         params.filter(res => {
 		var {message_id,messageCode,message,who} = res
-		
+
 		return messageCode == e
 	}).map( (x,index) =>{
 		var {message_id,messageCode,message,who,date} = x
@@ -246,16 +277,16 @@ var i = 0
 		}else{
 		box.innerHTML +=  `<br>${who} : ${message} : ${date}`
 		}
-			}) 
+			})
 
-			
+
 	if( first ){
 	     if($("#login").val() != '' && $('#joins').val() != ''){
 	        $('#login').val('')
-	    } 
+	    }
 	}
 	  socket.emit('room name',e)
-	
+
 	// Execute a function when the user presses a key on the keyboard
 	input.on("keypress", function(event) {
 	  // If the user presses the "Enter" key on the keyboard
@@ -264,37 +295,61 @@ var i = 0
 	    event.preventDefault();
 	    // Trigger the button element with a click
 	    var is = e == $("#login").val() ^ e == $('#joins').val()
-	    if( is != 1 ) return; 
+	    if( is != 1 ) return;
 	     socket.emit('chat message',event.target.value ,e)
 	  }
 	});
-	
-	
-	
+
+
+
 	socket.on(e, function(text){
 	//    if( text.split(' :')[0] !=  e ) return
 	    if( box.innerHTML == ''){
-	         box.innerHTML =  (''+text).replace( /[<>]/g, '' ) 
+	         box.innerHTML =  (''+text).replace( /[<>]/g, '' )
 	    }else{
-	         box.innerHTML = box.innerHTML + "<br>"+ (''+text).replace( /[<>]/g, '' ) 
+	         box.innerHTML = box.innerHTML + "<br>"+ (''+text).replace( /[<>]/g, '' )
 	    }
 	  input.val('')
 	})
-	
-			}) 
+
+			})
 	}
-	
-	
-	function add_row(people){
+
+
+	function add_row(room){
 var tr = document.createElement('tr')
 
-for(let i of people){
-var td = document.createElement('td')
+tr.id = room
 
-td.innerHTML = i
+tda = document.createElement('td')
+tda.innerHTML = `<a>${room}</a>`
+tr.append(tda)
 
-tr.append(td) 
-}
+tdb = document.createElement('td')
+let btna = document.createElement('button')
+btna.innerHTML = 'open'
+btna.className = 'open'
+btna.addEventListener('click',function(){
+    roomThing(room)
+    document.getElementById('join').click()
+})
+tdb.append(btna)
+tr.append(tdb)
+
+
+tdc = document.createElement('td')
+let btnb = document.createElement('button')
+btnb.innerHTML = 'delet'
+btnb.className = 'delet'
+btnb.addEventListener('click',function(){
+    delet_roomThing(room)
+})
+tdc.append(btnb)
+tr.append(tdc)
+
+
+
+
 
  document.querySelector('table').append(tr)
 }
@@ -302,7 +357,7 @@ tr.append(td)
 function set_roomsTable(){
      document.querySelector('table').innerHTML = ''
 Object.entries(loadALL()).map(x => {
-    add_row([`<a>${x[0]}</a>`,'<button class="open">open</button>','<button class="delet">delet</button>'])
+    add_row( x[0] )
 })
 }
 
@@ -346,55 +401,32 @@ border: none;
 }
 </style>
 <script>
- function roomThing(room){
-	  	    document.getElementById('joins').value = room
-	  	    
-	  	    $('#join').click()
 
-	} 
-
-function delet_roomThing(room,place){
-    Swal.fire({
-  title: 'Do you realy want to remove this room',
-  showDenyButton: true,
-  showCancelButton: false,
-  confirmButtonText: 'remove',
-  denyButtonText: `Don't remove`,
-}).then((result) => {
-  /* Read more about isConfirmed, isDenied below */
-  if (result.isConfirmed) {
-    Swal.fire('Deleted!', '', 'success')
-    
-       sessionStorage.removeItem(room)
-       try{[...document.querySelectorAll('tr')][place].remove()}catch(e){}
- 
-  } else if (result.isDenied) {
-    Swal.fire('Room is save', '', 'success')
-  }
-})
-
-   
-}
-	
 
 set_roomsTable();
 
-
+/*
 $('table').find('tr').click( function(){
+    this.click()
+
+
     var place =  ($(this).index())
     let open = [...document.querySelectorAll('.open')][place]
     let delet = [...document.querySelectorAll('.delet')][place]
     let key = [...document.querySelectorAll('tr')][place]
-    
-    open.addEventListener('click',function(){
-   roomThing( $($(key).find('td')[0]).find('a')[0].innerText   )
-  })
-  
-  delet.addEventListener('click',function(){
-   delet_roomThing( $($(key).find('td')[0]).find('a')[0].innerText, place )
-  })
-});
 
+
+    open.addEventListener('click',function(){
+         console.log(this)
+   roomThing( $($(key).find('td')[0]).find('a')[0].innerText   )
+  }) 
+
+  delet.addEventListener('click',function(){
+       console.log(this)
+   delet_roomThing( $($(key).find('td')[0]).find('a')[0].innerText, place )
+  }) 
+
+});
+*/
 
 </script>
-
