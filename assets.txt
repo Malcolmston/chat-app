@@ -1,0 +1,19 @@
+1. https://cdn.jsdelivr.net/npm/sweetalert2@11
+  a. uses the swal2 api
+  b. https://sweetalert2.github.io/
+2. https://kit.fontawesome.com/fd76b8450f.js
+  a. uses fontawesome pro fonts to use pro <i> elements
+  b. https://fontawesome.com/icons/
+3. /socket.io/socket.io.js
+  a. uses socket.io for html websockets
+  b. https://socket.io/
+  c. socket will also use npm
+4. https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js
+  a. crypto-js library
+5. https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js
+  a. jquery 3.6.0
+6. https://cdn.pubnub.com/pubnub.min.js
+  a. this packaage is not used however it could also handle chat rooms
+  
+
+
