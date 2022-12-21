@@ -86,3 +86,19 @@ return members.map(x => x.username)
 function getAllusersA() {
 	return members.map(x => x.username)
 }
+
+
+
+module.exports = {
+	newUser,
+	getActiveUser,
+	getIndividualRoomUsers,
+	getAllusers,
+
+	add_roomA,
+	rooms_you_may_joinA,
+	find_room,
+	add_memberA,
+	getAllusersA,
+	remove_memberA
+};
