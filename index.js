@@ -40,22 +40,6 @@ app.use(session({
 }));
 
 
-
-/*
-true => DD/MM/YY
-false => AM/PM + (00:00)
-*/
-Date.prototype.toFormat = function(){
-    let r = this.toISOString().split('T')[0].replace(/-/g,'/').split('/')
-    let data = (this.getHours() > 12 ? 'PM '+(this.getHours()-12) : 'AM '+this.getHours())   +':'+ this.getMinutes();
-    data = data.split(':')[0] +':'+ (data.split(':')[1].length === 1 ? '0'+data.split(':')[1] : data.split(':')[1])
-
-    let a =  r[2] +'/'+r[1]+'/'+r[0] +' '+  data
-
-    return a;
-  
-}
-
 //the innitial file loader
 app.get('/', function(req, res) {
     //get login file
