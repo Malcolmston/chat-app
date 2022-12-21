@@ -41,10 +41,22 @@ app.use(session({
 
 
 //the innitial file loader
-app.get('/', function(req, res) {
-    //get login file
-    res.sendFile(path.resolve(__dirname + login));
+app.get('/', function(request, res) {
+	//get login file
+	if (getUser() ) {
+		request.session.loggedin = true;
+		request.session.ussername = getUser();
+
+		
+		res.redirect('/home')
+	} else {
+		res.sendFile(path.resolve(__dirname + login));
+	}
+
 });
+
+
+
 //gets the login html form
 app.post('/login', urlencodedParser, (req, res) => {
     let {
