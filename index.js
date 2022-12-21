@@ -3,7 +3,7 @@ const {
 	addNewuser,
 	validate,
 	getAll,
-	
+
 	addChats,
 	getChats,
 	recalChats
@@ -14,7 +14,7 @@ const {
 	find_roomA,
 	add_memberA,
 	getAllusersA,
-    remove_memberA
+	remove_memberA
 } = require("./place.js")
 
 var bodyParser = require('body-parser'),
@@ -24,7 +24,7 @@ var bodyParser = require('body-parser'),
 	http = require('http').Server(app),
 	path = require('path'),
 	socket = require('socket.io'),
-localStorage = require('localStorage'),
+	localStorage = require('localStorage'),
 	router = express.Router(),
 	io = socket(http);
 
@@ -44,25 +44,25 @@ const chat = '/homePage.html'
 const port = process.env.PORT || 3000
 
 Array.prototype.difference = function(arr) {
-return this.filter(x => !arr.includes(x));
+	return this.filter(x => !arr.includes(x));
 }
 
-Array.prototype.similarity  = function(arr) {
-return this.filter(x => arr.includes(x));
+Array.prototype.similarity = function(arr) {
+	return this.filter(x => arr.includes(x));
 }
 
 
 
 function setUser(user) {
-//	localStorage.setItem('username', user);
+	//	localStorage.setItem('username', user);
 }
 
 function removeUser() {
-//	localStorage.removeItem('username');
+	//	localStorage.removeItem('username');
 }
 
-function getUser(){
-    return false//localStorage.getItem('username')
+function getUser() {
+	return false//localStorage.getItem('username')
 
 }
 
@@ -70,11 +70,11 @@ function getUser(){
 //the innitial file loader
 app.get('/', function(request, res) {
 	//get login file
-	if (getUser() ) {
+	if (getUser()) {
 		request.session.loggedin = true;
 		request.session.ussername = getUser();
 
-		
+
 		res.redirect('/home')
 	} else {
 		res.sendFile(path.resolve(__dirname + login));
@@ -83,83 +83,125 @@ app.get('/', function(request, res) {
 });
 
 
+// http://localhost:3000/signup
+app.post('/signup', function(request, response) {
+	// gets the input fields
+	let ussername = request.body.ussername;
+	let password = request.body.password;
+	// makes sure the input fields exists and are not empty
+	if (ussername && password) {
+		validate(ussername, password).then(function(params) {
+			if (!params) {
+				request.session.loggedin = true;
+				request.session.ussername = ussername;
+				setUser(ussername);
+				addNewuser(ussername, password).then(console.log)
 
-//gets the login html form
-app.post('/login', urlencodedParser, (req, res) => {
-    let {
-        ussername,
-        pswd
-    } = req.body
-
-
-    validate(ussername, pswd).then(function(data) {
-        if (data) {
-            getNewlogIn(ussername, pswd).then(function(p) {
-                let {
-                    first_name,
-                    last_name,
-                    username,
-                    password
-                } = (p[0])
-
-                you = first_name + ' ' + last_name + ' ' + username
-
-                io.on('connection', (socket) => {
-                    io.emit('whoAreyou', you);
-                });
-                res.redirect('/chat');
-            })
-
-
-
-
-        } else {
-            console.log('fail')
-        }
-    })
-
+				response.redirect('/home')
+			} else {
+				response.send('an account with that username already exsits!')
+			}
+		})
+	} else {
+		response.send('Please enter username and Password!');
+		response.end();
+	}
 
 
 });
-//gets the signup html form
-app.post('/signup', urlencodedParser, (req, res) => {
-    let {
-        Fame,
-        Lame,
-        ussername,
-        pswd
-    } = req.body
-    you = Fame + " " + Lame + " " + ussername
 
-    addNewuser(Fame, Lame, ussername, pswd).then(function(data) {
-        if (!data) {
-            io.on('connection', (socket) => {
-                io.emit('whoAreyou', you);
-            });
-            res.redirect('/chat');
+app.post('/login', function(request, response) {
+	// gets the input fields
+	let ussername = request.body.ussername;
+	let password = request.body.password;
+	// makes sure the input fields exists and are not empty
 
-        } else {
-            console.log('fail')
-        }
-    })
+	if (ussername && password) {
+		validate(ussername, password).then(function(params) {
+			if (params) {
+				request.session.loggedin = true;
+				request.session.ussername = ussername;
+				setUser(ussername);
+				request.session.you = request.body
 
-});
-//opens the chat html
-app.get('/chat', function(req, res) {
-    // creats the chat table 
-    createChat();
-    res.sendFile(__dirname + chat);
-});
-//returns the user home if there is a time out
-app.get('/home', function(req, res) {
-    res.redirect('/');
-    res.sendFile(path.resolve(__dirname + login));
+				response.redirect('/home')
+				response.end();
+			} else {
+				response.send('incorrect username and/or password!');
+			}
+		})
+	} else {
+		response.send('Please enter username and Password!');
+		response.end();
+	}
+
+
 })
+
+app.post('/logout', function(request, response) {
+	remove_memberA(request.session.ussername)
+
+	io.on('connection', socket => {
+
+		socket.on('logedin', async function(user) {
+			socket.username = user;
+			var c = await getAll()
+			totalUsers = c.map(x => x.username)
+			//.difference
+
+			// a is the not loged in usr
+			let a = totalUsers.difference(getAllusersA())
+			// b is all the loged in users
+			let b = totalUsers.similarity(getAllusersA())
+			a = a.map(x => [x, false])
+			b = b.map(x => [x, true])
+
+			let t = a.concat(b)
+
+			socket.broadcast.emit('people', t)
+			socket.emit('people', t)
+
+		})
+	})
+	removeUser();
+	request.session.destroy()
+	response.redirect('/')
+})
+
+app.get('/home', function(request, response) {
+	// If the user is loggedin
+	if (request.session.loggedin) {
+		//next file
+
+		var option = {
+			headers: {
+				"user": request.session.ussername
+			}
+		}
+
+		//response.sendFile(path.resolve(__dirname + login));
+		response.sendFile(path.join(__dirname + chat), option);
+
+
+		// Output username
+		//response.send('Welcome back, ' + request.session.ussername + '!');
+	} else {
+		// Not logged in
+		response.send('Please login to view this page!');
+
+	}
+	//response.end();
+})
+
+
+
+
+
 /* 
 gets the server as from http 
 use could use app.js socket.io http for listening to the server
 */
 http.listen(port, () => {
-    console.log(`Socket.IO server running at http://localhost:${port}/`);
+	console.log(`Socket.IO server running at http://localhost:${port}/`);
 });
 
