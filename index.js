@@ -205,3 +205,68 @@ http.listen(port, () => {
 	console.log(`Socket.IO server running at http://localhost:${port}/`);
 });
 
+	// this block will run when the client connects
+		io.on('connection', socket => {
+			socket.username = ""
+			socket.chat_room = ""
+
+			socket.on('logedin', async function(user) {
+				add_memberA(user)
+				socket.username = user;
+				
+			  var c = await getAll()
+			     totalUsers = c.map(x => x.username)
+			     //.difference
+			     
+			     // a is the not loged in usr
+			     let a = totalUsers.difference(getAllusersA())
+			     // b is all the loged in users
+			     let b = totalUsers.similarity(getAllusersA()) 
+			     a = a.map(x => [x,false] )
+			     b =  b.map(x => [x,true] )
+
+                let t =   a.concat(b)
+			     	socket.broadcast.emit('people', t )
+				socket.emit('people',t  )
+
+			})
+
+
+			socket.on('persistence', function(a) {
+				recalChats(a).then(function(arr) {
+					arr = arr.map(x => x.message)
+					socket.emit('persistence', arr)
+				})
+			})
+			
+
+			socket.on('room', room => {
+				let j = add_roomA(...room)
+
+				socket.join(j);
+
+				socket.chat_room = j
+
+				socket.emit('message', 'this is a message just for you')
+
+			})
+
+			socket.on('find room', room => {
+				let j = find_roomA(room).code
+
+				socket.join(j);
+				socket.chat_room = j
+
+				socket.emit('message', 'this is a message just for you')
+
+
+			})
+
+			socket.on('message', message => {
+			    
+			addChats(socket.username, message, socket.chat_room ).then(()=>{
+				io.to(socket.chat_room).emit('message', message);
+			})
+			
+			})
+		})
