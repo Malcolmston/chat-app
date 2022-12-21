@@ -1,37 +1,45 @@
+
 const {
-    MassagelogIn,
-    MassagesignIn,
-    costom
-} = require('./notification.js')
+	addNewuser,
+	validate,
+	getAll,
+	
+	addChats,
+	getChats,
+	recalChats
+} = require("./sql.js")
+
 const {
-    addNewuser,
-    getNewlogIn,
-    validate,
-    isEmpty,
-    getAll,
-    createChat,
-    addNewChat,
-    getChats
-} = require('./sql.js');
-var {
-    express,
-    bodyParser,
-    fetch,
-    urlencodedParser
-} = require('./modules.js');
+	add_roomA,
+	find_roomA,
+	add_memberA,
+	getAllusersA,
+    remove_memberA
+} = require("./place.js")
 
-const app = require('express')();
-var fs = require('fs');
-const http = require('http').Server(app);
-const io = require('socket.io')(http);
-const port = process.env.PORT || 3000;
+var bodyParser = require('body-parser'),
+	express = require("express"),
+	session = require('express-session'),
+	app = express(),
+	http = require('http').Server(app),
+	path = require('path'),
+	socket = require('socket.io'),
+localStorage = require('localStorage'),
+	router = express.Router(),
+	io = socket(http);
 
-const login = '/login/main.html'
-const chat = '/chat/main.html'
-//const redirect = '/redirect/main.html'
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/', router);
 
-var path = require('path');
-var you;
+app.use(session({
+	secret: 'secret',
+	resave: true,
+	saveUninitialized: true
+}));
+
+
 
 /*
 true => DD/MM/YY
