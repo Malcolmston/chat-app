@@ -39,6 +39,33 @@ app.use(session({
 	saveUninitialized: true
 }));
 
+const login = '/accountPage.html'
+const chat = '/homePage.html'
+const port = process.env.PORT || 3000
+
+Array.prototype.difference = function(arr) {
+return this.filter(x => !arr.includes(x));
+}
+
+Array.prototype.similarity  = function(arr) {
+return this.filter(x => arr.includes(x));
+}
+
+
+
+function setUser(user) {
+//	localStorage.setItem('username', user);
+}
+
+function removeUser() {
+//	localStorage.removeItem('username');
+}
+
+function getUser(){
+    return false//localStorage.getItem('username')
+
+}
+
 
 //the innitial file loader
 app.get('/', function(request, res) {
