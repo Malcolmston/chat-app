@@ -37,3 +37,52 @@ function getIndividualRoomUsers(room) {
 function getAllusers() {
 	return users.map(x => x.username)
 }
+
+
+
+// creates a room from the sender and the reciver
+function add_roomA(from, to) {
+	if (find_room(to) || find_room(from)) { return from + to }
+	rooms.push({
+		to,
+		from,
+		code: to + from
+	})
+
+	return to + from
+}
+
+// gets all rooms that you can join
+function rooms_you_may_joinA(you) {
+	return rooms.filter(room => room.to == you || room.from == from)
+}
+
+// finds a the first room you can join
+function find_room(to) {
+	return rooms.filter(room => (room.to == to || room.from == to))[0] || false
+}
+
+function is_member(usr) {
+	return members.filter(x => x.username == usr).length == 0
+
+}
+
+function add_memberA(usr) {
+	if (!is_member(usr)) return;
+	members.push({ username: usr })
+	return usr
+}
+
+function remove_memberA(usr) {
+let index = members.map(x => x.username).indexOf(usr);
+if (index > -1) { // only splice array when item is found
+  members.splice(index, 1); // 2nd parameter means remove one item only
+}
+
+return members.map(x => x.username)
+
+}
+
+function getAllusersA() {
+	return members.map(x => x.username)
+}
