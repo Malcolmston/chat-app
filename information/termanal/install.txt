@@ -1,0 +1,7 @@
+set node version ==> nvm install
+to get list of all node versions ==> nvm ls-remote
+
+all imports ==> npm install body-parser express express-session http path socket.io localStorage sqlite3 promise node-fetch@2
+
+to start index.js  ==> node index.js
+
