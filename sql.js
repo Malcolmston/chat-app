@@ -5,20 +5,20 @@ var Promise = require('promise');
 const fetch = require('node-fetch');
 
 
-function getDay(){
+function getDay() {
 	var today = new Date();
-var dd = today.getDate();
-var mm = today.getMonth()+1; //January is 0!
-var yyyy = today.getFullYear();
+	var dd = today.getDate();
+	var mm = today.getMonth() + 1; //January is 0!
+	var yyyy = today.getFullYear();
 
-if(dd<10) {
-    dd='0'+dd
-} 
+	if (dd < 10) {
+		dd = '0' + dd
+	}
 
-if(mm<10) {
-    mm='0'+mm
-} 
-return mm+'/'+dd+'/'+yyyy;
+	if (mm < 10) {
+		mm = '0' + mm
+	}
+	return mm + '/' + dd + '/' + yyyy;
 }
 
 function getAll(From = 'users') {
@@ -38,7 +38,7 @@ function getAll(From = 'users') {
 
 function crateTable(name = 'users') {
 	return new Promise((resolve, reject) => {
-		db.serialize(function() {
+		db.serialize(function () {
 			db.run(`CREATE TABLE IF NOT EXISTS ${name} (person_id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, password TEXT NOT NULL)`);
 			resolve('done')
 		})
@@ -49,12 +49,12 @@ function crateTable(name = 'users') {
 //adds a new user with the headers
 function addNewuser(username, password) {
 	return new Promise((resolve, reject) => {
-		db.serialize(function() {
+		db.serialize(function () {
 			db.run("CREATE TABLE IF NOT EXISTS  users  (person_id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, password TEXT NOT NULL)");
 			var stmt = db.prepare("INSERT INTO users VALUES (?,?,?)");
 			stmt.run(null, username, password);
 			stmt.finalize();
-			validate(username, password).then(function(ask) {
+			validate(username, password).then(function (ask) {
 				if (!ask) {
 					db.all("SELECT * FROM users",
 						[],
@@ -85,7 +85,7 @@ function getNewlogIn(username, password) {
 				if (err) {
 					reject(err)
 				} else {
-					let ans = rows.filter(function(x) {
+					let ans = rows.filter(function (x) {
 						return x['username'] == username && x['password'] == password
 					})
 					resolve(ans)
@@ -101,7 +101,7 @@ async function isEmpty() {
 		return (a.length >= 1)
 	} catch (error) {
 		a = 'error'
-		crateTable().then(function() {
+		crateTable().then(function () {
 			isEmpty()
 		})
 	}
@@ -111,13 +111,13 @@ async function validate(username, password) {
 	var ans = await getAll('users')
 	//console.log( username, password )
 	try {
-		return ans.filter(function(x) {
+		return ans.filter(function (x) {
 			//(a | b) == 1 
 
 			return x['username'] == username && x['password'] == password
 		}).length >= 1
 	} catch (error) {
-		crateTable().then(function() {
+		crateTable().then(function () {
 			validate(username, password)
 		})
 	}
@@ -127,8 +127,8 @@ async function validate(username, password) {
 
 //creates the sqlite database that will store all chats
 function crearChats() {
-	return new Promise(function(resolve, reject) {
-		db.serialize(function() {
+	return new Promise(function (resolve, reject) {
+		db.serialize(function () {
 			db.run("CREATE TABLE IF NOT EXISTS chats (id INTEGER PRIMARY KEY, name TEXT, message TEXT, room TEXT, time TEXT)");
 			resolve(true);
 		});
@@ -136,9 +136,9 @@ function crearChats() {
 }
 
 //when a user sends a chat it is added to the database so theat perssitance works
-function addChats(name, message, room ) {
-	return new Promise(function(resolve, reject) {
-		db.serialize(function() {
+function addChats(name, message, room) {
+	return new Promise(function (resolve, reject) {
+		db.serialize(function () {
 			db.run(`INSERT INTO chats (name, message, room ,time) VALUES ('${name}', '${message}','${room}', '${getDay()}')`)
 			resolve('Inserted 1 row');
 
@@ -148,12 +148,12 @@ function addChats(name, message, room ) {
 
 //this function recals all of the chats.
 function getChats() {
-    //note this function is called but never used
-	return new Promise(function(resolve, reject) {
-		db.serialize(function() {
-			db.all("SELECT * FROM chats", function(err, rows) {
+	//note this function is called but never used
+	return new Promise(function (resolve, reject) {
+		db.serialize(function () {
+			db.all("SELECT * FROM chats", function (err, rows) {
 				if (err) reject(err);
-				console.log( rows )
+				console.log(rows)
 				resolve(rows);
 
 			});
@@ -163,12 +163,20 @@ function getChats() {
 
 // gets all cats from a room name with the var id. 
 function recalChats(id) {
-	return new Promise(function(resolve, reject) {
-		db.serialize(function() {
-		    //get all chats that contain both your username and the senders username
-			db.all(`SELECT * FROM chats WHERE room LIKE '%${id[0]}%' AND room LIKE '%${id[1]}%'`, function(err, rows) {
-				if (err) reject(err);
+	return new Promise(function (resolve, reject) {
+		db.serialize(function () {
+			//get all chats that contain both your username and the senders username
+			/*db.all(`SELECT * FROM chats WHERE room LIKE '%${id[0]}%' AND room LIKE '%${id[1]}%'`, function (err, rows) { */
+			db.all(`SELECT * FROM chats`, function (err, rows) {
+				rows = rows.filter( row => {
+					let {room} = row
+					return room.includes(id[0]) && room.includes(id[1])
+				})
+
 				console.log( rows )
+
+
+				if (err) reject(err);
 				resolve(rows);
 			})
 		})
@@ -176,15 +184,19 @@ function recalChats(id) {
 }
 
 
-crateTable().then( crearChats()  )
+
+crateTable().then(crearChats())
+
+
 
 
 module.exports = {
 	addNewuser,
 	validate,
 	getAll,
-	
+
 	addChats,
 	getChats,
-	recalChats
+	recalChats,
+
 }

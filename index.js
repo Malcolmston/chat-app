@@ -6,7 +6,9 @@ const {
 
 	addChats,
 	getChats,
-	recalChats
+	recalChats,
+
+
 } = require("./sql.js")
 
 const {
@@ -43,58 +45,38 @@ const login = '/accountPage.html'
 const chat = '/homePage.html'
 const port = process.env.PORT || 3000
 
-Array.prototype.difference = function(arr) {
+// get all different items in the array
+Array.prototype.difference = function (arr) {
 	return this.filter(x => !arr.includes(x));
 }
 
-Array.prototype.similarity = function(arr) {
+// gets the all similar items in the array
+Array.prototype.similarity = function (arr) {
 	return this.filter(x => arr.includes(x));
 }
 
 
 
-function setUser(user) {
-	//	localStorage.setItem('username', user);
-}
 
-function removeUser() {
-	//	localStorage.removeItem('username');
-}
+// the home page
+app.get('/', function (request, res) {
+	res.sendFile(path.resolve(__dirname + login));
 
-function getUser() {
-	return false//localStorage.getItem('username')
-
-}
-
-
-//the innitial file loader
-app.get('/', function(request, res) {
-	//get login file
-	if (getUser()) {
-		request.session.loggedin = true;
-		request.session.ussername = getUser();
-
-
-		res.redirect('/home')
-	} else {
-		res.sendFile(path.resolve(__dirname + login));
-	}
 
 });
 
 
-// http://localhost:3000/signup
-app.post('/signup', function(request, response) {
+// gets the inputs from the user on the sign up page
+app.post('/signup', function (request, response) {
 	// gets the input fields
 	let ussername = request.body.ussername;
 	let password = request.body.password;
 	// makes sure the input fields exists and are not empty
 	if (ussername && password) {
-		validate(ussername, password).then(function(params) {
+		validate(ussername, password).then(function (params) {
 			if (!params) {
 				request.session.loggedin = true;
 				request.session.ussername = ussername;
-				setUser(ussername);
 				addNewuser(ussername, password).then(console.log)
 
 				response.redirect('/home')
@@ -110,18 +92,18 @@ app.post('/signup', function(request, response) {
 
 });
 
-app.post('/login', function(request, response) {
+// gets the inputs from the user on the log in page
+app.post('/login', function (request, response) {
 	// gets the input fields
 	let ussername = request.body.ussername;
 	let password = request.body.password;
 	// makes sure the input fields exists and are not empty
 
 	if (ussername && password) {
-		validate(ussername, password).then(function(params) {
+		validate(ussername, password).then(function (params) {
 			if (params) {
 				request.session.loggedin = true;
 				request.session.ussername = ussername;
-				setUser(ussername);
 				request.session.you = request.body
 
 				response.redirect('/home')
@@ -138,37 +120,17 @@ app.post('/login', function(request, response) {
 
 })
 
-app.post('/logout', function(request, response) {
+// gets when the user logs out
+app.post('/logout', function (request, response) {
 	remove_memberA(request.session.ussername)
 
-	io.on('connection', socket => {
-
-		socket.on('logedin', async function(user) {
-			socket.username = user;
-			var c = await getAll()
-			totalUsers = c.map(x => x.username)
-			//.difference
-
-			// a is the not loged in usr
-			let a = totalUsers.difference(getAllusersA())
-			// b is all the loged in users
-			let b = totalUsers.similarity(getAllusersA())
-			a = a.map(x => [x, false])
-			b = b.map(x => [x, true])
-
-			let t = a.concat(b)
-
-			socket.broadcast.emit('people', t)
-			socket.emit('people', t)
-
-		})
-	})
-	removeUser();
 	request.session.destroy()
 	response.redirect('/')
 })
 
-app.get('/home', function(request, response) {
+// sends the user to the home page
+app.get('/home', function (request, response) {
+
 	// If the user is loggedin
 	if (request.session.loggedin) {
 		//next file
@@ -197,6 +159,7 @@ app.get('/home', function(request, response) {
 
 
 
+
 /* 
 gets the server as from http 
 use could use app.js socket.io http for listening to the server
@@ -205,68 +168,98 @@ http.listen(port, () => {
 	console.log(`Socket.IO server running at http://localhost:${port}/`);
 });
 
-	// this block will run when the client connects
-		io.on('connection', socket => {
-			socket.username = ""
-			socket.chat_room = ""
+// this block will run when the client connects
+io.on('connection', socket => {
+	socket.username = ""
+	socket.chat_room = ""
 
-			socket.on('logedin', async function(user) {
-				add_memberA(user)
-				socket.username = user;
-				
-			  var c = await getAll()
-			     totalUsers = c.map(x => x.username)
-			     //.difference
-			     
-			     // a is the not loged in usr
-			     let a = totalUsers.difference(getAllusersA())
-			     // b is all the loged in users
-			     let b = totalUsers.similarity(getAllusersA()) 
-			     a = a.map(x => [x,false] )
-			     b =  b.map(x => [x,true] )
+	socket.on('logedin', async function (user) {
+		add_memberA(user)
+		socket.username = user;
 
-                let t =   a.concat(b)
-			     	socket.broadcast.emit('people', t )
-				socket.emit('people',t  )
+		var c = await getAll()
 
-			})
+		totalUsers = c.map(x => x.username)
+		//.difference
 
+		// a is the not loged in usr
+		let a = totalUsers.difference(getAllusersA())
+		// b is all the loged in users
+		let b = totalUsers.similarity(getAllusersA())
+		a = a.map(x => [x, false])
+		b = b.map(x => [x, true])
 
-			socket.on('persistence', function(a) {
-				recalChats(a).then(function(arr) {
-					arr = arr.map(x => x.message)
-					socket.emit('persistence', arr)
-				})
-			})
-			
+		let t = a.concat(b)
 
-			socket.on('room', room => {
-				let j = add_roomA(...room)
+		socket.broadcast.emit('people', t)
+		socket.emit('people', t)
 
-				socket.join(j);
+	})
 
-				socket.chat_room = j
+	socket.on('logedout', async function (user) {
+		remove_memberA(user)
 
-				socket.emit('message', 'this is a message just for you')
+		var c = await getAll()
 
-			})
+		totalUsers = c.map(x => x.username)
+		//.difference
 
-			socket.on('find room', room => {
-				let j = find_roomA(room).code
+		// a is the not loged in usr
+		let a = totalUsers.difference(getAllusersA())
+		// b is all the loged in users
+		let b = totalUsers.similarity(getAllusersA())
+		a = a.map(x => [x, false])
+		b = b.map(x => [x, true])
 
-				socket.join(j);
-				socket.chat_room = j
+		let t = a.concat(b)
 
-				socket.emit('message', 'this is a message just for you')
+		socket.broadcast.emit('peopleO', t)
+		//	socket.emit('peopleO',t  )
 
+	})
 
-			})
-
-			socket.on('message', message => {
-			    
-			addChats(socket.username, message, socket.chat_room ).then(()=>{
-				io.to(socket.chat_room).emit('message', message);
-			})
-			
-			})
+	socket.on('persistence', function (a) {
+		console.log(a)
+		recalChats(a).then(function (arr) {
+			arr = arr.map(x => x.message)
+			socket.emit('persistence', arr)
 		})
+	})
+
+
+	socket.on('room', room => {
+		let j = add_roomA(...room)
+
+		socket.join(j);
+
+		socket.chat_room = j
+
+		socket.emit('message', 'this is a message just for you')
+
+	})
+
+	socket.on('find room', room => {
+		let other = socket.chat_room.replace(socket.username, '')
+		let j = find_roomA(room).code
+
+		socket.join(j);
+		socket.chat_room = j
+
+		socket.emit('message', 'this is a message just for you')
+
+
+	})
+
+	socket.on('message', message => {
+		let other = socket.chat_room.replace(socket.username, '')
+		//socket.broadcast.emit(other, `a message was sent from ${socket.username}`);
+
+		socket.broadcast.emit(other, socket.username);
+
+
+		addChats(socket.username, message, socket.chat_room).then(() => {
+			io.to(socket.chat_room).emit('message', message);
+		})
+
+	})
+})

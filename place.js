@@ -69,7 +69,7 @@ function is_member(usr) {
 
 function add_memberA(usr) {
 	if (!is_member(usr)) return;
-	members.push({ username: usr })
+	members.push({ username: usr})
 	return usr
 }
 
