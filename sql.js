@@ -184,7 +184,7 @@ function recalChats(id) {
 }
 
 
-
+// loads all the basic sqlite that will start the servers
 crateTable().then(crearChats())
 
 

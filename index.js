@@ -41,8 +41,11 @@ app.use(session({
 	saveUninitialized: true
 }));
 
+// gets both pages as urls
 const login = '/accountPage.html'
 const chat = '/homePage.html'
+
+// gets the port
 const port = process.env.PORT || 3000
 
 // get all different items in the array
