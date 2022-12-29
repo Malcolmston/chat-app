@@ -28,9 +28,13 @@ creates a simple 1:1 chat app theat users can use
 #### html assets
 | html 	| css 	| js 	|
 |---	|---	|---	|
-| icon image https://images.unsplash.com/photo-1666515878427-c0a045bf03c6?crop=entropy&cs=tinysrgb&fm=jpg&ixid=MnwzMjM4NDZ8MHwxfHJhbmRvbXx8fHx8fHx8fDE2Njg3NDQ4MjM&ixlib=rb-4.0.3&q=80 	| https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css 	| https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js 	|
-|  	|  	| https://cdn.jsdelivr.net/npm/sweetalert2@11 	|
-|  	|  	| https://kit.fontawesome.com/fd76b8450f.js 	|
-|  	|  	| https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js 	|
-|  	|  	| https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js 	|
-|  	|  	| /socket.io/socket.io.js 	|
+| icon image ![jellyfish](https://images.unsplash.com/photo-1666515878427-c0a045bf03c6?crop=entropy&cs=tinysrgb&fm=jpg&ixid=MnwzMjM4NDZ8MHwxfHJhbmRvbXx8fHx8fHx8fDE2Njg3NDQ4MjM&ixlib=rb-4.0.3&q=80) 	| [bootstrap 5 v5.2.1](https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css) 	| [bootstrap 5 v5.2.1](https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js) 	|
+|  	|  	| [swal 2](https://cdn.jsdelivr.net/npm/sweetalert2@11) 	|
+|  	|  	| [fontawesome pro](https://kit.fontawesome.com/fd76b8450f.js) 	|
+|  	|  	| [crypto 3.1.2](https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js) 	|
+|  	|  	| [jquery 3.6.0](https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js) 	|
+|  	|  	| [socket.io](/socket.io/socket.io.js) 	|
+|   |   | [marked 0.3.2][def] |
+
+
+[def]: https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js
