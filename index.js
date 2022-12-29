@@ -1,3 +1,5 @@
+//npm install body-parser express express-session http path socket.io sqlite3 node-fetch@2
+
 
 const {
 	addNewuser,
@@ -5,7 +7,6 @@ const {
 	getAll,
 
 	addChats,
-	getChats,
 	recalChats,
 
 
@@ -26,14 +27,12 @@ var bodyParser = require('body-parser'),
 	http = require('http').Server(app),
 	path = require('path'),
 	socket = require('socket.io'),
-	localStorage = require('localStorage'),
 	router = express.Router(),
 	io = socket(http);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/', router);
+app.use(express.static(path.join(__dirname, 'static')));
 
 app.use(session({
 	secret: 'secret',
@@ -63,9 +62,8 @@ Array.prototype.similarity = function (arr) {
 
 // the home page
 app.get('/', function (request, res) {
+	//res.sendFile(path.resolve(__dirname + login));
 	res.sendFile(path.resolve(__dirname + login));
-
-
 });
 
 
