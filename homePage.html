@@ -229,18 +229,6 @@
 				visibility: visible;
 			}
 
-.Information th:empty, td:empty { visibility: hidden; }
-
-
-.Information table, td, th {
-  border: 1px solid;
-    empty-cells: hide;
-}
-
-.Information table {
-  width: 100%;
-  border-collapse: collapse;
-}
 
 .nav {
     width: 100%;
@@ -284,6 +272,24 @@
     color: black;
 }
 
+/* markdown css */
+
+
+ table {
+	border: 1px solid;
+  width: 100%;
+}
+
+table, td, th {
+  border: 1px solid;
+}
+
+
+ [alt="jellyfish"] {
+	width: 100px;
+	height: 100px;
+}
+
 		</style>
 
 		<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.3/animate.min.css" rel="stylesheet">
@@ -300,11 +306,15 @@
 
 	<div class='top nav'>
 		<div class='itm active'><i class="fa-duotone fa-house-user"></i> Home </div>
-		<div class='itm inactive'><i class="fa-duotone fa-comments"></i>Chat</div>
+		<div class='itm inactive'><i class="fa-duotone fa-comments"></i> Chat</div>
 		<div class='itm inactive'><i class="fa-sharp fa-solid fa-magnifying-glass"></i> Information</div>
 	</div>
 
-	<main class="Home"></main>
+	<main class="Home">
+		<canvas id="myCanvas" width="240" height="30">
+			Your browser does not support the canvas tag.
+			</canvas>
+	</main>
 
 	<main class="Chat">
 		<div id="myNav" class="overlay">
@@ -340,21 +350,74 @@
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/mouse0270-bootstrap-notify/3.1.5/bootstrap-notify.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
 
 <script>
+	// gets the web headers 
+	var xhr = new XMLHttpRequest();
+		xhr.open('GET', document.location, false);
+		xhr.send(null);
+		username = xhr.getResponseHeader("user");
+		
+
+		//welcolms a user in the canvas
+	function welcolm (user,n=true){
+    
+    let canvas = document.getElementById("myCanvas");
+ let jsConfetti = new JSConfetti(canvas ,{ resize: false })
+
+
+//{ resize: true }
+
+
+let ctx = canvas.getContext("2d");
+let fontColor = 'red';
+let textVariable = n ? `welcolm: ${user}` : `welcolm back: ${user}`
+
+
+    ctx.font = "600 40px Proxima-nova";
+
+  canvas.width = ctx.measureText(textVariable).width;
+  canvas.style.width = canvas.width + 'px';
+
+  
+  ctx.font = "600 40px Proxima-nova";
+  ctx.fillStyle = fontColor;
+  ctx.textAlign = "left";
+   
+
+
+  ctx.fillText(textVariable, 0, canvas.height - 1);
+  
+if(n){
+   jsConfetti.addConfetti({
+       confettiColors: ['#ff0a54', '#ff477e', '#ff7096', '#ff85a1', '#fbb1bd', '#f9bec7']
+   }).then(() => {jsConfetti.clearCanvas()})
+}else{
+     jsConfetti.addConfetti({
+         confettiColors: ['#03A9F4', '#3949AB', '#4DD0E1', '#DD2C00', '#C62828', '#E57373']
+     }).then(() => {jsConfetti.clearCanvas()})
+}
+}
+
+
+
 	document.querySelectorAll('main').forEach( item => {
 		item.style.display = "none"
 	})
-	
-		
 
+document.querySelector('.Home').style.display = 'block'
+
+	welcolm(username,true)
 
 
 	async function getMarkdown(){
   let info =  $.ajax({
   method: 'get',
-  url: 'https://raw.githubusercontent.com/Malcolmston/chat-app/3c489f6fa29a35a6a0fc67be0df2359ae5ecf0f0/README.md'
+  url: 'https://raw.githubusercontent.com/Malcolmston/chat-app/main/README.md'
   })
+
+  console.log( info )
   return info
 }
 
@@ -364,8 +427,26 @@ function getMarkdownText(arg) {
 	
 
 //
+var o = ['Home','Chat','Information']
+
 document.querySelectorAll('.itm').forEach( item => {
   item.addEventListener('click',function(){
+
+		let clicked = this.innerText.trim()
+
+
+		document.querySelectorAll('.itm').forEach(function(x){
+if( x.innerText.trim() == clicked ){
+	x.classList.replace('inactive','active')
+}else{
+	x.classList.replace('active','inactive')
+}
+
+
+		})
+
+
+		
 	document.querySelectorAll('main').forEach( item => {
 			if(item.className == this.innerText.trim()){
 				item.style.display = "block"
@@ -378,8 +459,7 @@ document.querySelectorAll('.itm').forEach( item => {
         case "Information":
 
             getMarkdown().then((data)=>{
-             
-     
+            
 	document.querySelector('.Information').innerHTML = getMarkdownText(data)
       
             }).catch( (e) => {
@@ -388,7 +468,11 @@ document.querySelectorAll('.itm').forEach( item => {
             })
 			break;
 		case "Chats":
-			
+			break;
+		case "Home":
+			break;
+        default:
+			break;
    }
    
     })
@@ -523,12 +607,6 @@ var infoClick = function (id) {
 		}
 
 
-// gets the web headers 
-		var xhr = new XMLHttpRequest();
-		xhr.open('GET', document.location, false);
-		xhr.send(null);
-		username = xhr.getResponseHeader("user");
-
 		var socket = io();
 
 // turns sockets on in the server side
@@ -622,8 +700,6 @@ document.getElementById('allContentPeople').innerHTML = ''
 
 		})
 
-	
-
 		socket.on(username, (x) => {
 			socket.emit('logedin', username)
 			infoClick(x)
@@ -633,8 +709,6 @@ document.getElementById('allContentPeople').innerHTML = ''
 			socket.emit('logedin', username)
 			message(x)
 		})
-
-
 
 		socket.on('persistence', x => {
 			chats.innerHTML = 'this is a message just for you'

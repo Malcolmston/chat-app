@@ -135,12 +135,13 @@ app.get('/home', function (request, response) {
 	// If the user is loggedin
 	if (request.session.loggedin) {
 		//next file
-
-		var option = {
-			headers: {
-				"user": request.session.ussername
+		var  option = {
+				headers: {
+					"user": request.session.ussername				}
 			}
-		}
+
+
+		
 
 		//response.sendFile(path.resolve(__dirname + login));
 		response.sendFile(path.join(__dirname + chat), option);
