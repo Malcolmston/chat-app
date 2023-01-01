@@ -9,50 +9,49 @@
 		href="https://images.unsplash.com/photo-1666515878427-c0a045bf03c6?crop=entropy&cs=tinysrgb&fm=jpg&ixid=MnwzMjM4NDZ8MHwxfHJhbmRvbXx8fHx8fHx8fDE2Njg3NDQ4MjM&ixlib=rb-4.0.3&q=80">
 
 
-
-	<style>
+		<style>
 	
 
 
-	form {
-	width: 400px;
-	margin-left: auto;
-	margin-right: auto;
-	margin-top: 10px;
-	}
-	.hide {
-	display: none;
-	}
-	.show {
-	display: block;
-	}
-
-
-
-.flex {
-  display: flex;
-  justify-content: center;
-}
-
-.flex-item + .flex-item {
-  margin-left: 10px;
-}
-
-.btn {
-  margin-top: 15px;
-  margin-left: 10px;
-  
-  background-color: #0066FF;
-  border: none;
-  color: white;
-  padding: 10px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  cursor: pointer;
-}
-	</style>
+			form {
+			width: 400px;
+			margin-left: auto;
+			margin-right: auto;
+			margin-top: 10px;
+			}
+			.hide {
+			display: none;
+			}
+			.show {
+			display: block;
+			}
+			
+			
+			
+			.flex {
+			display: flex;
+			justify-content: center;
+			}
+			
+			.flex-item + .flex-item {
+			margin-left: 10px;
+			}
+			
+			.btn {
+			margin-top: 15px;
+			margin-left: 10px;
+			
+			background-color: #0066FF;
+			border: none;
+			color: white;
+			padding: 10px 20px;
+			text-align: center;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 16px;
+			cursor: pointer;
+			}
+			</style>			
 
 </head>
 
@@ -66,9 +65,9 @@
 	  <h1>create a new account</h1>
   
 	  <label for="ussername" class="form-label">Ussername:</label>
-	  <input type="text" class="form-control" id="ussername1" placeholder="Enter ussername" name="ussername" reqired>
+	  <input type="text" class="form-control" id="ussername1" placeholder="Enter ussername" name="ussername" required>
 	  <label for="pwd" class="form-label">Password:</label>
-	  <input type="password" class="form-control" id="pwd1" placeholder="Enter password" name="password" reqired>
+	  <input type="password" class="form-control" id="pwd1" placeholder="Enter password" name="password" required>
 	  <button type="submit" class="btn btn-primary">Submit</button>
 	  <button type="button" class="btn btn-danger">cancel</button>
   
@@ -81,9 +80,9 @@
 	<form action='/login' method="post" class='login hide' id='login'>
 	  <h1>LogIn</h1>
 	  <label for="ussername" class="form-label">Ussername:</label>
-	  <input type="ussername" class="form-control" id="ussername" placeholder="Enter Ussername" name="ussername" reqired>
+	  <input type="ussername" class="form-control" id="ussername" placeholder="Enter Ussername" name="ussername" required>
 	  <label for="pwd" class="form-label">Password:</label>
-	  <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="password" reqired>
+	  <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="password" required>
 	  <label class="form-check-label">
 		<input class="form-check-input" type="checkbox" name="remember"> Remember me
 	  </label>
@@ -99,7 +98,7 @@
 	<script>
 		// gets if falue is not false
 function isTrue(value){
-	return (value === true && value !== false) && (value != undefined && value != null)
+	return value||false //(value === true && value !== false) && (value != undefined && value != null)
 }
 
 // sets the user in localStorage
@@ -115,7 +114,6 @@ function isTrue(value){
 		}
 // gets if user is true 
 		function getUser() {
-
 			return isTrue(localStorage.getItem('username')) && isTrue(localStorage.getItem('password')) ? [localStorage.getItem('username'), localStorage.getItem('password')] : false
 
 		}
@@ -177,11 +175,9 @@ function isTrue(value){
 		})
 
 		if (getUser()) {
+
 			document.querySelector('#ussername').value = getUser()[0]
 			document.querySelector('#pwd').value = getUser()[1]
-
-			document.querySelector('#ussername').value = getUser[0]
-			document.querySelector('#pwd').value = getUser[1]
 
 			document.querySelector('#login').submit()
 

@@ -1,3 +1,5 @@
+//npm install body-parser express express-session http path socket.io sqlite3 node-fetch@2
+
 
 const {
 	addNewuser,
@@ -5,7 +7,6 @@ const {
 	getAll,
 
 	addChats,
-	getChats,
 	recalChats,
 
 
@@ -26,14 +27,12 @@ var bodyParser = require('body-parser'),
 	http = require('http').Server(app),
 	path = require('path'),
 	socket = require('socket.io'),
-	localStorage = require('localStorage'),
 	router = express.Router(),
 	io = socket(http);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/', router);
+app.use(express.static(path.join(__dirname, 'static')));
 
 app.use(session({
 	secret: 'secret',
@@ -60,12 +59,10 @@ Array.prototype.similarity = function (arr) {
 
 
 
-
 // the home page
 app.get('/', function (request, res) {
+	//res.sendFile(path.resolve(__dirname + login));
 	res.sendFile(path.resolve(__dirname + login));
-
-
 });
 
 
@@ -107,7 +104,7 @@ app.post('/login', function (request, response) {
 			if (params) {
 				request.session.loggedin = true;
 				request.session.ussername = ussername;
-				request.session.you = request.body
+
 
 				response.redirect('/home')
 				response.end();
@@ -137,12 +134,14 @@ app.get('/home', function (request, response) {
 	// If the user is loggedin
 	if (request.session.loggedin) {
 		//next file
-
-		var option = {
-			headers: {
-				"user": request.session.ussername
+		var  option = {
+				headers: {
+					"user": request.session.ussername
+				}
 			}
-		}
+
+
+		
 
 		//response.sendFile(path.resolve(__dirname + login));
 		response.sendFile(path.join(__dirname + chat), option);

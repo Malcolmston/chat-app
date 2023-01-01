@@ -5,228 +5,297 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title>My Website</title>
+	<title>Chat App</title>
 
 
-	<link rel="icon" href="./favicon.ico" type="image/x-icon">
-	<style>
-		:focus {
-			outline: none;
-			box-shadow: none !important;
-		}
+	<link rel="icon" type="image/x-icon"
+		href="https://images.unsplash.com/photo-1666515878427-c0a045bf03c6?crop=entropy&cs=tinysrgb&fm=jpg&ixid=MnwzMjM4NDZ8MHwxfHJhbmRvbXx8fHx8fHx8fDE2Njg3NDQ4MjM&ixlib=rb-4.0.3&q=80">
 
-		.overlay {
-			height: 100%;
-			width: 100%;
-			display: none;
-			position: fixed;
-			z-index: 1;
-			top: 0;
-			left: 0;
-			background-color: rgb(0, 0, 0);
-			background-color: rgba(0, 0, 0, 0.9);
-		}
+		<style>
+			@import url("https://fonts.googleapis.com/css?family=Raleway:400,400i,700");
 
-		.overlay-content {
-			position: relative;
-			top: 25%;
-			width: 100%;
-			text-align: center;
-			margin-top: 30px;
-		}
-
-		.overlay a {
-			padding: 8px;
-			text-decoration: none;
-			font-size: 36px;
-			color: #818181;
-			display: block;
-			transition: 0.3s;
-		}
-
-		.overlay a:hover,
-		.overlay a:focus {
-			color: #f1f1f1;
-		}
-
-		ul {
-			list-style-type: none;
-			width: 400px;
-			height: 550px;
-			background-color: lightgray;
-
-			overflow-y: scroll;
-		}
-
-		li {
-			font: 1rem 'Fira Sans', sans-serif;
-		}
-
-		.messageBar {
-			width: 400px;
-			height: 24px;
-			border: solid black 1px;
-			border-radius: 40px;
-		}
-
-		table,
-		td,
-		th {
-			border: 0px solid !important;
-		}
-
-		table {
-			width: 400px !important;
-			border-collapse: collapse !important;
-			overflow-y: scroll;
-		}
-
-		@media only screen and (max-height: 540px) {
-			ul {
-				height: 450px;
+			:focus {
+				outline: none;
+				box-shadow: none !important;
 			}
-		}
-
-		@media only screen and (max-height: 440px) {
-			ul {
-				height: 350px;
-			}
-		}
-
-		@media only screen and (max-height: 340px) {
-			ul {
-				height: 250px;
-			}
-		}
-
-		@media only screen and (max-height: 240px) {
+	
 			.overlay {
-				display: block;
+				height: 100%;
+				width: 100%;
+				display: none;
+				position: fixed;
+				z-index: 1;
+				top: 0;
+				left: 0;
+				background-color: rgb(0, 0, 0);
+				background-color: rgba(0, 0, 0, 0.9);
 			}
-		}
+	
+			.overlay-content {
+				position: relative;
+				top: 25%;
+				width: 100%;
+				text-align: center;
+				margin-top: 30px;
+			}
+	
+			.overlay a {
+				padding: 8px;
+				text-decoration: none;
+				font-size: 36px;
+				color: #818181;
+				display: block;
+				transition: 0.3s;
+			}
+	
+			.overlay a:hover,
+			.overlay a:focus {
+				color: #f1f1f1;
+			}
+	
+			ul {
+				list-style-type: none;
+				width: 400px;
+				height: 550px;
+				background-color: lightgray;
+	
+				overflow-y: scroll;
+			}
+	
+			li {
+				font: 1rem 'Fira Sans', sans-serif;
+			}
 
-		.flex-container {
-			display: grid;
-			grid-template-columns: 1fr 1fr;
-			grid-gap: 20px;
-		}
+			textarea {
+  				resize: none;
+			}
+	
+			.messageBar {
+				width: 400px;
+				height: 48px;
+				border: solid #000000 1px;
+			}
+	
+			table,
+			td,
+			th {
+				border: 0px solid !important;
+			}
+	
+			table {
+				width: 400px !important;
+				border-collapse: collapse !important;
+				overflow-y: scroll;
+			}
+	
+			@media only screen and (max-height: 540px) {
+				ul {
+					height: 450px;
+				}
+			}
+	
+			@media only screen and (max-height: 440px) {
+				ul {
+					height: 350px;
+				}
+			}
+	
+			@media only screen and (max-height: 340px) {
+				ul {
+					height: 250px;
+				}
+			}
+	
+			@media only screen and (max-height: 240px) {
+				.overlay {
+					display: block;
+				}
+			}
+	
+			.flex-container {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				grid-gap: 20px;
+			}
+	
+	
+	
+			.active {
+				background-color: #00E676;
+			}
+	
+			.inactive {
+				background-color: #FF1744;
+			}
+	
+			.offPage {
+				background-color: #666666;
+			}
+	
+	
+	
+	
+			.chip1 {
+				display: inline-flex;
+				flex-direction: row;
+				background-color: #e5e5e5;
+				border: none;
+				cursor: default;
+				height: 36px;
+				outline: none;
+				padding: 0;
+				font-size: 14px;
+				color: #333333;
+				font-family: "Open Sans", sans-serif;
+				white-space: nowrap;
+				align-items: center;
+				border-radius: 16px;
+				vertical-align: middle;
+				text-decoration: none;
+				justify-content: center;
+			}
+	
+			.chip-head1 {
+				display: flex;
+				position: relative;
+				overflow: hidden;
+				font-size: 1.25rem;
+				flex-shrink: 0;
+				align-items: center;
+				user-select: none;
+				border-radius: 50%;
+				justify-content: center;
+				width: 36px;
+				color: #fff;
+				height: 36px;
+				font-size: 20px;
+				margin-right: -4px;
+			}
+	
+			.chip-content1 {
+				cursor: inherit;
+				display: flex;
+				align-items: center;
+				user-select: none;
+				white-space: nowrap;
+				padding-left: 12px;
+				padding-right: 12px;
+			}
+	
+			.chip-svg1 {
+				color: #999999;
+				cursor: pointer;
+				height: auto;
+				margin: 4px 4px 0 -8px;
+				fill: currentColor;
+				width: 1em;
+				height: 1em;
+				display: inline-block;
+				font-size: 24px;
+				transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+				user-select: none;
+				flex-shrink: 0;
+			}
+	
+			.chip-svg1:hover {
+				color: #666666;
+			}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+			.tooltip1 {
+				position: relative;
+				display: inline-block;
+			}
+	
+			.tooltip1 .tooltiptext1 {
+				visibility: hidden;
+				width: 120px;
+				background-color: black;
+				color: #fff;
+				text-align: center;
+				border-radius: 6px;
+				padding: 5px 0;
+	
+				/* Position the tooltip */
+				position: absolute;
+				z-index: 1;
+			}
+	
+			.tooltip1:hover .tooltiptext1 {
+				visibility: visible;
+			}
+
+
+.nav {
+    width: 100%;
+    height: 40px;
+} 
+
+.nav svg {
+  font-size:35px;
+}
+
+
+.nav .itm {
+    float: left;
+    width: calc(100%/3);
+     height: 40px;
+  
+    font-family: Raleway, sans-serif;
+  font-size: 30px;
+  
+}
 
 
 
-		.active {
-			background-color: #00E676;
-		}
+.nav .active {
+    background-color: lime;
+}
 
-		.inactive {
-			background-color: #FF1744;
-		}
-
-		.offPage {
-			background-color: #666666;
-		}
+.nav .inactive {
+    background-color: rgb(37,37,37);
+    color: white;
+}
 
 
+.nav .active:hover {
+    background-color: #006600;
+    color: white;
+    
+}
+.nav .inactive:hover {
+    background-color: #D3D3D3;
+    color: black;
+}
+
+/* markdown css */
 
 
-		.chip1 {
-			display: inline-flex;
-			flex-direction: row;
-			background-color: #e5e5e5;
-			border: none;
-			cursor: default;
-			height: 36px;
-			outline: none;
-			padding: 0;
-			font-size: 14px;
-			color: #333333;
-			font-family: "Open Sans", sans-serif;
-			white-space: nowrap;
-			align-items: center;
-			border-radius: 16px;
-			vertical-align: middle;
-			text-decoration: none;
-			justify-content: center;
-		}
+ table {
+	border: 1px solid;
+  width: 100%;
+}
 
-		.chip-head1 {
-			display: flex;
-			position: relative;
-			overflow: hidden;
-			font-size: 1.25rem;
-			flex-shrink: 0;
-			align-items: center;
-			user-select: none;
-			border-radius: 50%;
-			justify-content: center;
-			width: 36px;
-			color: #fff;
-			height: 36px;
-			font-size: 20px;
-			margin-right: -4px;
-		}
-
-		.chip-content1 {
-			cursor: inherit;
-			display: flex;
-			align-items: center;
-			user-select: none;
-			white-space: nowrap;
-			padding-left: 12px;
-			padding-right: 12px;
-		}
-
-		.chip-svg1 {
-			color: #999999;
-			cursor: pointer;
-			height: auto;
-			margin: 4px 4px 0 -8px;
-			fill: currentColor;
-			width: 1em;
-			height: 1em;
-			display: inline-block;
-			font-size: 24px;
-			transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-			user-select: none;
-			flex-shrink: 0;
-		}
-
-		.chip-svg1:hover {
-			color: #666666;
-		}
+table, td, th {
+  border: 1px solid;
+}
 
 
+ [alt="jellyfish"] {
+	width: 100px;
+	height: 100px;
+}
 
+		</style>
 
-
-
-
-
-
-		.tooltip1 {
-			position: relative;
-			display: inline-block;
-		}
-
-		.tooltip1 .tooltiptext1 {
-			visibility: hidden;
-			width: 120px;
-			background-color: black;
-			color: #fff;
-			text-align: center;
-			border-radius: 6px;
-			padding: 5px 0;
-
-			/* Position the tooltip */
-			position: absolute;
-			z-index: 1;
-		}
-
-		.tooltip1:hover .tooltiptext1 {
-			visibility: visible;
-		}
-	</style>
-
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.3/animate.min.css" rel="stylesheet">
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.3/animate.min.css" rel="stylesheet">
 	<link href="https://www.w3schools.com/w3css/4/w3.css" rel="stylesheet">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -234,14 +303,33 @@
 
 </head>
 
+
+
 <body>
-	<main>
+
+	<div class='top nav'>
+		<div class='itm active'><i class="fa-duotone fa-house-user"></i> Home </div>
+		<div class='itm inactive'><i class="fa-duotone fa-comments"></i> Chat</div>
+		<div class='itm inactive'><i class="fa-sharp fa-solid fa-magnifying-glass"></i> Information</div>
+	</div>
+
+	<main class="Home">
+		<div class='bar'>
+			<form id='home' action='/logout' method="post">
+				<i class="fa-solid fa-house"></i>
+				<a>Log out</a>
+			</form>
+		<canvas id="myCanvas" width="240" height="30">
+			Your browser does not support the canvas tag.
+			</canvas>
+	</main>
+
+	<main class="Chat">
 		<div id="myNav" class="overlay">
 			<div class="overlay-content">
 				<a href="#">Page is too small</a>
 			</div>
 		</div>
-		<h1>Welcome to My Website</h1>
 		<div class='bar'>
 			<form id='home' action='/logout' method="post">
 				<i class="fa-solid fa-house"></i>
@@ -251,7 +339,8 @@
 		<div class="flex-container">
 			<div class="inputs">
 				<ul class='chat'></ul>
-				<input class="messageBar"></input>
+				<textarea style="overflow:auto;resize:none" class='messageBar' rows="10" cols="40"></textarea>
+				<button class="send"><i class="fa-sharp fa-solid fa-paper-plane-top"></i></button>
 			</div>
 			<div class="table">
 				<table id="allContentPeople">
@@ -260,14 +349,144 @@
 		</div>
 	</main>
 
+	<main class="Information"></main>
+
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<script src="https://kit.fontawesome.com/fd76b8450f.js" crossorigin="anonymous"></script>
 	<script src='https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js'></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/mouse0270-bootstrap-notify/3.1.5/bootstrap-notify.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
 
-	<script
-		src="https://cdnjs.cloudflare.com/ajax/libs/mouse0270-bootstrap-notify/3.1.5/bootstrap-notify.min.js"></script>
+<script>
+	// gets the web headers 
+	var xhr = new XMLHttpRequest();
+		xhr.open('GET', document.location, false);
+		xhr.send(null);
+		username = xhr.getResponseHeader("user");
+		
+
+		//welcolms a user in the canvas
+	function welcolm (user){
+    
+    let canvas = document.getElementById("myCanvas");
+ let jsConfetti = new JSConfetti(canvas ,{ resize: false })
+
+
+//{ resize: true }
+
+
+let ctx = canvas.getContext("2d");
+let fontColor = 'red';
+let textVariable = ` Hello: ${user}`
+
+
+    ctx.font = "600 40px Proxima-nova";
+
+  canvas.width = ctx.measureText(textVariable).width;
+  canvas.style.width = canvas.width + 'px';
+
+  
+  ctx.font = "600 40px Proxima-nova";
+  ctx.fillStyle = fontColor;
+  ctx.textAlign = "left";
+   
+
+
+  ctx.fillText(textVariable, 0, canvas.height - 1);
+  
+   jsConfetti.addConfetti({
+       confettiColors: ['#ff0a54', '#ff477e', '#ff7096', '#ff85a1', '#fbb1bd', '#f9bec7']
+   }).then(() => {jsConfetti.clearCanvas()})
+
+}
+
+
+
+	document.querySelectorAll('main').forEach( item => {
+		item.style.display = "none"
+	})
+
+document.querySelector('.Home').style.display = 'block'
+
+	welcolm(username)
+
+
+	async function getMarkdown(){
+  let info =  $.ajax({
+  method: 'get',
+  url: 'https://raw.githubusercontent.com/Malcolmston/chat-app/main/README.md'
+  })
+
+  console.log( info )
+  return info
+}
+
+function getMarkdownText(arg) {
+	return marked(arg, {sanitize: true});
+	}
+	
+
+//
+var o = ['Home','Chat','Information']
+
+document.querySelectorAll('.itm').forEach( item => {
+  item.addEventListener('click',function(){
+
+		let clicked = this.innerText.trim()
+
+
+		document.querySelectorAll('.itm').forEach(function(x){
+if( x.innerText.trim() == clicked ){
+	x.classList.replace('inactive','active')
+}else{
+	x.classList.replace('active','inactive')
+}
+
+
+		})
+
+
+		
+	document.querySelectorAll('main').forEach( item => {
+			if(item.className == this.innerText.trim()){
+				item.style.display = "block"
+			}else{
+		item.style.display = "none"
+			}
+	})
+
+    switch( this.innerText.trim() ){
+        case "Information":
+
+            getMarkdown().then((data)=>{
+            
+	document.querySelector('.Information').innerHTML = getMarkdownText(data)
+      
+            }).catch( (e) => {
+				console.error( e )
+				document.querySelector('.Information').innerHTML = 'failed! '+e
+            })
+			break;
+		case "Chats":
+			break;
+		case "Home":
+			break;
+        default:
+			break;
+   }
+   
+    })
+    
+  })
+
+	  
+	</script>
+
+
+
 
 	<script>
 // gets date in mm/dd/yyy format
@@ -391,12 +610,6 @@ var infoClick = function (id) {
 		}
 
 
-// gets the web headers 
-		var xhr = new XMLHttpRequest();
-		xhr.open('GET', document.location, false);
-		xhr.send(null);
-		username = xhr.getResponseHeader("user");
-
 		var socket = io();
 
 // turns sockets on in the server side
@@ -405,7 +618,8 @@ var infoClick = function (id) {
 		function message(m) {
 			let li = document.createElement('li')
 
-			let txt = document.createTextNode(m)
+			let txt = document.createElement('a')
+			txt.innerHTML = m
 
 			li.append(txt)
 			chats.append(li)
@@ -456,25 +670,34 @@ var infoClick = function (id) {
 
 		}
 
+		// removes the user in localStorage
+function removeUser() {
+	localStorage.removeItem('username');
+	localStorage.removeItem('password');
+}
+
 		// Get the input field
-		var input = document.querySelector(".messageBar");
-		var chats = document.querySelector(".chat")
-		var home = document.querySelector('#home')
-		// Execute a function when the user presses a key on the keyboard
-		input.addEventListener("keypress", function (event) {
-			// If the user presses the "Enter" key on the keyboard
-			if (event.key === "Enter") {
-				// Cancel the default action, if needed
-				event.preventDefault();
+		var input = document.querySelector(".messageBar"),
+		 chats = document.querySelector(".chat"),
+		 home = document.querySelectorAll('#home'),
+		send = document.querySelector('.send');
 
-				socket.emit('message', username + ":  " + input.value+": "+ getDay() );
-			}
-		});
 
-		home.addEventListener('click', function (event) {
+		send.addEventListener('click',function(){
+			event.preventDefault();
+				if(input.value == "" || input.value.trim() == "") return; 
+				socket.emit('message', username + ":  " + input.value.replaceAll('\n','<br>') +": "+ getDay() ) ;
+		})
+
+
+		home.forEach(function(element){
+element.addEventListener('click', function (event) {
 			socket.emit('logedout', username)
+			removeUser()
 	document.querySelector('#home').submit()
 		})
+		})
+	
 
 		socket.on('people', (arr) => {
 document.getElementById('allContentPeople').innerHTML = ''
@@ -490,8 +713,6 @@ document.getElementById('allContentPeople').innerHTML = ''
 
 		})
 
-	
-
 		socket.on(username, (x) => {
 			socket.emit('logedin', username)
 			infoClick(x)
@@ -502,13 +723,10 @@ document.getElementById('allContentPeople').innerHTML = ''
 			message(x)
 		})
 
-
-
 		socket.on('persistence', x => {
 			chats.innerHTML = 'this is a message just for you'
 			x.map(a => message(a))
 		})
-
 	</script>
 
 
