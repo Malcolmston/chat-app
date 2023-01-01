@@ -50,5 +50,3 @@ creates a simple 1:1 chat app theat users can use
 |  	|  	| [socket.io](/socket.io/socket.io.js) 	|
 |   |   | [marked 0.3.2](https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js) |
 |   |   | [confetti latest](https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js) |
-
-
