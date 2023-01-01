@@ -78,6 +78,7 @@ app.post('/signup', function (request, response) {
 			if (!params) {
 				request.session.loggedin = true;
 				request.session.ussername = ussername;
+				request.session.old = true;
 				addNewuser(ussername, password).then(console.log)
 
 				response.redirect('/home')
@@ -105,6 +106,8 @@ app.post('/login', function (request, response) {
 			if (params) {
 				request.session.loggedin = true;
 				request.session.ussername = ussername;
+				request.session.old = false;
+
 				request.session.you = request.body
 
 				response.redirect('/home')
@@ -137,7 +140,8 @@ app.get('/home', function (request, response) {
 		//next file
 		var  option = {
 				headers: {
-					"user": request.session.ussername				}
+					"user": request.session.ussername
+				}
 			}
 
 

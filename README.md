@@ -19,6 +19,18 @@ creates a simple 1:1 chat app theat users can use
 2.  chats are saved and recorded for both simple and persistant messages
 3.  the page uill automaticly change the statis of a user when they loging
 
+    #### home
+        say: Hi to the user and sprays confety. 
+        this page will also alow the user to log out.
+
+    #### chat
+        the user may send and recive chats.
+        rooms are 1:1
+
+    #### Information
+        this is what is in the Information tab.
+        by reading this you are shown the markdown
+
 
 
 

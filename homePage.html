@@ -5,7 +5,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title>My Website</title>
+	<title>Chat App</title>
 
 
 	<link rel="icon" type="image/x-icon"
@@ -65,12 +65,15 @@
 			li {
 				font: 1rem 'Fira Sans', sans-serif;
 			}
+
+			textarea {
+  				resize: none;
+			}
 	
 			.messageBar {
 				width: 400px;
-				height: 24px;
-				border: solid black 1px;
-				border-radius: 40px;
+				height: 48px;
+				border: solid #000000 1px;
 			}
 	
 			table,
@@ -311,6 +314,11 @@ table, td, th {
 	</div>
 
 	<main class="Home">
+		<div class='bar'>
+			<form id='home' action='/logout' method="post">
+				<i class="fa-solid fa-house"></i>
+				<a>Log out</a>
+			</form>
 		<canvas id="myCanvas" width="240" height="30">
 			Your browser does not support the canvas tag.
 			</canvas>
@@ -322,7 +330,6 @@ table, td, th {
 				<a href="#">Page is too small</a>
 			</div>
 		</div>
-		<h1>Welcome to My Website</h1>
 		<div class='bar'>
 			<form id='home' action='/logout' method="post">
 				<i class="fa-solid fa-house"></i>
@@ -332,7 +339,7 @@ table, td, th {
 		<div class="flex-container">
 			<div class="inputs">
 				<ul class='chat'></ul>
-				<input class="messageBar"></input>
+				<textarea style="overflow:auto;resize:none" class='messageBar' rows="10" cols="40"></textarea>
 			</div>
 			<div class="table">
 				<table id="allContentPeople">
@@ -361,7 +368,7 @@ table, td, th {
 		
 
 		//welcolms a user in the canvas
-	function welcolm (user,n=true){
+	function welcolm (user){
     
     let canvas = document.getElementById("myCanvas");
  let jsConfetti = new JSConfetti(canvas ,{ resize: false })
@@ -372,7 +379,7 @@ table, td, th {
 
 let ctx = canvas.getContext("2d");
 let fontColor = 'red';
-let textVariable = n ? `welcolm: ${user}` : `welcolm back: ${user}`
+let textVariable = ` Hello: ${user}`
 
 
     ctx.font = "600 40px Proxima-nova";
@@ -389,15 +396,10 @@ let textVariable = n ? `welcolm: ${user}` : `welcolm back: ${user}`
 
   ctx.fillText(textVariable, 0, canvas.height - 1);
   
-if(n){
    jsConfetti.addConfetti({
        confettiColors: ['#ff0a54', '#ff477e', '#ff7096', '#ff85a1', '#fbb1bd', '#f9bec7']
    }).then(() => {jsConfetti.clearCanvas()})
-}else{
-     jsConfetti.addConfetti({
-         confettiColors: ['#03A9F4', '#3949AB', '#4DD0E1', '#DD2C00', '#C62828', '#E57373']
-     }).then(() => {jsConfetti.clearCanvas()})
-}
+
 }
 
 
@@ -408,7 +410,7 @@ if(n){
 
 document.querySelector('.Home').style.display = 'block'
 
-	welcolm(username,true)
+	welcolm(username)
 
 
 	async function getMarkdown(){
@@ -669,22 +671,25 @@ var infoClick = function (id) {
 		// Get the input field
 		var input = document.querySelector(".messageBar");
 		var chats = document.querySelector(".chat")
-		var home = document.querySelector('#home')
+		var home = document.querySelectorAll('#home')
 		// Execute a function when the user presses a key on the keyboard
 		input.addEventListener("keypress", function (event) {
 			// If the user presses the "Enter" key on the keyboard
 			if (event.key === "Enter") {
 				// Cancel the default action, if needed
 				event.preventDefault();
-
+				if(input.value == "" || input.value.trim() == "") return; 
 				socket.emit('message', username + ":  " + input.value+": "+ getDay() );
 			}
 		});
 
-		home.addEventListener('click', function (event) {
+		home.forEach(function(element){
+element.addEventListener('click', function (event) {
 			socket.emit('logedout', username)
 	document.querySelector('#home').submit()
 		})
+		})
+	
 
 		socket.on('people', (arr) => {
 document.getElementById('allContentPeople').innerHTML = ''
