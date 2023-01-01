@@ -26,6 +26,7 @@ creates a simple 1:1 chat app theat users can use
     #### chat
         the user may send and recive chats.
         rooms are 1:1
+        chats can be multi line
 
     #### Information
         this is what is in the Information tab.
