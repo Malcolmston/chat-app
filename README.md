@@ -1,3 +1,5 @@
+
+
 home page
 ---------
 
@@ -17,11 +19,23 @@ creates a simple 1:1 chat app theat users can use
 2.  chats are saved and recorded for both simple and persistant messages
 3.  the page uill automaticly change the statis of a user when they loging
 
+    #### home
+        say: Hi to the user and sprays confety. 
+        this page will also alow the user to log out.
+
+    #### chat
+        the user may send and recive chats.
+        rooms are 1:1
+
+    #### Information
+        this is what is in the Information tab.
+        by reading this you are shown the markdown
 
 
 
 
-#### html assets
+
+#### node assets
 |body-parser | express| express-session | http | path | socket.io | sqlite3| node-fetch@2|
 |------------|--------|-----------------|------|------|-----------|--------|-------------|
 
@@ -34,7 +48,5 @@ creates a simple 1:1 chat app theat users can use
 |  	|  	| [crypto 3.1.2](https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js) 	|
 |  	|  	| [jquery 3.6.0](https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js) 	|
 |  	|  	| [socket.io](/socket.io/socket.io.js) 	|
-|   |   | [marked 0.3.2][def] |
-
-
-[def]: https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js
+|   |   | [marked 0.3.2](https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js) |
+|   |   | [confetti latest](https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js) |
