@@ -171,7 +171,6 @@ function recalChats(id) {
 				//room(id[0]) && room.includes(id[1])
 				rows = rows.filter( row => {
 					let {room} = row
-					console.log( [(id[0]+""+id[1]),(id[1]+""+id[0])] )
 					return  ( room == (id[0]+""+id[1]) || room == (id[1]+""+id[0])  )
 				})
 
