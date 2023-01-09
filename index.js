@@ -81,8 +81,10 @@ app.post('/signup', function (request, response) {
 
 				response.redirect('/home')
 			} else {
-			
-				response.send(`
+				response.writeHead(500, {'content-type': 'text/html'});
+				response.statusMessage = "an account with that username already exsits!"
+				
+				response.end(`
 				<script>
 				function removeUser() {
 					localStorage.removeItem('username');
@@ -97,21 +99,24 @@ app.post('/signup', function (request, response) {
 			}
 		})
 	} else {
-		
+		response.writeHead(401, {'content-type': 'text/html'});
 
-		response.send(`
+		response.statusMessage = "Please enter username and Password!"
+
+
+		response.end(`
 		<script>
 				function removeUser() {
 					localStorage.removeItem('username');
 					localStorage.removeItem('password');
 				}
 				</script>
-				<h1>Pease enter username and Password!</h1>
+				<h1>Please enter username and Password!</h1>
 				<form id='home' action='/logout' method="post">
 				<input type="submit" value="log out" onclick='removeUser()'/>
 				</form>
 				`);
-		response.end();
+		//response.end();
 	}
 
 
@@ -134,7 +139,12 @@ app.post('/login', function (request, response) {
 				response.redirect('/home')
 				response.end();
 			} else {
-				response.send(`
+				//response.writeHead(400);
+				response.writeHead(401, {'content-type': 'text/html'});
+				
+				response.statusMessage = "incorrect username and/or password!"
+
+				response.end(`
 				<script>
 				function removeUser() {
 					localStorage.removeItem('username');
@@ -146,10 +156,16 @@ app.post('/login', function (request, response) {
 				<input type="submit" value="log out" onclick='removeUser()'/>
 				</form>
 				`);
+				
 			}
 		})
 	} else {
-		response.send(`
+		//response.writeHead(400);
+		response.writeHead(400, {'content-type': 'text/html'});
+		
+		response.statusMessage = "Please enter username and Password!"
+
+		response.end(`
 		<script>
 		function removeUser() {
 			localStorage.removeItem('username');
@@ -161,7 +177,8 @@ app.post('/login', function (request, response) {
 				<input type="submit" value="log out" onclick='removeUser()'/>
 				</form>
 				`);
-		response.end();
+			
+		//response.end('hi');
 	}
 
 
@@ -201,8 +218,25 @@ app.get('/home', function (request, response) {
 		// Output username
 		//response.send('Welcome back, ' + request.session.ussername + '!');
 	} else {
+
 		// Not logged in
-		response.send('Please login to view this page!');
+		//response.writeHead(400);
+		response.writeHead(403, {'content-type': 'text/html'});
+		
+		response.statusMessage = "Please login to view this page!"
+
+		response.end(`
+		<script>
+		function removeUser() {
+			localStorage.removeItem('username');
+			localStorage.removeItem('password');
+		}
+		</script>
+				<h1>Please login to view this page!</h1>
+				<form id='home' action='/logout' method="post">
+				<input type="submit" value="log out" onclick='removeUser()'/>
+				</form>
+				`);
 
 	}
 	//response.end();
