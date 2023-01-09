@@ -81,7 +81,7 @@ app.post('/signup', function (request, response) {
 
 				response.redirect('/home')
 			} else {
-				response.writeHead(500, {'content-type': 'text/html'});
+				response.writeHead(400, {'content-type': 'text/html'});
 				response.statusMessage = "an account with that username already exsits!"
 				
 				response.end(`
@@ -218,7 +218,6 @@ app.get('/home', function (request, response) {
 		// Output username
 		//response.send('Welcome back, ' + request.session.ussername + '!');
 	} else {
-
 		// Not logged in
 		//response.writeHead(400);
 		response.writeHead(403, {'content-type': 'text/html'});
