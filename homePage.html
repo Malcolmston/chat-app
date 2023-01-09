@@ -11,291 +11,281 @@
 	<link rel="icon" type="image/x-icon"
 		href="https://images.unsplash.com/photo-1666515878427-c0a045bf03c6?crop=entropy&cs=tinysrgb&fm=jpg&ixid=MnwzMjM4NDZ8MHwxfHJhbmRvbXx8fHx8fHx8fDE2Njg3NDQ4MjM&ixlib=rb-4.0.3&q=80">
 
-		<style>
-			@import url("https://fonts.googleapis.com/css?family=Raleway:400,400i,700");
+	<style>
+		@import url("https://fonts.googleapis.com/css?family=Raleway:400,400i,700");
 
-			:focus {
-				outline: none;
-				box-shadow: none !important;
-			}
-	
-			.overlay {
-				height: 100%;
-				width: 100%;
-				display: none;
-				position: fixed;
-				z-index: 1;
-				top: 0;
-				left: 0;
-				background-color: rgb(0, 0, 0);
-				background-color: rgba(0, 0, 0, 0.9);
-			}
-	
-			.overlay-content {
-				position: relative;
-				top: 25%;
-				width: 100%;
-				text-align: center;
-				margin-top: 30px;
-			}
-	
-			.overlay a {
-				padding: 8px;
-				text-decoration: none;
-				font-size: 36px;
-				color: #818181;
-				display: block;
-				transition: 0.3s;
-			}
-	
-			.overlay a:hover,
-			.overlay a:focus {
-				color: #f1f1f1;
-			}
-	
+		:focus {
+			outline: none;
+			box-shadow: none !important;
+		}
+
+		.overlay {
+			height: 100%;
+			width: 100%;
+			display: none;
+			position: fixed;
+			z-index: 1;
+			top: 0;
+			left: 0;
+			background-color: rgb(0, 0, 0);
+			background-color: rgba(0, 0, 0, 0.9);
+		}
+
+		.overlay-content {
+			position: relative;
+			top: 25%;
+			width: 100%;
+			text-align: center;
+			margin-top: 30px;
+		}
+
+		.overlay a {
+			padding: 8px;
+			text-decoration: none;
+			font-size: 36px;
+			color: #818181;
+			display: block;
+			transition: 0.3s;
+		}
+
+		.overlay a:hover,
+		.overlay a:focus {
+			color: #f1f1f1;
+		}
+
+		ul {
+			list-style-type: none;
+			width: 400px;
+			height: 550px;
+			background-color: lightgray;
+
+			overflow-y: scroll;
+		}
+
+		li {
+			font: 1rem 'Fira Sans', sans-serif;
+		}
+
+		textarea {
+			resize: none;
+		}
+
+		.messageBar {
+			width: 400px;
+			height: 48px;
+			border: solid #000000 1px;
+		}
+
+		table,
+		td,
+		th {
+			border: 0px solid !important;
+		}
+
+		table {
+			width: 400px !important;
+			border-collapse: collapse !important;
+			overflow-y: scroll;
+		}
+
+		@media only screen and (max-height: 540px) {
 			ul {
-				list-style-type: none;
-				width: 400px;
-				height: 550px;
-				background-color: lightgray;
-	
-				overflow-y: scroll;
+				height: 450px;
 			}
-	
-			li {
-				font: 1rem 'Fira Sans', sans-serif;
-			}
+		}
 
-			textarea {
-  				resize: none;
+		@media only screen and (max-height: 440px) {
+			ul {
+				height: 350px;
 			}
-	
-			.messageBar {
-				width: 400px;
-				height: 48px;
-				border: solid #000000 1px;
-			}
-	
-			table,
-			td,
-			th {
-				border: 0px solid !important;
-			}
-	
-			table {
-				width: 400px !important;
-				border-collapse: collapse !important;
-				overflow-y: scroll;
-			}
-	
-			@media only screen and (max-height: 540px) {
-				ul {
-					height: 450px;
-				}
-			}
-	
-			@media only screen and (max-height: 440px) {
-				ul {
-					height: 350px;
-				}
-			}
-	
-			@media only screen and (max-height: 340px) {
-				ul {
-					height: 250px;
-				}
-			}
-	
-			@media only screen and (max-height: 240px) {
-				.overlay {
-					display: block;
-				}
-			}
-	
-			.flex-container {
-				display: grid;
-				grid-template-columns: 1fr 1fr;
-				grid-gap: 20px;
-			}
-	
-	
-	
-			.active {
-				background-color: #00E676;
-			}
-	
-			.inactive {
-				background-color: #FF1744;
-			}
-	
-			.offPage {
-				background-color: #666666;
-			}
-	
-	
-	
-	
-			.chip1 {
-				display: inline-flex;
-				flex-direction: row;
-				background-color: #e5e5e5;
-				border: none;
-				cursor: default;
-				height: 36px;
-				outline: none;
-				padding: 0;
-				font-size: 14px;
-				color: #333333;
-				font-family: "Open Sans", sans-serif;
-				white-space: nowrap;
-				align-items: center;
-				border-radius: 16px;
-				vertical-align: middle;
-				text-decoration: none;
-				justify-content: center;
-			}
-	
-			.chip-head1 {
-				display: flex;
-				position: relative;
-				overflow: hidden;
-				font-size: 1.25rem;
-				flex-shrink: 0;
-				align-items: center;
-				user-select: none;
-				border-radius: 50%;
-				justify-content: center;
-				width: 36px;
-				color: #fff;
-				height: 36px;
-				font-size: 20px;
-				margin-right: -4px;
-			}
-	
-			.chip-content1 {
-				cursor: inherit;
-				display: flex;
-				align-items: center;
-				user-select: none;
-				white-space: nowrap;
-				padding-left: 12px;
-				padding-right: 12px;
-			}
-	
-			.chip-svg1 {
-				color: #999999;
-				cursor: pointer;
-				height: auto;
-				margin: 4px 4px 0 -8px;
-				fill: currentColor;
-				width: 1em;
-				height: 1em;
-				display: inline-block;
-				font-size: 24px;
-				transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-				user-select: none;
-				flex-shrink: 0;
-			}
-	
-			.chip-svg1:hover {
-				color: #666666;
-			}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-			.tooltip1 {
-				position: relative;
-				display: inline-block;
-			}
-	
-			.tooltip1 .tooltiptext1 {
-				visibility: hidden;
-				width: 120px;
-				background-color: black;
-				color: #fff;
-				text-align: center;
-				border-radius: 6px;
-				padding: 5px 0;
-	
-				/* Position the tooltip */
-				position: absolute;
-				z-index: 1;
-			}
-	
-			.tooltip1:hover .tooltiptext1 {
-				visibility: visible;
-			}
+		}
 
+		@media only screen and (max-height: 340px) {
+			ul {
+				height: 250px;
+			}
+		}
 
-.nav {
-    width: 100%;
-    height: 40px;
-} 
+		@media only screen and (max-height: 240px) {
+			.overlay {
+				display: block;
+			}
+		}
 
-.nav svg {
-  font-size:35px;
-}
-
-
-.nav .itm {
-    float: left;
-    width: calc(100%/3);
-     height: 40px;
-  
-    font-family: Raleway, sans-serif;
-  font-size: 30px;
-  
-}
+		.flex-container {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			grid-gap: 20px;
+		}
 
 
 
-.nav .active {
-    background-color: lime;
-}
+		.active {
+			background-color: #00E676;
+		}
 
-.nav .inactive {
-    background-color: rgb(37,37,37);
-    color: white;
-}
-
-
-.nav .active:hover {
-    background-color: #006600;
-    color: white;
-    
-}
-.nav .inactive:hover {
-    background-color: #D3D3D3;
-    color: black;
-}
-
-/* markdown css */
+		.inactive {
+			background-color: #FF1744;
+		}
 
 
- table {
-	border: 1px solid;
-  width: 100%;
-}
 
-table, td, th {
-  border: 1px solid;
-}
+		.chip1 {
+			display: inline-flex;
+			flex-direction: row;
+			background-color: #e5e5e5;
+			border: none;
+			cursor: default;
+			height: 36px;
+			outline: none;
+			padding: 0;
+			font-size: 14px;
+			color: #333333;
+			font-family: "Open Sans", sans-serif;
+			white-space: nowrap;
+			align-items: center;
+			border-radius: 16px;
+			vertical-align: middle;
+			text-decoration: none;
+			justify-content: center;
+		}
+
+		.chip-head1 {
+			display: flex;
+			position: relative;
+			overflow: hidden;
+			font-size: 1.25rem;
+			flex-shrink: 0;
+			align-items: center;
+			user-select: none;
+			border-radius: 50%;
+			justify-content: center;
+			width: 36px;
+			color: #fff;
+			height: 36px;
+			font-size: 20px;
+			margin-right: -4px;
+		}
+
+		.chip-content1 {
+			cursor: inherit;
+			display: flex;
+			align-items: center;
+			user-select: none;
+			white-space: nowrap;
+			padding-left: 12px;
+			padding-right: 12px;
+		}
+
+		.chip-svg1 {
+			color: #999999;
+			cursor: pointer;
+			height: auto;
+			margin: 4px 4px 0 -8px;
+			fill: currentColor;
+			width: 1em;
+			height: 1em;
+			display: inline-block;
+			font-size: 24px;
+			transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+			user-select: none;
+			flex-shrink: 0;
+		}
+
+		.chip-svg1:hover {
+			color: #666666;
+		}
 
 
- [alt="jellyfish"] {
-	width: 100px;
-	height: 100px;
-}
+		.tooltip1 {
+			position: relative;
+			display: inline-block;
+		}
 
-		</style>
+		.tooltip1 .tooltiptext1 {
+			visibility: hidden;
+			width: 120px;
+			background-color: black;
+			color: #fff;
+			text-align: center;
+			border-radius: 6px;
+			padding: 5px 0;
 
-		<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.3/animate.min.css" rel="stylesheet">
+			/* Position the tooltip */
+			position: absolute;
+			z-index: 1;
+		}
+
+		.tooltip1:hover .tooltiptext1 {
+			visibility: visible;
+		}
+
+
+		.nav {
+			width: 100%;
+			height: 40px;
+		}
+
+		.nav svg {
+			font-size: 35px;
+		}
+
+
+		.nav .itm {
+			float: left;
+			width: calc(100%/3);
+			height: 40px;
+
+			font-family: Raleway, sans-serif;
+			font-size: 30px;
+
+		}
+
+
+
+		.nav .active {
+			background-color: lime;
+		}
+
+		.nav .inactive {
+			background-color: rgb(37, 37, 37);
+			color: white;
+		}
+
+
+		.nav .active:hover {
+			background-color: #006600;
+			color: white;
+
+		}
+
+		.nav .inactive:hover {
+			background-color: #D3D3D3;
+			color: black;
+		}
+
+		/* markdown css */
+
+
+		table {
+			border: 1px solid;
+			width: 100%;
+		}
+
+		table,
+		td,
+		th {
+			border: 1px solid;
+		}
+
+
+		[alt="jellyfish"] {
+			width: 100px;
+			height: 100px;
+		}
+	</style>
+
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.3/animate.min.css" rel="stylesheet">
 	<link href="https://www.w3schools.com/w3css/4/w3.css" rel="stylesheet">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -308,10 +298,12 @@ table, td, th {
 <body>
 
 	<div class='top nav'>
+		<div class='itm inactive'> <i class="fa-duotone fa-question"></i> How to</div>
 		<div class='itm active'><i class="fa-duotone fa-house-user"></i> Home </div>
 		<div class='itm inactive'><i class="fa-duotone fa-comments"></i> Chat</div>
 		<div class='itm inactive'><i class="fa-sharp fa-solid fa-magnifying-glass"></i> Information</div>
 	</div>
+
 
 	<main class="Home">
 		<div class='bar'>
@@ -319,8 +311,8 @@ table, td, th {
 				<i class="fa-solid fa-house"></i>
 				<a>Log out</a>
 			</form>
-		<canvas id="myCanvas" width="240" height="30">
-			Your browser does not support the canvas tag.
+			<canvas id="myCanvas" width="240" height="30">
+				Your browser does not support the canvas tag.
 			</canvas>
 	</main>
 
@@ -356,158 +348,159 @@ table, td, th {
 	<script src='https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js'></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/mouse0270-bootstrap-notify/3.1.5/bootstrap-notify.min.js"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/mouse0270-bootstrap-notify/3.1.5/bootstrap-notify.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
 
-<script>
-	// gets the web headers 
-	var xhr = new XMLHttpRequest();
+	<script>
+		// gets the web headers 
+		var xhr = new XMLHttpRequest();
 		xhr.open('GET', document.location, false);
 		xhr.send(null);
 		username = xhr.getResponseHeader("user");
-		
+
 
 		//welcolms a user in the canvas
-	function welcolm (user){
-    
-    let canvas = document.getElementById("myCanvas");
- let jsConfetti = new JSConfetti(canvas ,{ resize: false })
+		function welcolm(user) {
+
+			let canvas = document.getElementById("myCanvas");
+			let jsConfetti = new JSConfetti(canvas, { resize: false })
 
 
-//{ resize: true }
+			//{ resize: true }
 
 
-let ctx = canvas.getContext("2d");
-let fontColor = 'red';
-let textVariable = ` Hello: ${user}`
+			let ctx = canvas.getContext("2d");
+			let fontColor = 'red';
+			let textVariable = ` Hello: ${user}`
 
 
-    ctx.font = "600 40px Proxima-nova";
+			ctx.font = "600 40px Proxima-nova";
 
-  canvas.width = ctx.measureText(textVariable).width;
-  canvas.style.width = canvas.width + 'px';
-
-  
-  ctx.font = "600 40px Proxima-nova";
-  ctx.fillStyle = fontColor;
-  ctx.textAlign = "left";
-   
+			canvas.width = ctx.measureText(textVariable).width;
+			canvas.style.width = canvas.width + 'px';
 
 
-  ctx.fillText(textVariable, 0, canvas.height - 1);
-  
-   jsConfetti.addConfetti({
-       confettiColors: ['#ff0a54', '#ff477e', '#ff7096', '#ff85a1', '#fbb1bd', '#f9bec7']
-   }).then(() => {jsConfetti.clearCanvas()})
-
-}
+			ctx.font = "600 40px Proxima-nova";
+			ctx.fillStyle = fontColor;
+			ctx.textAlign = "left";
 
 
 
-	document.querySelectorAll('main').forEach( item => {
-		item.style.display = "none"
-	})
+			ctx.fillText(textVariable, 0, canvas.height - 1);
 
-document.querySelector('.Home').style.display = 'block'
+			jsConfetti.addConfetti({
+				confettiColors: ['#ff0a54', '#ff477e', '#ff7096', '#ff85a1', '#fbb1bd', '#f9bec7']
+			}).then(() => { jsConfetti.clearCanvas() })
 
-	welcolm(username)
-
-
-	async function getMarkdown(){
-  let info =  $.ajax({
-  method: 'get',
-  url: 'https://raw.githubusercontent.com/Malcolmston/chat-app/main/README.md'
-  })
-
-  console.log( info )
-  return info
-}
-
-function getMarkdownText(arg) {
-	return marked(arg, {sanitize: true});
-	}
-	
-
-//
-var o = ['Home','Chat','Information']
-
-document.querySelectorAll('.itm').forEach( item => {
-  item.addEventListener('click',function(){
-
-		let clicked = this.innerText.trim()
+		}
 
 
-		document.querySelectorAll('.itm').forEach(function(x){
-if( x.innerText.trim() == clicked ){
-	x.classList.replace('inactive','active')
-}else{
-	x.classList.replace('active','inactive')
-}
 
+		document.querySelectorAll('main').forEach(item => {
+			item.style.display = "none"
+		})
+
+		document.querySelector('.Home').style.display = 'block'
+
+		welcolm(username)
+
+
+		async function getMarkdown() {
+			let info = $.ajax({
+				method: 'get',
+				url: 'https://raw.githubusercontent.com/Malcolmston/chat-app/main/README.md'
+			})
+
+			console.log(info)
+			return info
+		}
+
+		function getMarkdownText(arg) {
+			return marked(arg, { sanitize: true });
+		}
+
+
+		//
+		var o = ['Home', 'Chat', 'Information']
+
+		document.querySelectorAll('.itm').forEach(item => {
+			item.addEventListener('click', function () {
+
+				let clicked = this.innerText.trim()
+
+
+				document.querySelectorAll('.itm').forEach(function (x) {
+					if (x.innerText.trim() == clicked) {
+						x.classList.replace('inactive', 'active')
+					} else {
+						x.classList.replace('active', 'inactive')
+					}
+
+
+				})
+
+
+
+				document.querySelectorAll('main').forEach(item => {
+					if (item.className == this.innerText.trim()) {
+						item.style.display = "block"
+					} else {
+						item.style.display = "none"
+					}
+				})
+
+				switch (this.innerText.trim()) {
+					case "Information":
+
+						getMarkdown().then((data) => {
+
+							document.querySelector('.Information').innerHTML = getMarkdownText(data)
+
+						}).catch((e) => {
+							console.error(e)
+							document.querySelector('.Information').innerHTML = 'failed! ' + e
+						})
+						break;
+					case "Chats":
+						break;
+					case "Home":
+						break;
+					default:
+						break;
+				}
+
+			})
 
 		})
 
 
-		
-	document.querySelectorAll('main').forEach( item => {
-			if(item.className == this.innerText.trim()){
-				item.style.display = "block"
-			}else{
-		item.style.display = "none"
-			}
-	})
-
-    switch( this.innerText.trim() ){
-        case "Information":
-
-            getMarkdown().then((data)=>{
-            
-	document.querySelector('.Information').innerHTML = getMarkdownText(data)
-      
-            }).catch( (e) => {
-				console.error( e )
-				document.querySelector('.Information').innerHTML = 'failed! '+e
-            })
-			break;
-		case "Chats":
-			break;
-		case "Home":
-			break;
-        default:
-			break;
-   }
-   
-    })
-    
-  })
-
-	  
 	</script>
 
 
 
 
 	<script>
-// gets date in mm/dd/yyy format
-function getDay() {
-	var today = new Date();
-	var dd = today.getDate();
-	var mm = today.getMonth() + 1; //January is 0!
-	var yyyy = today.getFullYear();
+		// gets date in mm/dd/yyy format
+		function getDay() {
+			var today = new Date();
+			var dd = today.getDate();
+			var mm = today.getMonth() + 1; //January is 0!
+			var yyyy = today.getFullYear();
 
-	if (dd < 10) {
-		dd = '0' + dd
-	}
+			if (dd < 10) {
+				dd = '0' + dd
+			}
 
-	if (mm < 10) {
-		mm = '0' + mm
-	}
-	return mm + '/' + dd + '/' + yyyy;
-}
+			if (mm < 10) {
+				mm = '0' + mm
+			}
+			return mm + '/' + dd + '/' + yyyy;
+		}
 
-//the class Pill creats the pill html element and will also allow for state changes
-class Pils {
+		//the class Pill creats the pill html element and will also allow for state changes
+		class Pils {
 			constructor() {
 				this.chip = document.createElement('div')
 				this.chip.setAttribute('class', 'chip1')
@@ -572,8 +565,8 @@ class Pils {
 
 		}
 
-// this will send 'notifications' to the user. 
-var infoClick = function (id) {
+		// this will send 'notifications' to the user. 
+		var infoClick = function (id) {
 			$.notify({
 				// options
 				title: '<strong>Info</strong>',
@@ -612,9 +605,9 @@ var infoClick = function (id) {
 
 		var socket = io();
 
-// turns sockets on in the server side
+		// turns sockets on in the server side
 		socket.emit('logedin', username)
-// logs the messages fpr you
+		// logs the messages fpr you
 		function message(m) {
 			let li = document.createElement('li')
 
@@ -628,7 +621,7 @@ var infoClick = function (id) {
 
 			return;
 		}
-// a short cut to add pills in the contacts list
+		// a short cut to add pills in the contacts list
 		function add_row(room, active) {
 
 			var tr = document.createElement('tr')
@@ -637,7 +630,7 @@ var infoClick = function (id) {
 			let pill = new Pils()
 			let pil;
 
-			
+
 			let s = active == "offPage" ? active : (active ? 'active' : 'inactive')
 
 			pil = pill.create_pil(s, room, false)
@@ -660,7 +653,7 @@ var infoClick = function (id) {
 			//}
 
 		}
-// joins each room wen you click the contact card. persetence is called
+		// joins each room wen you click the contact card. persetence is called
 		function roomThing(room) {
 			let to = room
 
@@ -671,43 +664,43 @@ var infoClick = function (id) {
 		}
 
 		// removes the user in localStorage
-function removeUser() {
-	localStorage.removeItem('username');
-	localStorage.removeItem('password');
-}
+		function removeUser() {
+			localStorage.removeItem('username');
+			localStorage.removeItem('password');
+		}
 
 		// Get the input field
 		var input = document.querySelector(".messageBar"),
-		 chats = document.querySelector(".chat"),
-		 home = document.querySelectorAll('#home'),
-		send = document.querySelector('.send');
+			chats = document.querySelector(".chat"),
+			home = document.querySelectorAll('#home'),
+			send = document.querySelector('.send');
 
 
-		send.addEventListener('click',function(){
+		send.addEventListener('click', function () {
 			event.preventDefault();
-				if(input.value == "" || input.value.trim() == "") return; 
-				socket.emit('message', username + ":  " + input.value.replaceAll('\n','<br>') +": "+ getDay() ) ;
+			if (input.value == "" || input.value.trim() == "") return;
+			socket.emit('message', username + ":  " + input.value.replaceAll('\n', '<br>') + ": " + getDay());
 		})
 
 
-		home.forEach(function(element){
-element.addEventListener('click', function (event) {
-			socket.emit('logedout', username)
-			removeUser()
-	document.querySelector('#home').submit()
+		home.forEach(function (element) {
+			element.addEventListener('click', function (event) {
+				socket.emit('logedout', username)
+				removeUser()
+				document.querySelector('#home').submit()
+			})
 		})
-		})
-	
+
 
 		socket.on('people', (arr) => {
-document.getElementById('allContentPeople').innerHTML = ''
-				console.log( arr )
+			document.getElementById('allContentPeople').innerHTML = ''
+			console.log(arr)
 
 			arr.map(function (x) {
 				if (username != x[0]) {
 					//offPage
-						add_row(x[0], x[1])	
-					}				
+					add_row(x[0], x[1])
+				}
 			})
 
 
