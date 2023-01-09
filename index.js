@@ -189,7 +189,7 @@ app.post('/logout', function (request, response) {
 	try{
 		remove_memberA(request.session.ussername)
 	}catch(e){
-
+console.log(e);
 	}
 
 	request.session.destroy()
