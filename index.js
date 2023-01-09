@@ -81,11 +81,36 @@ app.post('/signup', function (request, response) {
 
 				response.redirect('/home')
 			} else {
-				response.send('an account with that username already exsits!')
+			
+				response.send(`
+				<script>
+				function removeUser() {
+					localStorage.removeItem('username');
+					localStorage.removeItem('password');
+				}
+				</script>
+				<h1>an account with that username already exsits!</h1>
+				<form id='home' action='/logout' method="post">
+				<input type="submit" value="log out" onclick='removeUser()'/>
+				</form>
+				`)
 			}
 		})
 	} else {
-		response.send('Please enter username and Password!');
+		
+
+		response.send(`
+		<script>
+				function removeUser() {
+					localStorage.removeItem('username');
+					localStorage.removeItem('password');
+				}
+				</script>
+				<h1>Pease enter username and Password!</h1>
+				<form id='home' action='/logout' method="post">
+				<input type="submit" value="log out" onclick='removeUser()'/>
+				</form>
+				`);
 		response.end();
 	}
 
@@ -109,11 +134,33 @@ app.post('/login', function (request, response) {
 				response.redirect('/home')
 				response.end();
 			} else {
-				response.send('incorrect username and/or password!');
+				response.send(`
+				<script>
+				function removeUser() {
+					localStorage.removeItem('username');
+					localStorage.removeItem('password');
+				}
+				</script>
+				<h1>incorrect username and/or password!</h1>
+				<form id='home' action='/logout' method="post">
+				<input type="submit" value="log out" onclick='removeUser()'/>
+				</form>
+				`);
 			}
 		})
 	} else {
-		response.send('Please enter username and Password!');
+		response.send(`
+		<script>
+		function removeUser() {
+			localStorage.removeItem('username');
+			localStorage.removeItem('password');
+		}
+		</script>
+				<h1>Please enter username and Password!</h1>
+				<form id='home' action='/logout' method="post">
+				<input type="submit" value="log out" onclick='removeUser()'/>
+				</form>
+				`);
 		response.end();
 	}
 
@@ -122,7 +169,11 @@ app.post('/login', function (request, response) {
 
 // gets when the user logs out
 app.post('/logout', function (request, response) {
-	remove_memberA(request.session.ussername)
+	try{
+		remove_memberA(request.session.ussername)
+	}catch(e){
+
+	}
 
 	request.session.destroy()
 	response.redirect('/')
