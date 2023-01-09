@@ -168,12 +168,14 @@ function recalChats(id) {
 			//get all chats that contain both your username and the senders username
 			/*db.all(`SELECT * FROM chats WHERE room LIKE '%${id[0]}%' AND room LIKE '%${id[1]}%'`, function (err, rows) { */
 			db.all(`SELECT * FROM chats`, function (err, rows) {
+				//room(id[0]) && room.includes(id[1])
 				rows = rows.filter( row => {
 					let {room} = row
-					return room.includes(id[0]) && room.includes(id[1])
+					console.log( [(id[0]+""+id[1]),(id[1]+""+id[0])] )
+					return  ( room == (id[0]+""+id[1]) || room == (id[1]+""+id[0])  )
 				})
 
-				console.log( rows )
+				
 
 
 				if (err) reject(err);
