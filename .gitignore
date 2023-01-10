@@ -3,3 +3,7 @@ node_modules/
 
 #databaces
 *.sqlite
+
+
+#other workspace
+*.vscode/
