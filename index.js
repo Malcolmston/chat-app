@@ -239,7 +239,7 @@ String.prototype.replaceLast = function (old,thing) {
   a[this.lastIndexOf(old)] = thing;
   return a.join("");
 
-  return
+  return;
 }
 
 // this block will run when the client connects
@@ -287,13 +287,10 @@ io.on("connection", (socket) => {
     let t = a.concat(b);
 
     socket.broadcast.emit("peopleO", t);
-    //	socket.emit('peopleO',t  )
   });
 
   socket.on("persistence", function (a) {
-    console.log(a);
-    recalChats(a).then(function (arr) {
-      arr = arr.map((x) => x.message);
+        recalChats(a).then(function (arr) {
       socket.emit("persistence", arr);
     });
   });
@@ -323,10 +320,10 @@ io.on("connection", (socket) => {
     //socket.broadcast.emit(other, `a message was sent from ${socket.username}`);
 
     socket.broadcast.emit(other, socket.username);
-    
+
     addChats(socket.username, message, socket.chat_room).then((date) => {
       io.to(socket.chat_room).emit("message", {name: socket.username ,message: message, date: date} );
     });
   });
 });
-//http://localhost:3000/home
+//http://localhost:3000/
