@@ -321,8 +321,9 @@ io.on("connection", (socket) => {
 
     socket.broadcast.emit(other, socket.username);
 
-    addChats(socket.username, message, socket.chat_room).then((date) => {
-      io.to(socket.chat_room).emit("message", {name: socket.username ,message: message, date: date} );
+    addChats(socket.username, message, socket.chat_room).then((time) => {
+      console.log(  {name: socket.username ,message: message, time: time} )
+      io.to(socket.chat_room).emit("message", {name: socket.username ,message: message, time: time} );
     });
   });
 });
