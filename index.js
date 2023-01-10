@@ -239,7 +239,7 @@ String.prototype.replaceLast = function (old,thing) {
   a[this.lastIndexOf(old)] = thing;
   return a.join("");
 
-  return
+  return;
 }
 
 // this block will run when the client connects
@@ -287,7 +287,6 @@ io.on("connection", (socket) => {
     let t = a.concat(b);
 
     socket.broadcast.emit("peopleO", t);
-    //	socket.emit('peopleO',t  )
   });
 
   socket.on("persistence", function (a) {
