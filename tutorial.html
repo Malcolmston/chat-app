@@ -1,4 +1,4 @@
-<iframe id="myframe" srcdoc="
+<iframe id='myframe' srcdoc="
 <!DOCTYPE html>
 <html lang='en'>
 
@@ -278,6 +278,47 @@
 </head>
 
 <body>
+<div id='myNav' class='overlay'>  
+  <div class='text'>text</div>
+  
+  <a href='javascript:void(0)' class='closebtn' onclick='closeNav()'>&times;</a>
+  <div class='overlay-content'>
+<div class='slide'>
+  <div class='top nav'>
+		<div class='itm active'><i class='fa-duotone fa-house-user'></i> Home </div>
+		<div class='itm inactive'><i class='fa-duotone fa-comments'></i> Chat</div>
+		<div class='itm inactive'><i class='fa-sharp fa-solid fa-magnifying-glass'></i> Information</div>
+	</div>
+ 
+  
+
+</div>
+    <div class='slide'>
+		<div class='bar'>
+			<form id='home' action='/logout' method='post'>
+				<i class='fa-solid fa-house'></i>
+				<a>Log out</a>
+			</form>
+		</div>
+		<div class='flex-container'>
+			<div class='inputs'>
+				<ul class='chat'></ul>
+				<textarea style='overflow:auto;resize:none' class='messageBar' rows='10' cols='40'></textarea>
+				<button class='send'><i class='fa-sharp fa-solid fa-paper-plane-top'></i></button>
+			</div>
+			<div class='table'>
+				<table id='allContentPeople'>
+				</table>
+			</div>
+		</div>
+      
+    </div>
+     <div class='slide'>3</div>
+  </div>
+  
+  
+</div>
+
   <script src='https://kit.fontawesome.com/fd76b8450f.js' crossorigin='anonymous'></script>
   	<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
  
@@ -346,6 +387,7 @@
     }
 
     function openNav() {
+    console.log(  document.querySelectorAll('*') )
       document.getElementById('myNav').style.display = 'block';
     }
 
