@@ -1,18 +1,13 @@
 //npm install body-parser express express-session http path socket.io sqlite3 node-fetch@2
-//npm install body-parser express express-session http path socket.io sqlite3 node-fetch@2
-
 
 const {
   addNewuser,
   validate,
   getAll,
 
-	addChats,
-	getChats,
-	recalChats,
-
-
-} = require("./sql.js")
+  addChats,
+  recalChats,
+} = require("./sql.js");
 
 const {
   add_roomA,
@@ -22,21 +17,19 @@ const {
   remove_memberA,
 } = require("./place.js");
 
-var bodyParser = require('body-parser'),
-	express = require("express"),
-	session = require('express-session'),
-	app = express(),
-	http = require('http').Server(app),
-	path = require('path'),
-	socket = require('socket.io'),
-	localStorage = require('localStorage'),
-	router = express.Router(),
-	io = socket(http);
+var bodyParser = require("body-parser"),
+  express = require("express"),
+  session = require("express-session"),
+  app = express(),
+  http = require("http").Server(app),
+  path = require("path"),
+  socket = require("socket.io"),
+  router = express.Router(),
+  io = socket(http);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/', router);
+app.use(express.static(path.join(__dirname, "static")));
 
 app.use(
   session({
@@ -64,24 +57,23 @@ Array.prototype.similarity = function (arr) {
 };
 
 // the home page
-app.get('/', function (request, res) {
-	res.sendFile(path.resolve(__dirname + login));
-
-
+app.get("/", function (_request, res) {
+  //res.sendFile(path.resolve(__dirname + login));
+  res.sendFile(path.resolve(__dirname + login));
 });
 
 // gets the inputs from the user on the sign up page
-app.post('/signup', function (request, response) {
-	// gets the input fields
-	let ussername = request.body.ussername;
-	let password = request.body.password;
-	// makes sure the input fields exists and are not empty
-	if (ussername && password) {
-		validate(ussername, password).then(function (params) {
-			if (!params) {
-				request.session.loggedin = true;
-				request.session.ussername = ussername;
-				addNewuser(ussername, password).then(console.log)
+app.post("/signup", function (request, response) {
+  // gets the input fields
+  let ussername = request.body.ussername;
+  let password = request.body.password;
+  // makes sure the input fields exists and are not empty
+  if (ussername && password) {
+    validate(ussername, password).then(function (params) {
+      if (!params) {
+        request.session.loggedin = true;
+        request.session.ussername = ussername;
+        addNewuser(ussername, password).then(console.log);
 
         response.redirect("/home");
       } else {
@@ -131,12 +123,11 @@ app.post("/login", function (request, response) {
   let password = request.body.password;
   // makes sure the input fields exists and are not empty
 
-	if (ussername && password) {
-		validate(ussername, password).then(function (params) {
-			if (params) {
-				request.session.loggedin = true;
-				request.session.ussername = ussername;
-				request.session.you = request.body
+  if (ussername && password) {
+    validate(ussername, password).then(function (params) {
+      if (params) {
+        request.session.loggedin = true;
+        request.session.ussername = ussername;
 
         response.redirect("/home");
         response.end();
@@ -196,17 +187,15 @@ app.post("/logout", function (request, response) {
 });
 
 // sends the user to the home page
-app.get('/home', function (request, response) {
-
-	// If the user is loggedin
-	if (request.session.loggedin) {
-		//next file
-
-		var option = {
-			headers: {
-				"user": request.session.ussername
-			}
-		}
+app.get("/home", function (request, response) {
+  // If the user is loggedin
+  if (request.session.loggedin) {
+    //next file
+    var option = {
+      headers: {
+        user: request.session.ussername,
+      },
+    };
 
     //response.sendFile(path.resolve(__dirname + login));
     response.sendFile(path.join(__dirname + chat), option);

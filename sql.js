@@ -72,6 +72,36 @@ function addNewuser(username, password) {
     });
   });
 }
+// get a new login
+function getNewlogIn(username, password) {
+  return new Promise((resolve, reject) => {
+    db.all("SELECT * FROM users", [], (err, rows) => {
+      if (!err && !rows) {
+      }
+      if (err) {
+        reject(err);
+      } else {
+        let ans = rows.filter(function (x) {
+          return x["username"] == username && x["password"] == password;
+        });
+        resolve(ans);
+      }
+    });
+  });
+}
+//asyncernisly get if users is empty
+async function isEmpty() {
+  var a;
+  try {
+    a = await getAll("users");
+    return a.length >= 1;
+  } catch (error) {
+    a = "error";
+    crateTable().then(function () {
+      isEmpty();
+    });
+  }
+}
 //is the log in valid?
 async function validate(username, password) {
   var ans = await getAll("users");
