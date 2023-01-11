@@ -1381,11 +1381,11 @@
 		socket.emit('logedin', username)
 		// logs the messages fpr you
 		function message(m) {
-			let {name, message, date} = m
+			let {name, message, time} = m
 			let li = document.createElement('li')
 
 			let txt = document.createElement('a')
-			txt.innerHTML = name+" : "+message+" : "+date
+			txt.innerHTML = name+" : "+message+" : "+time
 
 			li.append(txt)
 			chats.append(li)
@@ -1492,6 +1492,7 @@
 
 		socket.on('persistence', x => {
 			chats.innerHTML = 'this is a message just for you'
+			console.log(x)
 			x.map(a => message(a))
 		})
 	</script>
