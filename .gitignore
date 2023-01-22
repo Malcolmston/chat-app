@@ -3,8 +3,12 @@ node_modules/
 
 #databaces
 *.sqlite
+*.db
+.sqlite3
 
 
 #other workspace
-*.vscode/
+.vscode/
+/chat-app
+*.DS_Store
 
