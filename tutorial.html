@@ -1,0 +1,592 @@
+<iframe id='myframe' srcdoc="
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <meta http-equiv='X-UA-Compatible' content='ie=edge'>
+  <title>Chat App</title>
+
+
+  <link rel='icon' type='image/x-icon'
+    href='https://images.unsplash.com/photo-1666515878427-c0a045bf03c6?crop=entropy&cs=tinysrgb&fm=jpg&ixid=MnwzMjM4NDZ8MHwxfHJhbmRvbXx8fHx8fHx8fDE2Njg3NDQ4MjM&ixlib=rb-4.0.3&q=80'>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css?family=Raleway:400,400i,700');
+
+    body {
+      font-family: 'Lato', sans-serif;
+    }
+
+    .nav {
+      width: 100%;
+      height: 40px;
+    }
+
+    .nav svg {
+      font-size: 35px;
+    }
+
+    .itm {
+      float: left;
+      width: calc(100% / 3);
+      height: 40px;
+      font-family: Raleway, sans-serif;
+      font-size: 30px;
+    }
+
+    .active {
+      background-color: #0f0;
+    }
+
+    .active:hover {
+      background-color: #060;
+      color: #fff;
+    }
+
+    .inactive {
+      background-color: #252525;
+      color: #fff;
+    }
+
+    .inactive:hover {
+      background-color: #d3d3d3;
+      color: #000;
+    }
+
+    .closebtn {
+      padding: 8px;
+      text-decoration: none;
+      font-size: 36px;
+      color: #818181;
+      display: block;
+      transition: 0.3s;
+    }
+
+    .overlay .closebtn:hover,
+    .overlay .closebtn:focus {
+      color: #f1f1f1;
+    }
+
+    .overlay {
+      height: 100%;
+      width: 100%;
+      display: none;
+      position: fixed;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      background-color: #000;
+      background-color: rgba(0, 0, 0, 0.9);
+    }
+
+    .overlay+a {
+      padding: 8px;
+      text-decoration: none;
+      font-size: 36px;
+      color: #818181;
+      display: block;
+      transition: 0.3s;
+    }
+
+    .overlay-content {
+      position: relative;
+      top: 25%;
+      width: 100%;
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .text {
+      padding-top: 8px;
+      text-decoration: none;
+      font-size: 24px;
+      color: #818181;
+      display: block;
+      transition: 0.3s;
+    }
+
+    .overlay a:hover,
+    .overlay a:focus {
+      color: #f1f1f1;
+    }
+
+    .overlay .closebtn {
+      position: absolute;
+      top: 20px;
+      right: 45px;
+      font-size: 60px;
+    }
+
+    .slide {
+      overflow: hidden;
+      margin-left: auto;
+      margin-right: auto;
+      width: 600px;
+      height: 450px;
+      background-color: #fff;
+      border: 4px solid #000;
+    }
+
+    .slide:nth-of-type(1) .nav {
+      width: 100%;
+      height: 40px;
+    }
+
+    .slide:nth-of-type(1) .nav svg {
+      font-size: 35px;
+    }
+
+    .slide:nth-of-type(1) .helpArow {
+      font-size: 55px;
+      color: #d3d3d3;
+    }
+
+    .slide:nth-of-type(1) .clicked {
+      animation-name: mouse;
+      animation-fill-mode: forwards;
+      animation-duration: 1s;
+    }
+
+    .slide:nth-of-type(1) .nav .itm {
+      float: left;
+      width: calc(100% / 3);
+      height: 40px;
+      font-family: Raleway, sans-serif;
+      font-size: 30px;
+    }
+
+    .slide:nth-of-type(1) .nav .active {
+      background-color: #0f0;
+    }
+
+    .slide:nth-of-type(1) .nav .inactive {
+      background-color: #252525;
+      color: #fff;
+    }
+
+    .slide:nth-of-type(1) .nav .active:hover {
+      background-color: #060;
+      color: #fff;
+    }
+
+    .slide:nth-of-type(1) .nav .inactive:hover {
+      background-color: #d3d3d3;
+      color: #000;
+    }
+
+    .slide:nth-of-type(2) .bar {
+      float: left;
+    }
+
+    .slide:nth-of-type(2) .flex-container {
+      float: left;
+    }
+
+    .slide:nth-of-type(2) ul {
+      list-style-type: none;
+      width: 250px;
+      height: 300px;
+      background-color: #d3d3d3;
+      overflow-y: scroll;
+    }
+
+    .slide:nth-of-type(2) li {
+      font: 15px Arial, sans-serif !important;
+      color: #000 !important;
+    }
+
+    .slide:nth-of-type(2) textarea {
+      resize: none;
+    }
+
+    .slide:nth-of-type(2) .bar svg {
+      float: left !important;
+    }
+
+    .slide:nth-of-type(2) .bar a {
+      font: 15px Arial, sans-serif !important;
+      color: #000 !important;
+      float: left;
+    }
+
+    .slide:nth-of-type(2) .messageBar {
+      margin-top: -11px;
+      width: 250px;
+      height: 48px;
+      border: solid #000 1px;
+    }
+
+    .slide:nth-of-type(2) .send {
+      float: right;
+    }
+
+    @media screen and (max-height: 450px) {
+      .overlay a {
+        font-size: 20px;
+      }
+
+      .overlay .closebtn {
+        font-size: 40px;
+        top: 15px;
+        right: 35px;
+      }
+    }
+
+    @-moz-keyframes mouse {
+      from {
+        color: #d3d3d3;
+      }
+
+      to {
+        color: #000;
+      }
+    }
+
+    @-webkit-keyframes mouse {
+      from {
+        color: #d3d3d3;
+      }
+
+      to {
+        color: #000;
+      }
+    }
+
+    @-o-keyframes mouse {
+      from {
+        color: #d3d3d3;
+      }
+
+      to {
+        color: #000;
+      }
+    }
+
+    @keyframes mouse {
+      from {
+        color: #d3d3d3;
+      }
+
+      to {
+        color: #000;
+      }
+    }
+  </style>
+
+</head>
+
+<body>
+<div id='myNav' class='overlay'>  
+  <div class='text'>text</div>
+  
+  <a href='javascript:void(0)' class='closebtn' onclick='closeNav()'>&times;</a>
+  <div class='overlay-content'>
+<div class='slide'>
+  <div class='top nav'>
+		<div class='itm active' id='b'><i class='fa-duotone fa-house-user'></i> Home </div>
+		<div class='itm inactive' id=''><i class='fa-duotone fa-comments'></i> Chat</div>
+		<div class='itm inactive'><i class='fa-sharp fa-solid fa-magnifying-glass'></i> Information</div>
+	</div>
+ 
+  
+
+</div>
+    <div class='slide'>
+		<div class='bar'>
+			<form id='home' action='/logout' method='post'>
+				<i class='fa-solid fa-house'></i>
+				<a>Log out</a>
+			</form>
+		</div>
+		<div class='flex-container'>
+			<div class='inputs'>
+				<ul class='chat'></ul>
+				<textarea style='overflow:auto;resize:none' class='messageBar' rows='10' cols='40'></textarea>
+				<button class='send'><i class='fa-sharp fa-solid fa-paper-plane-top'></i></button>
+			</div>
+			<div class='table'>
+				<table id='allContentPeople'>
+				</table>
+			</div>
+		</div>
+      
+    </div>
+     <div class='slide'>3</div>
+  </div>
+  
+  
+</div>
+
+  <script src='https://kit.fontawesome.com/fd76b8450f.js' crossorigin='anonymous'></script>
+  	<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+ 
+ <script>
+    class Pils {
+      constructor() {
+        this.chip = document.createElement('div');
+        this.chip.setAttribute('class', 'chip1');
+
+        this.tooltip = document.createElement('div');
+        this.tooltip.setAttribute('class', 'tooltip1');
+
+        this.chip_head = document.createElement('div');
+        this.chip_head.id = 'chip_head ';
+
+        this.tooltiptext = document.createElement('span');
+        this.tooltiptext.setAttribute('class', `tooltiptext1`);
+        this.tooltiptext.id = 'tooltiptext ';
+
+        this.chip_content = document.createElement('div');
+        this.chip_content.setAttribute('class', 'chip-content1');
+
+        this.chip_close = document.createElement('div');
+        this.chip_close.setAttribute('class', 'chip-close1');
+
+        this.chip_close.innerHTML = `<svg onclick='this.parentElement.parentElement.style.display='none'' class='chip-svg1' focusable='false' viewBox='0 0 24 24' aria-hidden='true'><path d='M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z'></path></svg>`;
+        //onclick='this.parentElement.style.display='none''
+      }
+
+      create_pil(stus, username, t = true) {
+        this.chip_head.setAttribute('class', `chip-head1 ${stus}`);
+
+        this.tooltiptext.innerText = stus;
+
+        this.tooltip.append(this.chip_head, this.tooltiptext);
+
+        this.chip_content.innerText = username;
+
+        this.chip.append(this.tooltip, this.chip_content, this.chip_close);
+
+        if (t) {
+          document.querySelector('#allContentPeople').append(this.chip);
+        } else {
+          return this.chip;
+        }
+      }
+
+      change_pil(stus) {
+        //   this.className = ''
+        this.chip_head.classList.add('chip-head1');
+        this.chip_head.classList.add(stus);
+
+        this.tooltiptext.innerText = stus;
+      }
+
+      change_pilFrom(element, stus) {
+        // element.className = ''
+        let chip_head = document.getElementById('chip_head ');
+        let tooltiptext = document.getElementById('tooltiptext ');
+        //tooltiptext
+        chip_head.classList.add('chip-head1');
+        chip_head.classList.add(stus);
+
+        tooltiptext.innerText = stus;
+      }
+    }
+
+    function openNav() {
+    console.log(  document.querySelectorAll('*') )
+      document.getElementById('myNav').style.display = 'block';
+    }
+
+    function closeNav() {
+      document.getElementById('myNav').style.display = 'none';
+    }
+
+    function slide(show) {
+      let arr = document.querySelectorAll('.slide');
+      if (show > [...arr].length2) return;
+
+      arr.forEach(function (x, i) {
+        if (i == show) {
+          x.style.display = 'block';
+        } else {
+          x.style.display = 'none';
+        }
+      });
+    }
+
+    function delay(time) {
+      return new Promise((resolve) => setTimeout(resolve, time));
+    }
+
+    function slideone() {
+      let clicks = 0;
+
+      return new Promise((resolve, reject) => {
+        let text =
+          'Click on the tabs <br> the green bar means that it is the selected one';
+
+        document.querySelector('.text').innerHTML = text;
+
+        document.querySelectorAll('.itm').forEach((item) => {
+          item.addEventListener('click', function () {
+            if (clicks == 5) {
+              idx = 1;
+              slide(idx);
+              resolve(true)
+            }
+
+            clicks += 1;
+
+            let clicked = this.innerText.trim();
+
+            document.querySelectorAll('.itm').forEach(function (x) {
+              if (x.innerText.trim() == clicked) {
+                x.classList.replace('inactive', 'active');
+              } else {
+                x.classList.replace('active', 'inactive');
+              }
+            });
+          });
+        });
+      })
+    }
+
+    function slidetwo() {
+      return new Promise((resolve, reject) => {
+        var chats = document.querySelector('.chat');
+        var input = document.querySelector('.messageBar');
+        var pil = new Pils();
+
+        function message(m) {
+          let li = document.createElement('li');
+
+          let txt = document.createElement('a');
+          txt.innerHTML = m;
+
+          li.append(txt);
+          chats.append(li);
+
+          input.value = '';
+        }
+
+        var calls = {
+          first: function () {
+            return new Promise((resolve, reject) => {
+              document.querySelector('#home').removeEventListener('click', () => { })
+
+              pil.create_pil('active', 'username');
+
+              text = 'Next hover your mouse over the lime green circle';
+              document.querySelector('.text').innerHTML = text;
+
+              document.querySelector('.chip1').addEventListener('mouseover', function (event) {
+                document.querySelector('.chip1').removeEventListener('mouseover', () => { })
+
+                text = 'this shows the other users status';
+                document.querySelector('.text').innerHTML = text;
+
+                delay(2000).then((x) => {
+                  //text = 'click on the lime green button to chat with a user';
+                  //document.querySelector('.text').innerHTML = text;
+
+                  resolve(true);
+                });
+              });
+            });
+          },
+          second: function () {
+            return new Promise((resolve, reject) => {
+              text = 'click on the lime green button to chat a user';
+              document.querySelector('.text').innerHTML = text;
+
+              doc
+                .querySelector('.chip1')
+                .addEventListener('click', function (event) {
+                  //document.querySelector('.chip1').removeEventListener('click',()=>{})
+
+                  text = 'look at the chat block to the left';
+                  document.querySelector('.text').innerHTML = text;
+                  delay(2000).then((x) => {
+                    chats.innerHTML = '';
+                    text =
+                      'once you have seen the message: this is a message just for you you may start chatting';
+                    message('this is a message just for you');
+                    document.querySelector('.text').innerHTML = text;
+                    document.querySelector('.chip1').removeEventListener('click', () => { })
+                    resolve(true)
+                  })
+                })
+            })
+          },
+          third: function () {
+            return new Promise((resolve, reject) => {
+              delay(2500).then((x) => {
+                text = 'You can start typing in the textarea on the bottom left';
+
+                document.querySelector('.text').innerHTML = text;
+
+
+                document.querySelector('.messageBar').addEventListener('keydown', function () {
+                  document.querySelector('.messageBar').addEventListener('mouseout', function () {
+                    text = 'if you hit the button next to the textarea that will send a message';
+
+                    document.querySelector('.text').innerHTML = text;
+
+                    document.querySelector('.send').addEventListener('click', function () {
+                      resolve(true)
+                    })
+                  });
+                });
+
+              });
+
+            })
+          }
+        }
+
+        let text = 'Click on Log out';
+
+        document.querySelector('.text').innerHTML = text;
+
+        document.querySelector('#home').addEventListener('click', function (event) {
+          calls.first.call().then((x) => {
+            calls.second.call().then((x) => {
+              calls.third.call().then((x) => {
+                resolve(true)
+              })
+            });
+          });
+        })
+      })
+    }
+
+
+
+
+    window.addEventListener('load', function () {
+      Swal.fire({
+        title: 'Would you like to use the interactive tutorial?',
+        showCancelButton: true,
+        confirmButtonText: 'sure',
+        cancelButtonText: `Nope`,
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          openNav();
+          let idx = 0;
+          slide(idx);
+
+          slideone().then(function () {
+            slidetwo().then(function () {
+              alert('you have completed the tutorial! good job!');
+
+            })
+
+          })
+        } else if (result.isDenied) {
+
+        }
+      })
+
+
+
+      //slideone()
+    });
+
+  </script>
+</body>
+</html>"></iframe>
