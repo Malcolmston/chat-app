@@ -159,7 +159,7 @@ function getChats() {
   });
 }
 
-// gets all cats from a room name with the var id.
+// gets all chats from a room name with the var id.
 function recalChats(id) {
   return new Promise(function (resolve, reject) {
     db.serialize(function () {

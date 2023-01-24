@@ -1,0 +1,3 @@
+sequelize.js line 225 function findRoom
+    make the retrivers all sqlite
+    

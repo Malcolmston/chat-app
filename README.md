@@ -37,8 +37,13 @@ creates a simple 1:1 chat app theat users can use
 
 
 #### node assets
-|body-parser | express| express-session | http | path | socket.io | sqlite3| node-fetch@2|
-|------------|--------|-----------------|------|------|-----------|--------|-------------|
+|body-parser | express| express-session | http | path | socket.io | sqlite3| node-fetch@2| crypto| sequelize|
+|------------|--------|-----------------|------|------|-----------|--------|-------------|-------|----------|
+
+termanal 
+`npm install body-parser express express-session http path socket.io sqlite3 node-fetch@2 crypto sequelize`
+
+
 
 #### html assets
 | html 	| css 	| js 	|
@@ -51,3 +56,31 @@ creates a simple 1:1 chat app theat users can use
 |  	|  	| [socket.io](/socket.io/socket.io.js) 	|
 |   |   | [marked 0.3.2](https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js) |
 |   |   | [confetti latest](https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js) |
+
+html installs
+
+
+Node Virsions
+-------------
+
+```json
+{
+  "dependencies": {
+    "body-parser": "^1.20.1",
+    "crypto": "^1.0.1",
+    "ejs": "^3.1.8",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "html": "^1.0.0",
+    "http": "^0.0.1-security",
+    "localStorage": "^1.0.4",
+    "node-fetch": "^2.6.8",
+    "passport-remember-me": "^0.0.1",
+    "path": "^0.12.7",
+    "promise": "^8.3.0",
+    "sequelize": "^6.28.0",
+    "socket.io": "^4.5.4",
+    "sqlite3": "^5.1.4"
+  }
+}
+```

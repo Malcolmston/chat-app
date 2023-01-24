@@ -1101,6 +1101,7 @@
 		</div>
 		<div class="flex-container">
 			<div class="inputs">
+				<p class="roomNameId" style="font-size: 18px;">room: ?</p>
 				<ul class='chat'></ul>
 				<textarea style="overflow:auto;resize:none" class='messageBar' rows="10" cols="40"></textarea>
 				<button class="send"><i class="fa-sharp fa-solid fa-paper-plane-top"></i></button>
@@ -1381,6 +1382,20 @@
 		socket.emit('logedin', username)
 		// logs the messages fpr you
 		function message(m) {
+			if( typeof m == 'string') {
+				let li = document.createElement('li')
+
+			let txt = document.createElement('a')
+			txt.innerHTML = m
+
+			li.append(txt)
+			chats.append(li)
+
+			input.value = ""
+
+				return;
+			}
+			//console.log( m )
 			let {name, message, time} = m
 			let li = document.createElement('li')
 
@@ -1430,6 +1445,8 @@
 		function roomThing(room) {
 			let to = room
 
+
+			document.getElementsByClassName('roomNameId')[0].innerHTML = to ? 'room: '+to : 'room: ?'
 			socket.emit('room', [username, to])
 
 			socket.emit('persistence', [to, username])
@@ -1466,6 +1483,7 @@
 		})
 
 
+		//console.log( socket )
 		socket.on('people', (arr) => {
 			document.getElementById('allContentPeople').innerHTML = ''
 
@@ -1480,21 +1498,25 @@
 		})
 
 		socket.on(username, (x) => {
+			console.log( x )
 			socket.emit('logedin', username)
 			infoClick(x)
+			roomThing(x)
 		})
 
 		socket.on('message', x => {
-			console.log( [username,x] )
+			//console.log( [username,x] )
 			socket.emit('logedin', username)
 			message(x)
 		})
 
+		
 		socket.on('persistence', x => {
 			chats.innerHTML = 'this is a message just for you'
 			console.log(x)
 			x.map(a => message(a))
 		})
+		
 	</script>
 
 
