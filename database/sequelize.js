@@ -237,18 +237,25 @@ let [room,c] = await Rooms.findOrCreate({where:{ room: r||generateString(12) }})
 return room
 }
 
-async function addUsertoRoom( room, ...user){
-    user.forEach(async function(user){
-        await user.addRooms(room);
+ function createRoomAndJoin(...user) {
+    return new Promise(async function (resolve, reject) {
+         let a = user.map(function(x){
+        return addUser(x)
+    })
+    
+    let e = await createRoom();
+
+    
+    Promise.all(a).then(function(arr){
+        resolve( addUsertoRoom(e, ...arr) )
 
     })
     
-    let fetchedUsers = await Users.findAll({ 
-    include: Rooms
-    });
-    
-    return fetchedUsers
+    })
+   
 }
+
+
 
 async function validate(username, password) {
   //await sequelize.sync({ force: true });
@@ -345,6 +352,7 @@ module.exports = {
   recalChats,
 
   validateRoom,
-  addRoom
+  addRoom,
+  createRoomAndJoin
 
 };
