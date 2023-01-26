@@ -6,9 +6,6 @@ const {
   addChats,
   recalChats,
 
-  validateRoom,
-  myRooms,
-  findRoom,
   addRoom,
 } = require("./database/sequelize.js");
 
@@ -76,7 +73,7 @@ app.post("/signup", function (request, response) {
         request.session.loggedin = true;
         request.session.ussername = ussername;
         request.session.password = password;
-        addUser(ussername, password).then();
+        addUser(ussername, password).then( request.session.room );
 
         response.redirect("/home");
       } else {
@@ -257,7 +254,6 @@ io.use((socket, next) => {
 // this block will run when the client connects
 io.on("connection", (socket) => {
   let s = socket.request.session;
-
   socket.use((socket, next) => {
     validate(s.ussername, s.password).then(function (x) {
       if (s && s.loggedin && s.ussername && x) {
@@ -334,7 +330,8 @@ io.on("connection", (socket) => {
 
   socket.on("persistence", function (a) {
     recalChats(a[1], a[0]).then(function (arr) {
-      if (arr.length === 0) {
+       typeof arr == Array ? arr.length === 0 : false
+      if (  typeof arr == Array ? arr.length === 0 : false ) {
         console.error(
           "there were no rooms with the serched peramerters. the room with the current peramerters will be created."
         );
@@ -345,17 +342,21 @@ io.on("connection", (socket) => {
       }
     });
   });
+//s.room
 
   socket.on("room", (room) => {
     let j = add_roomA(...room);
 
     addRoom(room[0], room[1]).then(function (j) {
-      socket.join(j);
+      socket.join(j[0]);
 
       socket.chat_room = j;
 
+      console.log( j )
       //  socket.emit("message", "this is a message just for you");
-    });
+    }).catch(function (err) {
+      console.log('error')
+    })
   });
 
   socket.on("find room", (room) => {
@@ -375,6 +376,7 @@ io.on("connection", (socket) => {
     let other = socket.chat_room;
     socket.broadcast.emit(socket.username, other);
 
+console.log( "room: "+other )
     addChats(socket.username, message, other).then((time) => {
       //console.log(  {name: socket.username ,message: message, time: time} )
       io.to(socket.chat_room).emit("message", {

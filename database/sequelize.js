@@ -9,21 +9,6 @@ const sequelize = new Sequelize("uses", "", "", {
   storage: "uses.sqlite",
 });
 
-console.clear();
-
-Array.prototype.amountOf = function(item) {
-  let arr = this
-  const counts = {};
-
-for (const num of arr) {
-counts[num] = counts[num] ? counts[num] + 1 : 1;
-}
-
-return counts[item]
-
-}
-
-// generates a rondom code
 function generateString(length) {
   let characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -35,6 +20,12 @@ function generateString(length) {
 
   return result;
 }
+
+
+
+
+
+
 
 // Defining algorithm
 const algorithm = 'aes-256-cbc';
@@ -49,8 +40,7 @@ const iv = crypto.randomBytes(16);
 function hide(text) {
  
  // Creating Cipheriv with its parameter
- let cipher = crypto.createCipheriv(
-      'aes-256-cbc', Buffer.from(key), iv);
+ let cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(key), iv);
  
  // Updating text
  let encrypted = cipher.update(text);
@@ -61,81 +51,14 @@ function hide(text) {
  // Returning iv and encrypted data
  return encrypted.toString('hex') 
 }
- 
 
 
 
-/*
-// decripts string
-function show(key, encode = "utf8", enctype = "hex") {
-  var mykey = crypto.createDecipher("aes-128-cbc", "mypassword");
-  var mystr = mykey.update(key, enctype, encode);
-  mystr += mykey.final(encode);
 
-  return mystr;
-}
-*/
 
-// creates the users table
-const users = sequelize.define(
-  "user",
-  {
-    id: {
-      type: Sequelize.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    username: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-      unique: true,
-    },
-    password: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-      unique: true,
-      set(value) {
-        // stores the passwords not in plaintext
-        this.setDataValue("password", hide(value));
-      },
-    },
-  },
-  { timestamps: false }
-);
-
-// creates the rooms table
-const rooms = sequelize.define(
-  "room",
-  {
-    id: {
-      type: Sequelize.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    room: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-      defaultValue: generateString(23),
-      unique: true
-    },
-    userA: {
-      type: DataTypes.TEXT,
-      unique: true,
-      allowNull: true,
-    },
-    userB: {
-      type: DataTypes.TEXT,
-      unique: true,
-      allowNull: true,
-    },
-  },
-  { timestamps: false }
-);
 
 // crates the chats table
-const chats = sequelize.define(
-  "chat",
-  {
+const chats = sequelize.define("chats", {
     id: {
       type: Sequelize.INTEGER,
       autoIncrement: true,
@@ -164,39 +87,173 @@ const chats = sequelize.define(
   { timestamps: true }
 );
 
+
+
+const Users = sequelize.define('users',{
+	  username: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      unique: true,
+    },
+    password: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      unique: true,
+      set(value) {
+        // stores the passwords not in plaintext
+        this.setDataValue("password", hide(value));
+      },
+    },
+})
+
+const Rooms = sequelize.define('rooms',{
+	  room: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      unique: false,
+       defaultValue: generateString(12)
+      
+    },
+})
+
+const Host = sequelize.define('Users_Rooms', {});
+
+
+//https://sequelize.org/docs/v6/advanced-association-concepts/eager-loading/#eager-loading-with-many-to-many-relationships
+Users.belongsToMany(Rooms, { through: Host });
+Rooms.belongsToMany(Users, { through: Host });
+
 async function getAll(From = "users"){
-  let users = await sequelize.query("SELECT * FROM `"+From+"`",{
-        raw: false,
-        type: QueryTypes.SELECT,
-
-    });
-
+    let users;
+    switch(From){
+    case 'chats':
+          users = await chats.findAll()
+         return users
+         
+     case 'users':
+          users = await Users.findAll()
+         return users
+    
+     case 'rooms':
+          users = await Rooms.findAll()
+         return users
+    
+     case 'Users_Rooms':
+     case 'host':
+          users = await Host.findAll()
+         return users
+         
+    default: 
+          users = await Users.findAll()
+         return users
+    }
+    
 
  // console.log( users );
-  return users
 }
 
-async function isEmpty(table) {
-  //await sequelize.sync({ force: true });
 
-  let res = await users.findAll();
 
-  return res === null;
+async function validateRoom(user){
+    let result = await Users.findOne({
+   where: {
+       username: user
+   }
+});
+
+let a = result.id
+
+
+//for(let i = 1, i<a[1], i++){
+let host = await Host.findOne({
+    where: {
+        roomId: a
+    }
+})
+
+
+let ab = (await Rooms.findOne({
+    where: {
+        id: host ? host.userId : ''
+    }
+}))
+
+try{
+  return ab.room 
+
+}catch(e){
+return false
 }
 
-async function addUser(username, password) {
-  //await sequelize.sync({ force: true });
-  let res = await users.create({ username, password });
+}
 
-  res = await users.findAll();
+async function addRoom( ...users) {
+    
+    let room = generateString(12)
 
-  return res;
+   let a = users.map(async function(userA){
+      // let c = await addUser(userA)
+    
+
+        let a = await validateRoom(userA)
+    
+
+        let b = await addUser(userA)
+     
+
+   let res =  await createRoom(a) // u ? await createRoom(await addUser(userA)) : false
+   
+return res.room
+    })
+    
+let b  = await Promise.all(a)    
+
+return ([...new Set(b)].length < a.length) ? [...new Set(b)] : false
+
+}
+
+async function findRoom(...users) {
+    return (await validateRoom(users)) || undefined
+}
+   
+     
+async function addUser(username,password){
+    if(password){
+        let [user,a] = await Users.findOrCreate({where:{ username: username.toString(), password: password.toString() }});
+
+return user
+
+    }else{
+       let [user,a] = await Users.findOrCreate({where:{ username: username.toString()}});
+ return user
+
+    }
+
+}
+
+async function createRoom(r){
+let [room,c] = await Rooms.findOrCreate({where:{ room: r||generateString(12) }});
+
+return room
+}
+
+async function addUsertoRoom( room, ...user){
+    user.forEach(async function(user){
+        await user.addRooms(room);
+
+    })
+    
+    let fetchedUsers = await Users.findAll({ 
+    include: Rooms
+    });
+    
+    return fetchedUsers
 }
 
 async function validate(username, password) {
   //await sequelize.sync({ force: true });
 
-  let res = await users.findOne({
+  let res = await Users.findOne({
     where: {
       [Op.and]: [{ username: username }, { password: hide(password) }],
     },
@@ -206,104 +263,18 @@ async function validate(username, password) {
 }
 
 
-async function validateRoom(userA, userB) {
-
-  const [results, metadata] = await sequelize.query("SELECT * FROM `rooms` WHERE (`userA`='"+userA+"' AND `userB`='"+userB+"') OR (`userB`='"+userA+"' AND `userA`='"+userB+"') LIMIT 1;",{
-    raw: false,
-    type: QueryTypes.SELECT,
-
-});
-// Results will be an empty array and metadata will contain the number of affected rows.
-
- 
-  return  results==null ? true : results.length  === 0  
-}
-
-async function addRoom( userA, userB, room=generateString(12)) {
-  let a = await validateRoom(userA, userB)
-  let b = await validateRoom(userB, userA)
-
-  let res;
-
-
-  if(a && b){
-    res = await rooms.create({ room, userA, userB });
-  }else{
-    let id = await findRoom(userA, userB)
-
-    return id
-  }
-  //await sequelize.sync({ force: true });
-
-    
-  
-
-return room
-
-
-}
-
-async function findRoom( userA, userB) {
-    let openA = await validateRoom(userA, userB);
-    let openB = await validateRoom(userB, userA);
-
-   // if(!(openA || openB)) return;
-
-   let roomCode = await rooms.findOne({
-    attributes: { exclude: ['id', 'userA', 'userB'] },
-  where: {
-    [Op.or]: [
-      {
-        [Op.and]: {
-          userA: {
-            [Op.eq]: userA,
-          },
-          userB: {
-            [Op.eq]: userB
-          }
-        }
-      },
-      {
-        [Op.and]: {
-          userA: {
-            [Op.eq]: userB,
-          },
-          userB: {
-            [Op.eq]: userA
-          }
-        }
-      }
-    ]
-   
-
-  
-
-  }
-})
-
-
-  return roomCode.room//a.length > 0 ? a[0].room : (c.length > c ? c[0].room : null)
-  }
-
-
-async function myRooms(userA) {
-  //await sequelize.sync({ force: true });
-
-  let res = await users.findAll({
-    where: {
-      [Op.or]: [{ userA: userA }, { userB: userA }],
-    },
-  });
-  return res;
- 
-}
-
 //when a user sends a chat it is added to the database so theat perssitance works
 async function addChats(name, message, room) {
   //await sequelize.sync({ force: true });
-  let res = await chats.create({ name, message, room });
+  let res = await chats.create({ 
+      name:name, 
+      message: message, 
+      room: room 
+  });
+  
+  res.save()
 
-  res = await chats.findAll();
+//  res = await chats.findAll();
 
   return (new Date());//res;
 }
@@ -334,9 +305,36 @@ if( id === undefined){
   return res;
 }
 
-(async () => {
-    await sequelize.sync({ force: true });
+//this function recals all of the chats.
+async function recalChats(...user) {
+  //await sequelize.sync({ force: true });
+let id = await findRoom(user)
+
+
+if( id === undefined){
+    return undefined
+}
+
+//const [res, metadata] = await sequelize.query("SELECT * FROM rooms WHERE `room` = '"+id+"'  ");
+
+  let res = await chats.findAll({
+    where: { 
+      room: { 
+        [Op.eq]: id
+    }
+  }
+  });
+  
+
+  console.log( res );
+
+  return res;
+}
+
+(async function(){
+  await sequelize.sync({ force: true });
 })()
+
 
 module.exports = {
   addUser,
@@ -347,8 +345,6 @@ module.exports = {
   recalChats,
 
   validateRoom,
-  myRooms,
-  findRoom,
   addRoom
 
 };
