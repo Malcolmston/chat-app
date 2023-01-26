@@ -349,8 +349,7 @@ io.on("connection", (socket) => {
     let j = add_roomA(...room);
 
     addRoom(room[0], room[1]).then(function (j) {
-      createRoomAndJoin 
-      
+      createRoomAndJoin() 
       socket.join(j[0]);
 
       socket.chat_room = j;
