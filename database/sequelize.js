@@ -205,47 +205,37 @@ async function addUser(username, password) {
   }
 }
 
-async function addUsertoRoom( room, ...user){
-  user.forEach(async function(user){
-      await user.addRooms(room);
-
-  })
-  
-  let fetchedUsers = await Users.findAll({ 
-  include: Rooms
+async function addUsertoRoom(room, ...user) {
+  user.forEach(async function (user) {
+    await user.addRooms(room);
   });
-  
-  return fetchedUsers
+
+  let fetchedUsers = await Users.findAll({
+    include: Rooms,
+  });
+
+  return fetchedUsers;
 }
-
-
 
 function createRoomAndJoin(...user) {
   return new Promise(async function (resolve, reject) {
-       let a = user.map(function(x){
-      return addUser(x)
-  })
-  
-  let e = await createRoom();
+    let a = user.map(function (x) {
+      return addUser(x);
+    });
 
-  
-  Promise.all(a).then(function(arr){
-      addUsertoRoom(e, ...arr).then(function(){
-          if(e){
-               resolve(e.room )
-          }else{
-              reject('failed to send method that created a room.')
-          }
-        
-      })
-      
+    let e = await createRoom();
 
-  })
-  
-  })
- 
+    Promise.all(a).then(function (arr) {
+      addUsertoRoom(e, ...arr).then(function () {
+        if (e) {
+          resolve(e.room);
+        } else {
+          reject("failed to send method that created a room.");
+        }
+      });
+    });
+  });
 }
-
 
 async function createRoom(r) {
   let [room, c] = await Rooms.findOrCreate({
