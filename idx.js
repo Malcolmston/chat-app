@@ -348,14 +348,12 @@ io.on("connection", (socket) => {
   socket.on("room", (room) => {
     let j = add_roomA(...room);
 
-    addRoom(room[0], room[1]).then(function (j) {
-      createRoomAndJoin() 
-      socket.join(j[0]);
+    //addRoom(room[0], room[1]).then(function (j) {
+      createRoomAndJoin(room[0], room[1]).then(function (j) {
+        j = j.room
+      socket.join(j);
 
       socket.chat_room = j;
-
-      console.log( j )
-      //  socket.emit("message", "this is a message just for you");
     }).catch(function (err) {
       console.log('error')
     })
