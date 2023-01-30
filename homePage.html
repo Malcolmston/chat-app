@@ -1447,9 +1447,10 @@
 
 
 			document.getElementsByClassName('roomNameId')[0].innerHTML = to ? 'room: '+to : 'room: ?'
-			socket.emit('room', [username, to])
-
-			socket.emit('persistence', [to, username])
+			
+			socket.array = [username, to]
+			socket.emit('room', socket.array)
+			socket.emit('persistence', socket.array)
 
 		}
 
@@ -1470,7 +1471,7 @@
 			event.preventDefault();
 			if (input.value == "" || input.value.trim() == "") return;
 			//socket.emit('message', username + ":  " + input.value.replaceAll('\n', '<br>') + ": " + getDay());
-		socket.emit('message',input.value.replaceAll('\n', '<br>') );
+		socket.emit('message',input.value.replaceAll('\n', '<br>'), socket.array);
 	})
 
 
@@ -1497,12 +1498,16 @@
 
 		})
 
-		socket.on(username, (x) => {
-			console.log( x )
+		/*
+
+		socket.on('sent', (sender,who) => {
 			socket.emit('logedin', username)
-			infoClick(x)
-			roomThing(x)
+
+				infoClick(sender)
+				roomThing(sender)
+			
 		})
+		*/
 
 		socket.on('message', x => {
 			//console.log( [username,x] )
@@ -1513,7 +1518,6 @@
 		
 		socket.on('persistence', x => {
 			chats.innerHTML = 'this is a message just for you'
-			console.log(x)
 			x.map(a => message(a))
 		})
 		

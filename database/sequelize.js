@@ -8,18 +8,19 @@ const db = new sqlite3.Database("uses.sqlite");
 const sequelize = new Sequelize("uses", "", "", {
   dialect: "sqlite",
   storage: "uses.sqlite",
+  logging: false,
   retry: {
         match: [
           /SQLITE_BUSY/,
         ],
         name: 'query',
-        max: 5
+        max: 10000000000
       },
   pool: {
-        maxactive: 1,
-        max: 500,
+        maxactive: 10000000000,
+        max: 10000000000,
         min: 0,
-        idle: 20000
+        idle: 2000
       }
 });
 
@@ -163,7 +164,6 @@ async function getAll(From = "users"){
     }
     
 
- // console.log( users );
 }
 
 
@@ -198,20 +198,100 @@ async function validateRoom(user) {
 }
 */
 
+Array.prototype.chunk = function(chunkSize) {
+  var array = this;
+  return [].concat.apply([],
+    array.map(function(elem, i) {
+      return i % chunkSize ? [] : [array.slice(i, i + chunkSize)];
+    })
+  );
+}
+
+
+
 async function validateRoom(user) {
     let r = await addUser(user)
     
     let g = (await getAll('host')).map(x => x.userId)
-    let h = (await getAll()).map(x => x.username)
+    let h = (await getAll('users')).map(x => x.username)
     let i = (await getAll('rooms')).map(x => x.room)
     let j = (await getAll('host')).map(x => x.roomId)
     let k = ([...new Set(j)])[0]
     
-//console.log( g, ([r]).map( x => x.id ) )
-    return i[Number(k)-1] || false//isEqual( ([r]).map( x => x.id ), g )
+
+    return ( (g.map(x=>x.toString()).includes(r.id.toString()) ) || g.map(x => Number(x)).includes(Number(r.id)) )  && (i[Number(k)-1] || false) //isEqual( ([r]).map( x => x.id ), g )
 
 }
 
+//https://stackoverflow.com/questions/23305747/javascript-permutation-generator-with-permutation-length-parameter
+
+Array.prototype.getPermutations = function(maxLen) {
+  function getPermutations (list, maxLen) {
+  // Copy initial values as arrays
+  var perm = list.map(function(val) {
+      return [val];
+  });
+  // Our permutation generator
+  var generate = function(perm, maxLen, currLen) {
+      // Reached desired length
+      if (currLen === maxLen) {
+          return perm;
+      }
+      // For each existing permutation
+      for (var i = 0, len = perm.length; i < len; i++) {
+          var currPerm = perm.shift();
+          // Create new permutation
+          for (var k = 0; k < list.length; k++) {
+              perm.push(currPerm.concat(list[k]));
+          }
+      }
+      // Recurse
+      return generate(perm, maxLen, currLen + 1);
+  };
+  // Start with size 1 because of initial values
+  return [...new Set(generate(perm, maxLen, 1).map( x => x.sort() ).filter(arr => [...new Set(arr)].length != 1 ).map( x => x.toString() ))].map(x => x.split(',') )
+};
+
+return getPermutations(this,maxLen)
+}
+
+async function validateRoomAndGroup(...people) {
+  let usernames = (await getAll('users')).map(x => x.username)
+  usernames = await Promise.all(usernames)
+  let rooms = (await getAll('rooms')).map(x => x.room)
+  rooms = await Promise.all(rooms)
+
+  
+  let userIds = (await getAll('host')).map(x => x.userId-1)
+  userIds = await Promise.all(userIds)
+  let roomIds = (await getAll('host')).map(x => x.roomId-1)
+  roomIds = await Promise.all(roomIds)
+
+
+
+  let a = userIds.map( x => usernames[x] ).chunk(2)//.map( x => x.sort() )
+
+  let b = [...new Set(roomIds.map( x => rooms[x] ))]
+
+  let c = a.map( function(room,index){
+    return {
+      room: b[index],
+      users: room
+    }
+  })
+  console.log( c )
+
+  c = c.filter(function(obj,index){
+    return obj.users.toString() == people.toString() || obj.users.reverse().toString() == people.toString()
+  })
+
+  
+
+return c
+
+  // usernames = usernames.getPermutations(2)
+
+}
 
 async function addRoom( ...users) {
     
@@ -238,7 +318,30 @@ return ([...new Set(b)].length < a.length) ? [...new Set(b)] : false
 }
 
 async function findRoom(...users) {
-    return (await validateRoom(users)) || undefined
+ let obj =  await validateRoomAndGroup(...users)
+ let t;
+
+ if( obj.length == 0 ){
+   t = await createRoomAndJoin( ...users)
+  return (await findRoom(...users))
+ }else if(obj.length == 1 && (isEqual(obj[0].users, users)  )  ){
+  return obj[0].room
+ }else{
+
+let a = ( obj.filter(x => (isEqual(x.users, users)  ) ) )
+ 
+if( isEqual([], a) ) {
+   return undefined
+}else{
+  return a[0].room
+}
+
+  
+
+
+
+ }
+
 }
    
      
@@ -307,10 +410,8 @@ async function addChats(name, message, room) {
 }
 
 //this function recals all of the chats.
-async function recalChats(userA, userB) {
-  //await sequelize.sync({ force: true });
-let id = await findRoom(userA, userB)
-
+async function recalChats(id) {  
+//let id = await findRoom(...user)
 
 if( id === undefined){
     return undefined
@@ -325,33 +426,8 @@ if( id === undefined){
     }
   }
   });
+
   
-
-  return res;
-}
-
-//this function recals all of the chats.
-async function recalChats(...user) {
-  //await sequelize.sync({ force: true });
-let id = await findRoom(user)
-
-
-if( id === undefined){
-    return undefined
-}
-
-//const [res, metadata] = await sequelize.query("SELECT * FROM rooms WHERE `room` = '"+id+"'  ");
-
-  let res = await chats.findAll({
-    where: { 
-      room: { 
-        [Op.eq]: id
-    }
-  }
-  });
-  
-
-  console.log( res );
 
   return res;
 }
@@ -371,7 +447,9 @@ if( id === undefined){
         let a = await validateRoom(userA)//users.map(validateRoom)
         let b = await validateRoom(userB) //await Promise.all(a)
         
-        if(!a && !b){
+        
+
+        if(!a || !b){
              let c = await addUser(userA)
              
             let d = await addUser(userB)
@@ -379,7 +457,7 @@ if( id === undefined){
             let e = await createRoom()
     
             let f = await addUsertoRoom(e, c,d )
-            resolve(e)
+            resolve(e.room)
             
         }else{
            resolve(a)
@@ -387,6 +465,11 @@ if( id === undefined){
    
     })
 }
+
+
+
+
+
 
 function isEqual(a, b) {
   return Array.isArray(a) &&
@@ -410,5 +493,7 @@ module.exports = {
 
   validateRoom,
   addRoom,
+  findRoom,
   createRoomAndJoin,
+  validateRoomAndGroup
 };
