@@ -288,7 +288,7 @@ io.on("connection", (socket) => {
       if (!x && session.ussername != user) {
         console.log("fail!!!!!!!");
 
-        //socket.disconnect();
+        socket.disconnect();
       } else {
         add_memberA(user);
         socket.username = user;
