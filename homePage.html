@@ -1127,7 +1127,12 @@
 
 
 
-	<script>
+	<script >
+		const socket = io('http://localhost:3000', {
+  transports: ["websocket"]
+});
+
+
 		// gets the web headers 
 		var xhr = new XMLHttpRequest();
 		xhr.open('GET', document.location, false);
@@ -1254,7 +1259,7 @@
 
 	</script>
 
-	<script>
+	<script> 	  	  
 		// gets date in mm/dd/yyy format
 		function getDay() {
 			var today = new Date();
@@ -1375,9 +1380,6 @@
 			});
 		}
 
-
-		var socket = io();
-
 		// turns sockets on in the server side
 		socket.emit('logedin', username)
 		// logs the messages fpr you
@@ -1454,7 +1456,6 @@
 
 		}
 
-		// removes the user in localStorage
 		function removeUser() {
 			localStorage.removeItem('username');
 			localStorage.removeItem('password');
@@ -1471,7 +1472,8 @@
 			event.preventDefault();
 			if (input.value == "" || input.value.trim() == "") return;
 			//socket.emit('message', username + ":  " + input.value.replaceAll('\n', '<br>') + ": " + getDay());
-		socket.emit('message',input.value.replaceAll('\n', '<br>'), socket.array);
+		//alert(socket.array)
+			socket.emit('message',input.value.replaceAll('\n', '<br>'), socket.array);
 	})
 
 
@@ -1522,7 +1524,6 @@
 		})
 		
 	</script>
-
 
 </body>
 

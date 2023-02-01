@@ -6,14 +6,12 @@ const {
   addChats,
   recalChats,
 
-  findRoom,
   createRoomAndJoin,
-  validateRoomAndGroup
+  validateRoomAndGroup,
 } = require("./database/sequelize.js");
 
 const {
   add_roomA,
-  find_roomA,
   add_memberA,
   getAllusersA,
   remove_memberA,
@@ -27,6 +25,8 @@ var bodyParser = require("body-parser"),
   path = require("path"),
   socket = require("socket.io"),
   router = express.Router(),
+  cookie = require("cookie"),
+  url = require("url"),
   io = socket(http);
 
 const sessionMiddleware = session({
@@ -58,16 +58,18 @@ Array.prototype.similarity = function (arr) {
 };
 
 // the home page
-app.get("/", function (_request, res) {
-  //res.sendFile(path.resolve(__dirname + login));
+app.get("/", function (req, res) {
   res.sendFile(path.resolve(__dirname + login));
 });
+
+//app.get('/userHost', onRequest)
 
 // gets the inputs from the user on the sign up page
 app.post("/signup", function (request, response) {
   // gets the input fields
   let ussername = request.body.ussername;
   let password = request.body.password;
+
   // makes sure the input fields exists and are not empty
   if (ussername && password) {
     validate(ussername, password).then(function (params) {
@@ -75,7 +77,7 @@ app.post("/signup", function (request, response) {
         request.session.loggedin = true;
         request.session.ussername = ussername;
         request.session.password = password;
-        addUser(ussername, password).then( request.session.room );
+        addUser(ussername, password).then(request.session.room);
 
         response.redirect("/home");
       } else {
@@ -286,7 +288,7 @@ io.on("connection", (socket) => {
       if (!x && session.ussername != user) {
         console.log("fail!!!!!!!");
 
-        socket.disconnect();
+        //socket.disconnect();
       } else {
         add_memberA(user);
         socket.username = user;
@@ -331,45 +333,44 @@ io.on("connection", (socket) => {
   });
 
   socket.on("persistence", function (a) {
-    validateRoomAndGroup(...a).then(async function (j) {
-      console.log(a, j)
+    setTimeout(async function () {
+      validateRoomAndGroup(...a).then(async function (j) {
+        if (j == undefined || j.length == 0) {
+          socket.chat_room = await createRoomAndJoin(...a);
 
-      if( j == undefined || j.length == 0 ){        
+          console.error(
+            "there were no rooms with the serched peramerters. the room with the current peramerters will be created."
+          );
 
-        console.error( "there were no rooms with the serched peramerters. the room with the current peramerters will be created." );
+          socket.emit("persistence", []);
 
-        socket.emit("persistence", []);
-
-      }else{
-      recalChats(j[0].room).then(function (arr) {      
-         socket.emit("persistence", arr);
-       
-     });
-    }
-
-    })
-
-
-  
-    
+          socket.chat_room = await createRoomAndJoin(...a);
+        } else {
+          recalChats(j[0].room).then(function (arr) {
+            socket.emit("persistence", arr);
+          });
+        }
+      });
+    }, 100);
   });
-//s.room
+  //s.room
 
   socket.on("room", async (room) => {
     let j = socket.chat_room;
 
-    if(j == undefined || j.trim().length == 0){
-      socket.chat_room = (await createRoomAndJoin(...room))
-      j = socket.chat_room
+    if (j == undefined || j.trim().length == 0) {
+      let r = await createRoomAndJoin(...room);
+
+      console.log(r);
+      socket.chat_room = r;
+      j = socket.chat_room;
     }
 
+    add_roomA(...room);
 
-     add_roomA(...room);
+    socket.join(j);
 
-     socket.join(j);
-
-
-     /*
+    /*
     //addRoom(room[0], room[1]).then(function (j) {
       findRoom(...room).then(function (j) {
         j = j
@@ -380,21 +381,17 @@ io.on("connection", (socket) => {
     */
   });
 
-
-
-  socket.on("message", async (message,who) => {
+  socket.on("message", async (message, who) => {
     // let other = socket.chat_room.replace(socket.username, "");
     //socket.broadcast.emit(other, `a message was sent from ${socket.username}`);
     let other = socket.chat_room;
 
-    if(other == undefined || other.trim().length == 0){
-      socket.chat_room = (await createRoomAndJoin(...who))
-      other = socket.chat_room
+    if (other == undefined || other.trim().length == 0) {
+      socket.chat_room = await createRoomAndJoin(...who);
+      other = socket.chat_room;
     }
 
-    
-  
-   // socket.broadcast.emit('sent',  socket.username, who );
+    // socket.broadcast.emit('sent',  socket.username, who );
 
     addChats(socket.username, message, other).then((time) => {
       //console.log(  {name: socket.username ,message: message, time: time} )

@@ -279,13 +279,24 @@ async function validateRoomAndGroup(...people) {
       users: room
     }
   })
+
   console.log( c )
+
 
   c = c.filter(function(obj,index){
     return obj.users.toString() == people.toString() || obj.users.reverse().toString() == people.toString()
   })
 
-  
+  /*
+  if( c == undefined || c.length == 0 ){      
+    let r = await createRoom()
+    let p = people.map(  addUser)
+    p = await Promise.all(p)
+
+    let users = await addUsertoRoom(r.room, ...p)
+    console.log( users )
+  }
+  */
 
 return c
 
@@ -345,7 +356,7 @@ if( isEqual([], a) ) {
 }
    
      
-async function addUser(username,password){
+async function getUser(username){
     if(password){
         let [user,a] = await Users.findOrCreate({where:{ username: username.toString(), password: password.toString() }});
 
@@ -359,6 +370,17 @@ return user
     }
 
 }
+     
+async function addUser(username){
+
+      let user = await Users.findOne({where:{ username: username}});
+      
+return user
+
+  
+
+}
+
 
 async function createRoom(r){
 let [room,c] = await Rooms.findOrCreate({where:{ room: r||generateString(12) }});
@@ -369,7 +391,7 @@ return room
 async function addUsertoRoom(room, ...user) {
     let arr = []
   user.forEach(async function (user) {
-      arr.push( user.addRooms(room) )
+      arr.push( user.addRooms(room) )  
   //await user.addRooms(room);
   });
   
@@ -447,21 +469,34 @@ if( id === undefined){
         let a = await validateRoom(userA)//users.map(validateRoom)
         let b = await validateRoom(userB) //await Promise.all(a)
         
-        
+        let c;
+        let d;
+        let e; 
+        let f;
 
-        if(!a || !b){
-             let c = await addUser(userA)
+        c = await addUser(userA)
              
-            let d = await addUser(userB)
+        d = await addUser(userB)
+       
+        e = await createRoom()
+
+        f = await addUsertoRoom(e, c,d )
+       resolve(e.room)
+/*
+        if(!a || !b){
+              c = await addUser(userA)
+             
+             d = await addUser(userB)
             
-            let e = await createRoom()
+             e = await createRoom()
     
-            let f = await addUsertoRoom(e, c,d )
+             f = await addUsertoRoom(e, c,d )
             resolve(e.room)
             
         }else{
            resolve(a)
         }
+        */
    
     })
 }
@@ -484,7 +519,9 @@ function isEqual(a, b) {
 })();
 
 module.exports = {
+  generateString,
   addUser,
+  getUser,
   validate,
   getAll,
 
@@ -492,8 +529,10 @@ module.exports = {
   recalChats,
 
   validateRoom,
+  addUsertoRoom,
   addRoom,
   findRoom,
+  createRoom,
   createRoomAndJoin,
   validateRoomAndGroup
 };
