@@ -77,8 +77,8 @@ app.post("/signup", function (request, response) {
         request.session.loggedin = true;
         request.session.ussername = ussername;
         request.session.password = password;
-        addUser(ussername, password).then(function(e){
-          request.session.room = e
+        addUser(ussername, password).then(function (e) {
+          request.session.room = e;
         });
 
         response.redirect("/home");
@@ -239,27 +239,22 @@ http.listen(port, () => {
   console.log(`Socket.IO server running at http://localhost:${port}/`);
 });
 
-
-
-const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
+const wrap = (middleware) => (socket, next) =>
+  middleware(socket.request, {}, next);
 
 io.use(wrap(sessionMiddleware));
-
-
 
 io.use((socket, next) => {
   const session = socket.request.session;
   socket.session = session;
 
-  console.log('conectiong ...')
-    validate(session.ussername, session.password).then(function (x) {
-      if (session && session.loggedin && session.ussername && x) {
-        next();
-      } else {
-        next(new Error("unauthorized"));
-      }
-    });
-
+  validate(session.ussername, session.password).then(function (x) {
+    if (session && session.loggedin && session.ussername && x) {
+      next();
+    } else {
+      next(new Error("unauthorized"));
+    }
+  });
 });
 
 // this block will run when the client connects
@@ -339,19 +334,31 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("peopleO", t);
   });
 
-  socket.on("persistence", function (a) {
+  socket.on("persistence", function (a,pill) {
     setTimeout(async function () {
       validateRoomAndGroup(...a).then(async function (j) {
         if (j == undefined || j.length == 0) {
-          socket.chat_room = await createRoomAndJoin(...a);
 
-          console.error(
-            "there were no rooms with the serched peramerters. the room with the current peramerters will be created."
-          );
+          console.error("1 there were no rooms with the serched peramerters. the room with the current peramerters will be created.");
 
           socket.emit("persistence", []);
+          socket.emit("error", 'please click the room one more time. it was created but it was not yet joined','room');
 
-          socket.chat_room = await createRoomAndJoin(...a);
+          socket.chat_room = (await createRoomAndJoin(...a,true));
+
+          validateRoomAndGroup(...a).then(async function (j) {
+            if (j == undefined || j.length == 0) {
+  
+              console.error( "2 there were no rooms with the serched peramerters. the room with the current peramerters will be created.");
+
+              socket.emit("persistence", []);
+            } else {
+              recalChats(j[0].room).then(function (arr) {
+                socket.emit("persistence", arr);
+              });
+            }
+          });
+          //socket.chat_room = await createRoomAndJoin(...a);
         } else {
           recalChats(j[0].room).then(function (arr) {
             socket.emit("persistence", arr);
@@ -368,7 +375,7 @@ io.on("connection", (socket) => {
     if (j == undefined || j.trim().length == 0) {
       let r = await createRoomAndJoin(...room);
 
-      console.log(r);
+     //console.log(r);
       socket.chat_room = r;
       j = socket.chat_room;
     }
@@ -393,7 +400,7 @@ io.on("connection", (socket) => {
     //socket.broadcast.emit(other, `a message was sent from ${socket.username}`);
     let other = socket.chat_room;
 
-    if (other == undefined || other.trim().length == 0) {
+    if (other == undefined || other.length == 0) {
       socket.chat_room = await createRoomAndJoin(...who);
       other = socket.chat_room;
     }
