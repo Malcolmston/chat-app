@@ -356,7 +356,7 @@ if( isEqual([], a) ) {
 }
    
      
-async function getUser(username){
+async function addUser(username,password){
     if(password){
         let [user,a] = await Users.findOrCreate({where:{ username: username.toString(), password: password.toString() }});
 
@@ -371,7 +371,7 @@ return user
 
 }
      
-async function addUser(username){
+async function getUser(username){
 
       let user = await Users.findOne({where:{ username: username}});
       

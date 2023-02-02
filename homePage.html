@@ -1127,10 +1127,7 @@
 
 
 
-	<script >
-		const socket = io('http://localhost:3000', {
-  transports: ["websocket"]
-});
+	<script>
 
 
 		// gets the web headers 
@@ -1259,7 +1256,13 @@
 
 	</script>
 
-	<script> 	  	  
+	<script> 	
+			const socket = io();
+
+	
+
+
+
 		// gets date in mm/dd/yyy format
 		function getDay() {
 			var today = new Date();

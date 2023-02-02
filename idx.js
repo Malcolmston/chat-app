@@ -77,7 +77,9 @@ app.post("/signup", function (request, response) {
         request.session.loggedin = true;
         request.session.ussername = ussername;
         request.session.password = password;
-        addUser(ussername, password).then(request.session.room);
+        addUser(ussername, password).then(function(e){
+          request.session.room = e
+        });
 
         response.redirect("/home");
       } else {
@@ -237,22 +239,27 @@ http.listen(port, () => {
   console.log(`Socket.IO server running at http://localhost:${port}/`);
 });
 
-const wrap = (middleware) => (socket, next) =>
-  middleware(socket.request, {}, next);
+
+
+const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
 
 io.use(wrap(sessionMiddleware));
+
+
 
 io.use((socket, next) => {
   const session = socket.request.session;
   socket.session = session;
-  validate(session.ussername, session.password).then(function (x) {
-    if (session && session.loggedin && session.ussername && x) {
-      //console.log('save')
-      next();
-    } else {
-      next(new Error("unauthorized"));
-    }
-  });
+
+  console.log('conectiong ...')
+    validate(session.ussername, session.password).then(function (x) {
+      if (session && session.loggedin && session.ussername && x) {
+        next();
+      } else {
+        next(new Error("unauthorized"));
+      }
+    });
+
 });
 
 // this block will run when the client connects
