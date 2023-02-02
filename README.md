@@ -56,6 +56,7 @@ termanal
 |  	|  	| [socket.io](/socket.io/socket.io.js) 	|
 |   |   | [marked 0.3.2](https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js) |
 |   |   | [confetti latest](https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js) |
+|   |   | [cookie 3.0.1](https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js) |
 
 html installs
 
