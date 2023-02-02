@@ -1101,6 +1101,7 @@
 		</div>
 		<div class="flex-container">
 			<div class="inputs">
+				<p class="roomNameId" style="font-size: 18px;">room: ?</p>
 				<ul class='chat'></ul>
 				<textarea style="overflow:auto;resize:none" class='messageBar' rows="10" cols="40"></textarea>
 				<button class="send"><i class="fa-sharp fa-solid fa-paper-plane-top"></i></button>
@@ -1122,11 +1123,14 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/mouse0270-bootstrap-notify/3.1.5/bootstrap-notify.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
 
 
 
 
 	<script>
+
+
 		// gets the web headers 
 		var xhr = new XMLHttpRequest();
 		xhr.open('GET', document.location, false);
@@ -1253,7 +1257,13 @@
 
 	</script>
 
-	<script>
+	<script> 	
+			const socket = io();
+
+	
+
+
+
 		// gets date in mm/dd/yyy format
 		function getDay() {
 			var today = new Date();
@@ -1374,13 +1384,30 @@
 			});
 		}
 
-
-		var socket = io();
-
 		// turns sockets on in the server side
+
+socket.on('error',function(message,type){
+	alert(message)
+	
+})
+
 		socket.emit('logedin', username)
 		// logs the messages fpr you
 		function message(m) {
+			if( typeof m == 'string') {
+				let li = document.createElement('li')
+
+			let txt = document.createElement('a')
+			txt.innerHTML = m
+
+			li.append(txt)
+			chats.append(li)
+
+			input.value = ""
+
+				return;
+			}
+			//console.log( m )
 			let {name, message, time} = m
 			let li = document.createElement('li')
 
@@ -1410,7 +1437,7 @@
 
 			pil.addEventListener('click', function (a) {
 				if (a.target.tagName !== 'path') {
-					roomThing(room)
+					roomThing(room, pil)
 				}
 			})
 
@@ -1427,21 +1454,26 @@
 
 		}
 		// joins each room wen you click the contact card. persetence is called
-		function roomThing(room) {
+		function roomThing(room, pil) {
 			let to = room
 
-			socket.emit('room', [username, to])
 
-			socket.emit('persistence', [to, username])
+			document.getElementsByClassName('roomNameId')[0].innerHTML = to ? 'room: '+to : 'room: ?'
+			
+			socket.array = [username, to]
+			socket.emit('room', socket.array)
+			socket.emit('persistence', socket.array, pil)
 
 		}
 
-		// removes the user in localStorage
 		function removeUser() {
-			localStorage.removeItem('username');
-			localStorage.removeItem('password');
-		}
+        Cookies.remove('username')
+        Cookies.remove('password')
 
+
+        //localStorage.removeItem("username");
+        //localStorage.removeItem("password");
+      }
 		// Get the input field
 		var input = document.querySelector(".messageBar"),
 			chats = document.querySelector(".chat"),
@@ -1453,7 +1485,8 @@
 			event.preventDefault();
 			if (input.value == "" || input.value.trim() == "") return;
 			//socket.emit('message', username + ":  " + input.value.replaceAll('\n', '<br>') + ": " + getDay());
-		socket.emit('message',input.value.replaceAll('\n', '<br>') );
+		//alert(socket.array)
+			socket.emit('message',input.value.replaceAll('\n', '<br>'), socket.array);
 	})
 
 
@@ -1466,6 +1499,7 @@
 		})
 
 
+		//console.log( socket )
 		socket.on('people', (arr) => {
 			document.getElementById('allContentPeople').innerHTML = ''
 
@@ -1479,24 +1513,30 @@
 
 		})
 
-		socket.on(username, (x) => {
+		/*
+
+		socket.on('sent', (sender,who) => {
 			socket.emit('logedin', username)
-			infoClick(x)
+
+				infoClick(sender)
+				roomThing(sender)
+			
 		})
+		*/
 
 		socket.on('message', x => {
-			console.log( [username,x] )
+			//console.log( [username,x] )
 			socket.emit('logedin', username)
 			message(x)
 		})
 
-		socket.on('persistence', x => {
+		
+		socket.on('persistence', (x) => {
 			chats.innerHTML = 'this is a message just for you'
-			console.log(x)
 			x.map(a => message(a))
 		})
+		
 	</script>
-
 
 </body>
 

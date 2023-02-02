@@ -1,4 +1,5 @@
-//npm install body-parser express express-session http path socket.io sqlite3 node-fetch@2
+//npm install body-parser express express-session http path socket.io sqlite3 node-fetch@2 crypto sequelize
+
 
 const {
   addNewuser,
@@ -7,7 +8,9 @@ const {
 
   addChats,
   recalChats,
-} = require("./sql.js");
+} = require("./database/sql.js");
+
+
 
 const {
   add_roomA,
@@ -31,13 +34,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "static")));
 
-app.use(
-  session({
-    secret: "secret",
-    resave: true,
-    saveUninitialized: true,
-  })
-);
+const sessionMiddleware = session({
+  secret: "secret",
+  resave: false,
+  saveUninitialized: true,
+});
+
+app.use(sessionMiddleware);
 
 // gets both pages as urls
 const login = "/accountPage.html";
@@ -73,7 +76,8 @@ app.post("/signup", function (request, response) {
       if (!params) {
         request.session.loggedin = true;
         request.session.ussername = ussername;
-        addNewuser(ussername, password).then(console.log);
+        request.session.password = password;
+        addNewuser(ussername, password).then();
 
         response.redirect("/home");
       } else {
@@ -128,6 +132,7 @@ app.post("/login", function (request, response) {
       if (params) {
         request.session.loggedin = true;
         request.session.ussername = ussername;
+        request.session.password = password;
 
         response.redirect("/home");
         response.end();
@@ -196,7 +201,6 @@ app.get("/home", function (request, response) {
         user: request.session.ussername,
       },
     };
-
     //response.sendFile(path.resolve(__dirname + login));
     response.sendFile(path.join(__dirname + chat), option);
 
@@ -242,19 +246,75 @@ String.prototype.replaceLast = function (old,thing) {
   return;
 }
 
+const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
+
+io.use(wrap(sessionMiddleware));
+
+
+io.use((socket, next) => {
+  const session = socket.request.session;
+  socket.session = session
+  validate(session.ussername, session.password).then(function(x){
+    if (session && session.loggedin && session.ussername && x ) {
+
+      //console.log('save')
+      next();
+    } else {
+      next(new Error("unauthorized"));
+    }
+  })
+  
+
+
+});
+
+
 // this block will run when the client connects
 io.on("connection", (socket) => {
+  let s = socket.request.session;  
+  
+
+  socket.use( (socket, next) => {
+    validate(s.ussername, s.password).then(function(x){
+      if (s && s.loggedin && s.ussername && x ) {    
+        next();
+      } else {
+        next(new Error("unauthorized"));
+      }
+    })
+  });
+
+  socket.on("error", (err) => {
+    console.log(err)
+    
+    if (err && err.message === "unauthorized") {
+      socket.disconnect();
+    }
+  });
+
+  
+
+  const session = socket.request.session;
+
+  
   socket.username = "";
   socket.chat_room = "";
 
-  socket.on("logedin", async function (user) {
+  socket.on("logedin", function (user) {
+//    console.log( `keyd: ${session.ussername} and username: ${user}`)
+
+     validate(user, s.password).then(async function (x){
+    if(!x && session.ussername != user){
+             console.log('fail!!!!!!!')
+
+socket.disconnect();
+    }else{
     add_memberA(user);
     socket.username = user;
 
     var c = await getAll();
 
     totalUsers = c.map((x) => x.username);
-    //.difference
 
     // a is the not loged in usr
     let a = totalUsers.difference(getAllusersA());
@@ -267,6 +327,10 @@ io.on("connection", (socket) => {
 
     socket.broadcast.emit("people", t);
     socket.emit("people", t);
+    }
+     })
+
+
   });
 
   socket.on("logedout", async function (user) {
@@ -322,7 +386,7 @@ io.on("connection", (socket) => {
     socket.broadcast.emit(other, socket.username);
 
     addChats(socket.username, message, socket.chat_room).then((time) => {
-      console.log(  {name: socket.username ,message: message, time: time} )
+      //console.log(  {name: socket.username ,message: message, time: time} )
       io.to(socket.chat_room).emit("message", {name: socket.username ,message: message, time: time} );
     });
   });
