@@ -1437,7 +1437,9 @@ socket.on('error',function(message,type){
 
 			pil.addEventListener('click', function (a) {
 				if (a.target.tagName !== 'path') {
-					roomThing(room, pil)
+					roomThing(room)
+
+										
 				}
 			})
 
@@ -1454,15 +1456,14 @@ socket.on('error',function(message,type){
 
 		}
 		// joins each room wen you click the contact card. persetence is called
-		function roomThing(room, pil) {
+		function roomThing(room) {
 			let to = room
-
 
 			document.getElementsByClassName('roomNameId')[0].innerHTML = to ? 'room: '+to : 'room: ?'
 			
 			socket.array = [username, to]
 			socket.emit('room', socket.array)
-			socket.emit('persistence', socket.array, pil)
+			socket.emit('persistence', [username, to])
 
 		}
 
@@ -1532,9 +1533,13 @@ socket.on('error',function(message,type){
 
 		
 		socket.on('persistence', (x) => {
-			chats.innerHTML = 'this is a message just for you'
+				chats.innerHTML = 'this is a message just for you'
 			x.map(a => message(a))
+			
+			
 		})
+
+
 		
 	</script>
 

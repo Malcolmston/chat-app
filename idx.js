@@ -284,8 +284,6 @@ io.on("connection", (socket) => {
   socket.chat_room = "";
 
   socket.on("logedin", function (user) {
-    //    console.log( `keyd: ${session.ussername} and username: ${user}`)
-
     validate(user, s.password).then(async function (x) {
       if (!x && session.ussername != user) {
         console.log("fail!!!!!!!");
@@ -334,80 +332,83 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("peopleO", t);
   });
 
-  socket.on("persistence", function (a,pill) {
-    setTimeout(async function () {
+  socket.on("persistence", function (a) {
+    setTimeout(function () {
       validateRoomAndGroup(...a).then(async function (j) {
         if (j == undefined || j.length == 0) {
+          console.error(
+            "#1. there were no rooms with the serched peramerters. the room with the current peramerters will be created."
+          );
 
-          console.error("1 there were no rooms with the serched peramerters. the room with the current peramerters will be created.");
+          createRoomAndJoin(...a, true).then((x) => {
+                        setTimeout(async function () {
+              validateRoomAndGroup(...a).then(async function (j) {
+                x = j[0].room
+                
+                if (j == undefined || j.length == 0) {
+                  //socket.emit("persistence#1", []);
+                } else {
+                  //console.log(`room: ${x} `)
+                  add_roomA(...a);
+                  socket.join(x);
 
-          socket.emit("persistence", []);
-          socket.emit("error", 'please click the room one more time. it was created but it was not yet joined','room');
+                  socket.chat_room = x;
 
-          socket.chat_room = (await createRoomAndJoin(...a,true));
+                  console.log(j)
 
-          validateRoomAndGroup(...a).then(async function (j) {
-            if (j == undefined || j.length == 0) {
-  
-              console.error( "2 there were no rooms with the serched peramerters. the room with the current peramerters will be created.");
-
-              socket.emit("persistence", []);
-            } else {
-              recalChats(j[0].room).then(function (arr) {
-                socket.emit("persistence", arr);
+                  recalChats(x).then(function (arr) {
+                    
+                    socket.emit("persistence", arr);
+                  });
+                }
               });
-            }
+            }, 100);
           });
-          //socket.chat_room = await createRoomAndJoin(...a);
         } else {
-          recalChats(j[0].room).then(function (arr) {
-            socket.emit("persistence", arr);
+          createRoomAndJoin(...a).then((x) => {
+            validateRoomAndGroup(...a).then(async function (j) {
+              x = j[0].room
+                  //console.log(`room: ${x} `)
+            add_roomA(...a);
+            socket.join(x);
+
+            socket.chat_room = x;
+
+
+            recalChats(x).then(function (arr) {
+              socket.emit("persistence", arr);
+            });
+            })
+        
           });
         }
       });
     }, 100);
   });
   //s.room
-
+/*
   socket.on("room", async (room) => {
-    let j = socket.chat_room;
+      // socket.chat_room = await createRoomAndJoin(...room);
+      let j = socket.chat_room;
 
-    if (j == undefined || j.trim().length == 0) {
-      let r = await createRoomAndJoin(...room);
+      if (j == undefined || j.trim().length == 0) {
+        let r = await createRoomAndJoin(...room);
 
-     //console.log(r);
-      socket.chat_room = r;
-      j = socket.chat_room;
-    }
+        //console.log(r);
+        socket.chat_room = r;
+        j = socket.chat_room;
+      }
+      
+      add_roomA(...room);
 
-    add_roomA(...room);
+      console.log(`room: ${j} `)
 
-    socket.join(j);
-
-    /*
-    //addRoom(room[0], room[1]).then(function (j) {
-      findRoom(...room).then(function (j) {
-        j = j
       socket.join(j);
-
-      socket.chat_room = j;
-    }).catch(function (e){console.error})
-    */
   });
+  */
 
   socket.on("message", async (message, who) => {
-    // let other = socket.chat_room.replace(socket.username, "");
-    //socket.broadcast.emit(other, `a message was sent from ${socket.username}`);
-    let other = socket.chat_room;
-
-    if (other == undefined || other.length == 0) {
-      socket.chat_room = await createRoomAndJoin(...who);
-      other = socket.chat_room;
-    }
-
-    // socket.broadcast.emit('sent',  socket.username, who );
-
-    addChats(socket.username, message, other).then((time) => {
+    addChats(socket.username, message,socket.chat_room).then((time) => {
       //console.log(  {name: socket.username ,message: message, time: time} )
       io.to(socket.chat_room).emit("message", {
         name: socket.username,
