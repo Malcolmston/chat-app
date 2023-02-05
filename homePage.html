@@ -1392,6 +1392,7 @@ socket.on('error',function(message,type){
 })
 
 		socket.emit('logedin', username)
+		socket.username = username
 		// logs the messages fpr you
 		function message(m) {
 			if( typeof m == 'string') {
@@ -1514,18 +1515,17 @@ socket.on('error',function(message,type){
 
 		})
 
-		/*
-
-		socket.on('sent', (sender,who) => {
-			socket.emit('logedin', username)
-
-				infoClick(sender)
-				roomThing(sender)
-			
+		socket.on('sent', function (x,all){
+			if(all.includes(socket.username)){
+				socket.emit('logedin', username)
+				infoClick(x)
+				roomThing( x )
+			}
 		})
-		*/
 
-		socket.on('message', x => {
+
+		socket.on('message', (x,who) => {
+			socket.room = x.room
 			//console.log( [username,x] )
 			socket.emit('logedin', username)
 			message(x)

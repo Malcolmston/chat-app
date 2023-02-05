@@ -343,18 +343,18 @@ io.on("connection", (socket) => {
           createRoomAndJoin(...a, true).then((x) => {
                         setTimeout(async function () {
               validateRoomAndGroup(...a).then(async function (j) {
-                x = j[0].room
-                
                 if (j == undefined || j.length == 0) {
                   //socket.emit("persistence#1", []);
                 } else {
+                  x = j[0].room
+
                   //console.log(`room: ${x} `)
                   add_roomA(...a);
                   socket.join(x);
 
                   socket.chat_room = x;
 
-                  console.log(j)
+                  //console.log(j)
 
                   recalChats(x).then(function (arr) {
                     
@@ -406,16 +406,32 @@ io.on("connection", (socket) => {
       socket.join(j);
   });
   */
+  socket.on(socket.chat_room,  (room) => {
+    socket.broadcast.emit('sent', room)
+  })
 
   socket.on("message", async (message, who) => {
+    let ids = await io.to(socket.chat_room).allSockets();
+
+   // Array.from(ids).includes()
+
     addChats(socket.username, message,socket.chat_room).then((time) => {
       //console.log(  {name: socket.username ,message: message, time: time} )
       io.to(socket.chat_room).emit("message", {
+        room: socket.chat_room,
         name: socket.username,
         message: message,
         time: time,
-      });
+      }, who);
+
+      //console.log(  socket.id , Array.from(ids).includes(socket.id) )
+      socket.broadcast.emit("sent", socket.username,  who)
+
+     // socket.broadcast.emit(socket.chat_room, who)
+
+      //socket.broadcast.emit( 'sent', who.filter(x => x != socket.username )[0] )
     });
+
   });
 });
 
