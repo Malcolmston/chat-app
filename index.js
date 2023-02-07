@@ -209,6 +209,15 @@ app.get('/css/login.css',function(req,res){
   res.sendFile(path.join(__dirname + '/css/login.css')); 
 });
 
+app.get('/html/css/chat.css',function(req,res){
+  res.sendFile(path.join(__dirname + '/html/css/chat.css')); 
+});
+
+app.get('/html/css/nav.css',function(req,res){
+  res.sendFile(path.join(__dirname + '/html/css/nav.css')); 
+});
+
+
 
 app.get('/js/markdown.js',function(req,res){
   res.sendFile(path.join(__dirname + '/js/markdown.js')); 
@@ -224,6 +233,18 @@ app.get('/js/welcolm.js',function(req,res){
 
 app.get('/js/login.js',function(req,res){
   res.sendFile(path.join(__dirname + '/js/login.js')); 
+});
+
+app.get('/html/js/nav.js',function(req,res){
+  res.sendFile(path.join(__dirname + '/html/js/nav.js')); 
+});
+
+app.get('/html/js/pill.js',function(req,res){
+  res.sendFile(path.join(__dirname + '/html/js/pill.js')); 
+});
+
+app.get('/html/js/slides.js',function(req,res){
+  res.sendFile(path.join(__dirname + '/html/js/slides.js')); 
 });
 
 
@@ -534,3 +555,4 @@ io.on("connection", (socket) => {
 });
 
 //http://localhost:3000/
+
