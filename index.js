@@ -46,7 +46,6 @@ app.use(sessionMiddleware);
 // gets both pages as urls
 const login = "/accountPage.html";
 const chat = "/homePage.html";
-const iframe = "/iframe.html";
 // gets the port
 const port = process.env.PORT || 3000;
 
@@ -198,10 +197,40 @@ app.post("/logout", function (request, response) {
 
 
 //sets the inside of the iframe to the iframe.html 
-app.get("/iframe.html",function (request, response) {
-  //response.writeHead(401, { "content-type": "text/html" });
-  response.sendFile(path.resolve(__dirname + iframe));
-})
+app.get("/html/iframe.html",function(req,res){
+  res.sendFile(path.join(__dirname + '/html/iframe.html')); 
+});
+
+app.get('/css/app.css',function(req,res){
+  res.sendFile(path.join(__dirname + '/css/app.css')); 
+});
+
+app.get('/css/login.css',function(req,res){
+  res.sendFile(path.join(__dirname + '/css/login.css')); 
+});
+
+
+app.get('/js/markdown.js',function(req,res){
+  res.sendFile(path.join(__dirname + '/js/markdown.js')); 
+});
+
+app.get('/js/socket.js',function(req,res){
+  res.sendFile(path.join(__dirname + '/js/socket.js')); 
+});
+
+app.get('/js/welcolm.js',function(req,res){
+  res.sendFile(path.join(__dirname + '/js/welcolm.js')); 
+});
+
+app.get('/js/login.js',function(req,res){
+  res.sendFile(path.join(__dirname + '/js/login.js')); 
+});
+
+
+app.get('/README.md',function(req,res){
+  res.sendFile(path.join(__dirname + '/README.md')); 
+});
+
 
 // sends the user to the home page
 app.get("/home", function (request, response) {
