@@ -343,6 +343,40 @@ async function addUser(username, password) {
   }
 }
 
+async function removeUser(username, password) {
+  let r = await validate(username, password)
+
+  if(r){
+    let e = await Users.destroy({
+      where: {
+        [Op.and]: [{ username: username }, { password: hide(password) }],
+      }
+  });
+
+  return e
+  }else{
+    return false 
+  }
+}
+
+async function updateUser(o_username, o_password, n_username, n_password) {
+  if(r){
+    let e = await User.update({ username: n_username, password: n_password }, {
+    where: {
+      username: o_username,
+      password: o_password
+    }
+  });
+
+  return e
+}else{
+  return false
+}
+
+}
+
+
+
 async function getUser(username) {
   let user = await Users.findOne({ where: { username: username } });
 
@@ -477,6 +511,9 @@ function isEqual(a, b) {
 })();
 
 module.exports = {
+  removeUser,
+  updateUser,
+
   generateString,
   addUser,
   getUser,
