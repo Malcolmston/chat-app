@@ -205,17 +205,8 @@ function roomThing(room) {
     socket.array = [username, to]
     socket.emit('room', socket.array)
     socket.emit('persistence', [username, to])
-
 }
 
-function removeUser() {
-Cookies.remove('username')
-Cookies.remove('password')
-
-
-//localStorage.removeItem("username");
-//localStorage.removeItem("password");
-}
 // Get the input field
 var input = document.querySelector(".messageBar"),
     chats = document.querySelector(".chat"),
@@ -223,7 +214,7 @@ var input = document.querySelector(".messageBar"),
     send = document.querySelector('.send');
 
 
-send.addEventListener('click', function () {
+send.addEventListener('click', function (event) {
     event.preventDefault();
     if (input.value == "" || input.value.trim() == "") return;
     //socket.emit('message', username + ":  " + input.value.replaceAll('\n', '<br>') + ": " + getDay());
@@ -235,7 +226,6 @@ send.addEventListener('click', function () {
 home.forEach(function (element) {
     element.addEventListener('click', function (event) {
         socket.emit('logedout', username)
-        removeUser()
         document.querySelector('#home').submit()
     })
 })

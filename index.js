@@ -10,7 +10,7 @@ const {
   validateRoomAndGroup,
 
   removeUser,
-  updateUser
+  updateUser,
 } = require("./sequelize.js");
 
 const {
@@ -19,6 +19,8 @@ const {
   getAllusersA,
   remove_memberA,
 } = require("./place.js");
+
+const { v1: uuidv1, v4: uuidv4 } = require("uuid");
 
 var bodyParser = require("body-parser"),
   express = require("express"),
@@ -33,8 +35,11 @@ var bodyParser = require("body-parser"),
   io = socket(http);
 
 const sessionMiddleware = session({
+  genid: function (req) {
+    return uuidv4(); // use UUIDs for session IDs
+  },
   secret: "secret",
-  resave: false,
+  resave: true,
   saveUninitialized: true,
 });
 
@@ -74,11 +79,11 @@ app.post("/signup", function (request, response) {
 
   // makes sure the input fields exists and are not empty
   if (ussername && password) {
-    validate(ussername, password).then(function (params) {
+    validate(ussername, false, "or").then(function (params) {
       if (!params) {
         request.session.loggedin = true;
         request.session.ussername = ussername;
-        request.session.password = password;
+        //request.session.password = password;
         addUser(ussername, password).then(function (e) {
           request.session.room = e;
         });
@@ -136,7 +141,7 @@ app.post("/login", function (request, response) {
       if (params) {
         request.session.loggedin = true;
         request.session.ussername = ussername;
-        request.session.password = password;
+        // request.session.password = password;
 
         response.redirect("/home");
         response.end();
@@ -195,63 +200,58 @@ app.post("/logout", function (request, response) {
   response.redirect("/");
 });
 
-
-//sets the inside of the iframe to the iframe.html 
-app.get("/html/iframe.html",function(req,res){
-  res.sendFile(path.join(__dirname + '/html/iframe.html')); 
+//sets the inside of the iframe to the iframe.html
+app.get("/html/iframe.html", function (req, res) {
+  res.sendFile(path.join(__dirname + "/html/iframe.html"));
 });
 
-app.get('/css/app.css',function(req,res){
-  res.sendFile(path.join(__dirname + '/css/app.css')); 
+app.get("/css/app.css", function (req, res) {
+  res.sendFile(path.join(__dirname + "/css/app.css"));
 });
 
-app.get('/css/login.css',function(req,res){
-  res.sendFile(path.join(__dirname + '/css/login.css')); 
+app.get("/css/login.css", function (req, res) {
+  res.sendFile(path.join(__dirname + "/css/login.css"));
 });
 
-app.get('/html/css/chat.css',function(req,res){
-  res.sendFile(path.join(__dirname + '/html/css/chat.css')); 
+app.get("/html/css/chat.css", function (req, res) {
+  res.sendFile(path.join(__dirname + "/html/css/chat.css"));
 });
 
-app.get('/html/css/nav.css',function(req,res){
-  res.sendFile(path.join(__dirname + '/html/css/nav.css')); 
+app.get("/html/css/nav.css", function (req, res) {
+  res.sendFile(path.join(__dirname + "/html/css/nav.css"));
 });
 
-
-
-app.get('/js/markdown.js',function(req,res){
-  res.sendFile(path.join(__dirname + '/js/markdown.js')); 
+app.get("/js/markdown.js", function (req, res) {
+  res.sendFile(path.join(__dirname + "/js/markdown.js"));
 });
 
-app.get('/js/socket.js',function(req,res){
-  res.sendFile(path.join(__dirname + '/js/socket.js')); 
+app.get("/js/socket.js", function (req, res) {
+  res.sendFile(path.join(__dirname + "/js/socket.js"));
 });
 
-app.get('/js/welcolm.js',function(req,res){
-  res.sendFile(path.join(__dirname + '/js/welcolm.js')); 
+app.get("/js/welcolm.js", function (req, res) {
+  res.sendFile(path.join(__dirname + "/js/welcolm.js"));
 });
 
-app.get('/js/login.js',function(req,res){
-  res.sendFile(path.join(__dirname + '/js/login.js')); 
+app.get("/js/login.js", function (req, res) {
+  res.sendFile(path.join(__dirname + "/js/login.js"));
 });
 
-app.get('/html/js/nav.js',function(req,res){
-  res.sendFile(path.join(__dirname + '/html/js/nav.js')); 
+app.get("/html/js/nav.js", function (req, res) {
+  res.sendFile(path.join(__dirname + "/html/js/nav.js"));
 });
 
-app.get('/html/js/pill.js',function(req,res){
-  res.sendFile(path.join(__dirname + '/html/js/pill.js')); 
+app.get("/html/js/pill.js", function (req, res) {
+  res.sendFile(path.join(__dirname + "/html/js/pill.js"));
 });
 
-app.get('/html/js/slides.js',function(req,res){
-  res.sendFile(path.join(__dirname + '/html/js/slides.js')); 
+app.get("/html/js/slides.js", function (req, res) {
+  res.sendFile(path.join(__dirname + "/html/js/slides.js"));
 });
 
-
-app.get('/README.md',function(req,res){
-  res.sendFile(path.join(__dirname + '/README.md')); 
+app.get("/README.md", function (req, res) {
+  res.sendFile(path.join(__dirname + "/README.md"));
 });
-
 
 // sends the user to the home page
 app.get("/home", function (request, response) {
@@ -291,64 +291,60 @@ app.get("/home", function (request, response) {
   //response.end();
 });
 
-app.post('/api/table', async function(request, response){
+app.post("/api/table", async function (request, response) {
   let r = request.body.table;
-let a = await getAll(r)
+  let a = await getAll(r);
 
   response.json({
     data: a,
-    table: r
-  })
-})
+    table: r,
+  });
+});
 
+app.post("/api/account/remove", function (request, response) {
+  let body = request.body;
 
-app.post('/api/account/remove', function(request, response){
-  let body  = request.body
-
-  removeUser(body.username,  body.password).then(function(e){
+  removeUser(body.username, body.password).then(function (e) {
     response.json({
       username: body.username,
       password: body.password,
-      res: e
-      })
-  })
- 
-})
+      res: e,
+    });
+  });
+});
 
-app.post('/api/account/change', function(request, response){
-  let body  = request.body
+app.post("/api/account/change", function (request, response) {
+  let body = request.body;
 
-  updateUser()
+  updateUser();
   response.json({
     old: {
-    o_username: body.curr_username,
-    o_password: body.curr_password
+      o_username: body.curr_username,
+      o_password: body.curr_password,
     },
     new: {
       n_username: body.new_username,
-      n_password: body.new_password
-    }
+      n_password: body.new_password,
+    },
+  });
+});
 
-  })
-})
+app.post("/api/account/validate", function (request, response) {
+  // gets the input fields
+  let ussername = request.body.ussername;
+  let password = request.body.password;
 
-app.post('/api/account/validate',function(request, response){
- // gets the input fields
- let ussername = request.body.ussername;
- let password = request.body.password;
-
- // makes sure the input fields exists and are not empty
- if (ussername && password) {
-   validate(ussername, password).then(function (params) {
-    response.json({
-      username: body.username,
-      password: body.password,
-      valid: params
-      })
-   })
+  // makes sure the input fields exists and are not empty
+  if (ussername && password) {
+    validate(ussername, password).then(function (params) {
+      response.json({
+        username: body.username,
+        password: body.password,
+        valid: params,
+      });
+    });
   }
-})
-
+});
 
 /* 
 gets the server as from http 
@@ -460,12 +456,12 @@ io.on("connection", (socket) => {
           );
 
           createRoomAndJoin(...a, true).then((x) => {
-                        setTimeout(async function () {
+            setTimeout(async function () {
               validateRoomAndGroup(...a).then(async function (j) {
                 if (j == undefined || j.length == 0) {
                   //socket.emit("persistence#1", []);
                 } else {
-                  x = j[0].room
+                  x = j[0].room;
 
                   //console.log(`room: ${x} `)
                   add_roomA(...a);
@@ -476,7 +472,6 @@ io.on("connection", (socket) => {
                   //console.log(j)
 
                   recalChats(x).then(function (arr) {
-                    
                     socket.emit("persistence", arr);
                   });
                 }
@@ -486,26 +481,24 @@ io.on("connection", (socket) => {
         } else {
           createRoomAndJoin(...a).then((x) => {
             validateRoomAndGroup(...a).then(async function (j) {
-              x = j[0].room
-                  //console.log(`room: ${x} `)
-            add_roomA(...a);
-            socket.join(x);
+              x = j[0].room;
+              //console.log(`room: ${x} `)
+              add_roomA(...a);
+              socket.join(x);
 
-            socket.chat_room = x;
+              socket.chat_room = x;
 
-
-            recalChats(x).then(function (arr) {
-              socket.emit("persistence", arr);
+              recalChats(x).then(function (arr) {
+                socket.emit("persistence", arr);
+              });
             });
-            })
-        
           });
         }
       });
     }, 100);
   });
   //s.room
-/*
+  /*
   socket.on("room", async (room) => {
       // socket.chat_room = await createRoomAndJoin(...room);
       let j = socket.chat_room;
@@ -525,34 +518,36 @@ io.on("connection", (socket) => {
       socket.join(j);
   });
   */
-  socket.on(socket.chat_room,  (room) => {
-    socket.broadcast.emit('sent', room)
-  })
+  socket.on(socket.chat_room, (room) => {
+    socket.broadcast.emit("sent", room);
+  });
 
   socket.on("message", async (message, who) => {
     let ids = await io.to(socket.chat_room).allSockets();
 
-   // Array.from(ids).includes()
+    // Array.from(ids).includes()
 
-    addChats(socket.username, message,socket.chat_room).then((time) => {
+    addChats(socket.username, message, socket.chat_room).then((time) => {
       //console.log(  {name: socket.username ,message: message, time: time} )
-      io.to(socket.chat_room).emit("message", {
-        room: socket.chat_room,
-        name: socket.username,
-        message: message,
-        time: time,
-      }, who);
+      io.to(socket.chat_room).emit(
+        "message",
+        {
+          room: socket.chat_room,
+          name: socket.username,
+          message: message,
+          time: time,
+        },
+        who
+      );
 
       //console.log(  socket.id , Array.from(ids).includes(socket.id) )
-      socket.broadcast.emit("sent", socket.username,  who)
+      socket.broadcast.emit("sent", socket.username, who);
 
-     // socket.broadcast.emit(socket.chat_room, who)
+      // socket.broadcast.emit(socket.chat_room, who)
 
       //socket.broadcast.emit( 'sent', who.filter(x => x != socket.username )[0] )
     });
-
   });
 });
 
 //http://localhost:3000/
-
