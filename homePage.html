@@ -1,166 +1,162 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Chat App</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="https://images.unsplash.com/photo-1666515878427-c0a045bf03c6?crop=entropy&cs=tinysrgb&fm=jpg&ixid=MnwzMjM4NDZ8MHwxfHJhbmRvbXx8fHx8fHx8fDE2Njg3NDQ4MjM&ixlib=rb-4.0.3&q=80"
+    />
+    <link rel="stylesheet" type="text/css" href="css/app.css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.3/animate.min.css"
+      rel="stylesheet"
+    />
+    <link href="https://www.w3schools.com/w3css/4/w3.css" rel="stylesheet" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="top nav">
+      <div class="itm inactive">
+        <i class="fa-duotone fa-question"></i> Question
+      </div>
+      <div class="itm active">
+        <i class="fa-duotone fa-house-user"></i> Home
+      </div>
+      <div class="itm inactive">
+        <i class="fa-duotone fa-comments"></i> Chat
+      </div>
+      <div class="itm inactive">
+        <i class="fa-sharp fa-solid fa-magnifying-glass"></i> Information
+      </div>
+    </div>
 
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title>Chat App</title>
+    <main class="Question">
+      <iframe id="myframe" src="/html/iframe.html"> </iframe>
+    </main>
 
+    <main class="Home">
+      <div class="bar">
+        <form id="home" action="/logout" method="post">
+          <i class="fa-solid fa-house"></i>
+          <a>Log out</a>
+        </form>
+        <canvas id="myCanvas" width="240" height="30">
+          Your browser does not support the canvas tag.
+        </canvas>
+      </div>
+    </main>
 
-	<link rel="icon" type="image/x-icon"
-		href="https://images.unsplash.com/photo-1666515878427-c0a045bf03c6?crop=entropy&cs=tinysrgb&fm=jpg&ixid=MnwzMjM4NDZ8MHwxfHJhbmRvbXx8fHx8fHx8fDE2Njg3NDQ4MjM&ixlib=rb-4.0.3&q=80">
+    <main class="Chat">
+      <div id="myNav" class="overlay">
+        <div class="overlay-content">
+          <a href="#">Page is too small</a>
+        </div>
+      </div>
+      <div class="bar">
+        <form id="home" action="/logout" method="post">
+          <i class="fa-solid fa-house"></i>
+          <a>Log out</a>
+        </form>
+      </div>
+      <div class="flex-container">
+        <div class="inputs">
+          <p class="roomNameId" style="font-size: 18px">room: ?</p>
+          <ul class="chat"></ul>
+          <textarea
+            style="overflow: auto; resize: none"
+            class="messageBar"
+            rows="10"
+            cols="40"
+          ></textarea>
+          <button class="send">
+            <i class="fa-sharp fa-solid fa-paper-plane-top"></i>
+          </button>
+        </div>
+        <div class="table">
+          <table id="allContentPeople"></table>
+        </div>
+      </div>
+    </main>
 
-		<link rel="stylesheet" type="text/css" href="css/app.css"/>
-
-
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.3/animate.min.css" rel="stylesheet">
-	<link href="https://www.w3schools.com/w3css/4/w3.css" rel="stylesheet">
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet">
-
-
-
-</head>
-
-
-
-<body>
-
-	<div class='top nav'>
-		<div class='itm inactive'> <i class="fa-duotone fa-question"></i> Question</div>
-		<div class='itm active'><i class="fa-duotone fa-house-user"></i> Home </div>
-		<div class='itm inactive'><i class="fa-duotone fa-comments"></i> Chat</div>
-		<div class='itm inactive'><i class="fa-sharp fa-solid fa-magnifying-glass"></i> Information</div>
-	</div>
-
-	<main class="Question">
-		<iframe id="myframe" src='/html/iframe.html'>
-	</iframe>
-
-	</main>
-
-	<main class="Home">
-		<div class='bar'>
-			<form id='home' action='/logout' method="post">
-				<i class="fa-solid fa-house"></i>
-				<a>Log out</a>
-			</form>
-			<canvas id="myCanvas" width="240" height="30">
-				Your browser does not support the canvas tag.
-			</canvas>
-	</main>
-
-	<main class="Chat">
-		<div id="myNav" class="overlay">
-			<div class="overlay-content">
-				<a href="#">Page is too small</a>
-			</div>
-		</div>
-		<div class='bar'>
-			<form id='home' action='/logout' method="post">
-				<i class="fa-solid fa-house"></i>
-				<a>Log out</a>
-			</form>
-		</div>
-		<div class="flex-container">
-			<div class="inputs">
-				<p class="roomNameId" style="font-size: 18px;">room: ?</p>
-				<ul class='chat'></ul>
-				<textarea style="overflow:auto;resize:none" class='messageBar' rows="10" cols="40"></textarea>
-				<button class="send"><i class="fa-sharp fa-solid fa-paper-plane-top"></i></button>
-			</div>
-			<div class="table">
-				<table id="allContentPeople">
-				</table>
-			</div>
-		</div>
-	</main>
-
-	<main class="Information"></main>
-
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-	<script src="https://kit.fontawesome.com/fd76b8450f.js" crossorigin="anonymous"></script>
-	<script src='https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js'></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-	<script src="/socket.io/socket.io.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/mouse0270-bootstrap-notify/3.1.5/bootstrap-notify.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
+    <main class="Information"></main>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script
+      src="https://kit.fontawesome.com/fd76b8450f.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mouse0270-bootstrap-notify/3.1.5/bootstrap-notify.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+    <script src="/js/welcolm.js"></script>
+    <script src="/js/markdown.js"></script>
+    <script src="/js/socket.js"></script>
+    <script>
+      document.querySelectorAll("main").forEach((item) => {
+        item.style.display = "none";
+      });
 
-	<script src="/js/welcolm.js"></script>
-	<script src="/js/markdown.js"></script>
-	<script src="/js/socket.js"></script>
+      document.querySelector(".Home").style.display = "block";
 
-	<script>
-document.querySelectorAll('main').forEach(item => {
-			item.style.display = "none"
-		})
+      welcolm(username);
 
-		document.querySelector('.Home').style.display = 'block'
+      //
+      var o = ["Question", "Home", "Chat", "Information"];
 
-		welcolm(username)
+      document.querySelectorAll(".itm").forEach((item) => {
+        item.addEventListener("click", function () {
+          let clicked = this.innerText.trim();
 
+          document.querySelectorAll(".itm").forEach(function (x) {
+            if (x.innerText.trim() == clicked) {
+              x.classList.replace("inactive", "active");
+            } else {
+              x.classList.replace("active", "inactive");
+            }
+          });
 
-		//
-		var o = ['Question','Home', 'Chat', 'Information']
+          document.querySelectorAll("main").forEach((item) => {
+            if (item.className == this.innerText.trim()) {
+              item.style.display = "block";
+            } else {
+              item.style.display = "none";
+            }
+          });
 
-		document.querySelectorAll('.itm').forEach(item => {
-			item.addEventListener('click', function () {
-
-				let clicked = this.innerText.trim()
-
-
-				document.querySelectorAll('.itm').forEach(function (x) {
-					if (x.innerText.trim() == clicked) {
-						x.classList.replace('inactive', 'active')
-					} else {
-						x.classList.replace('active', 'inactive')
-					}
-
-
-				})
-
-
-
-				document.querySelectorAll('main').forEach(item => {
-					if (item.className == this.innerText.trim()) {
-						item.style.display = "block"
-					} else {
-						item.style.display = "none"
-					}
-				})
-
-				switch (this.innerText.trim()) {
-					case "Information":
-
-						getMarkdown().then((data) => {
-
-							document.querySelector('.Information').innerHTML = getMarkdownText(data)
-
-						}).catch((e) => {
-							console.error(e)
-							document.querySelector('.Information').innerHTML = 'failed! ' + e
-						})
-						break;
-					case "Chats":
-						break;
-					case "Home":
-						break;
-					case "How to":
-						break;
-					default:
-						break;
-				}
-
-			})
-
-		})
-
-
-	</script>
-
-
-</body>
-
+          switch (this.innerText.trim()) {
+            case "Information":
+              getMarkdown()
+                .then((data) => {
+                  document.querySelector(".Information").innerHTML =
+                    getMarkdownText(data);
+                })
+                .catch((e) => {
+                  console.error(e);
+                  document.querySelector(".Information").innerHTML =
+                    "failed! " + e;
+                });
+              break;
+            case "Chats":
+              break;
+            case "Home":
+              break;
+            case "How to":
+              break;
+            default:
+              break;
+          }
+        });
+      });
+    </script>
+  </body>
 </html>
