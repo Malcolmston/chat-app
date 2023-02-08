@@ -1,4 +1,5 @@
 var crypto = require("crypto");
+const readSecret = require("./secret.js").readSecret
 
 const sqlite3 = require("sqlite3");
 const { Sequelize, DataTypes, Op, QueryTypes } = require("sequelize");
@@ -35,7 +36,7 @@ function generateString(length) {
 }
 
 // Defining algorithm
-const algorithm = "aes-256-cbc";
+const algorithm = readSecret('algorithm')
 
 // Defining key
 const key = crypto.randomBytes(32);
@@ -46,7 +47,7 @@ const iv = crypto.randomBytes(16);
 //encripts string
 function hide(text) {
   // Creating Cipheriv with its parameter
-  let cipher = crypto.createCipheriv("aes-256-cbc", Buffer.from(key), iv);
+  let cipher = crypto.createCipheriv(algorithm, Buffer.from(key), iv);
 
   // Updating text
   let encrypted = cipher.update(text);

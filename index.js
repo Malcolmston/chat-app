@@ -20,6 +20,9 @@ const {
   remove_memberA,
 } = require("./place.js");
 
+const readSecret = require("./secret.js").readSecret
+
+
 const { v1: uuidv1, v4: uuidv4 } = require("uuid");
 
 var bodyParser = require("body-parser"),
@@ -34,11 +37,12 @@ var bodyParser = require("body-parser"),
   url = require("url"),
   io = socket(http);
 
+
 const sessionMiddleware = session({
   genid: function (req) {
     return uuidv4(); // use UUIDs for session IDs
   },
-  secret: "secret",
+  secret: readSecret('session'),
   resave: true,
   saveUninitialized: true,
 });
@@ -498,26 +502,7 @@ io.on("connection", (socket) => {
     }, 100);
   });
   //s.room
-  /*
-  socket.on("room", async (room) => {
-      // socket.chat_room = await createRoomAndJoin(...room);
-      let j = socket.chat_room;
 
-      if (j == undefined || j.trim().length == 0) {
-        let r = await createRoomAndJoin(...room);
-
-        //console.log(r);
-        socket.chat_room = r;
-        j = socket.chat_room;
-      }
-      
-      add_roomA(...room);
-
-      console.log(`room: ${j} `)
-
-      socket.join(j);
-  });
-  */
   socket.on(socket.chat_room, (room) => {
     socket.broadcast.emit("sent", room);
   });
