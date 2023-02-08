@@ -20,8 +20,7 @@ const {
   remove_memberA,
 } = require("./place.js");
 
-var session = require("./secret.js").session
-
+var secret = require("./secret.js")//.session
 
 const { v1: uuidv1, v4: uuidv4 } = require("uuid");
 
@@ -42,7 +41,7 @@ const sessionMiddleware = session({
   genid: function (req) {
     return uuidv4(); // use UUIDs for session IDs
   },
-  secret: session,
+  secret: secret.session,
   resave: true,
   saveUninitialized: true,
 });
@@ -83,7 +82,7 @@ app.post("/signup", function (request, response) {
 
   // makes sure the input fields exists and are not empty
   if (ussername && password) {
-    validate(ussername, false, "or").then(function (params) {
+    validate(ussername, false, 'or').then(function (params) {
       if (!params) {
         request.session.loggedin = true;
         request.session.ussername = ussername;
@@ -295,6 +294,7 @@ app.get("/home", function (request, response) {
   //response.end();
 });
 
+/*
 app.post("/api/table", async function (request, response) {
   let r = request.body.table;
   let a = await getAll(r);
@@ -349,6 +349,7 @@ app.post("/api/account/validate", function (request, response) {
     });
   }
 });
+*/
 
 /* 
 gets the server as from http 
@@ -367,8 +368,9 @@ io.use((socket, next) => {
   const session = socket.request.session;
   socket.session = session;
 
-  validate(session.ussername, session.password).then(function (x) {
-    if (session && session.loggedin && session.ussername && x) {
+  validate(session.ussername, false, 'or').then(function (x) {
+
+    if (session && session.loggedin && x) {
       next();
     } else {
       next(new Error("unauthorized"));
@@ -380,7 +382,8 @@ io.use((socket, next) => {
 io.on("connection", (socket) => {
   let s = socket.request.session;
   socket.use((socket, next) => {
-    validate(s.ussername, s.password).then(function (x) {
+    console.log(s.ussername)
+    validate(s.ussername, false, 'or').then(function (x) {
       if (s && s.loggedin && s.ussername && x) {
         next();
       } else {
@@ -390,12 +393,11 @@ io.on("connection", (socket) => {
   });
 
   socket.on("error", (err) => {
-    console.log(err);
-
     if (err && err.message === "unauthorized") {
       socket.disconnect();
     }
   });
+
 
   const session = socket.request.session;
 
@@ -403,7 +405,7 @@ io.on("connection", (socket) => {
   socket.chat_room = "";
 
   socket.on("logedin", function (user) {
-    validate(user, s.password).then(async function (x) {
+    validate(user, false, 'or').then(async function (x) {
       if (!x && session.ussername != user) {
         console.log("fail!!!!!!!");
 

@@ -1,5 +1,5 @@
 var crypto = require("crypto");
-const readSecret = require("./secret.js").readSecret
+const algorithm = require("./secret.js").algorithm
 
 const sqlite3 = require("sqlite3");
 const { Sequelize, DataTypes, Op, QueryTypes } = require("sequelize");
@@ -36,7 +36,6 @@ function generateString(length) {
 }
 
 // Defining algorithm
-const algorithm = readSecret('algorithm')
 
 // Defining key
 const key = crypto.randomBytes(32);
@@ -405,16 +404,33 @@ async function addUsertoRoom(room, ...user) {
   return all; //fetchedUsers;
 }
 
-async function validate(username, password) {
+async function validate(username, password, s='and') {
   //await sequelize.sync({ force: true });
+let res;
 
-  let res = await Users.findOne({
-    where: {
-      [Op.and]: [{ username: username }, { password: hide(password) }],
-    },
-  });
+  if( s=='and'){
+    res = await Users.findOne({
+      where: {
+        [Op.and]: [{ username: username }, { password: hide(password) }],
+      },
+    });
+    return res !== null;
+  }
+  if( s=='or'){
 
-  return res !== null;
+
+    res = await Users.findOne({
+      where: {
+         username: username
+      },
+    });
+
+
+    return res !== null;
+  }
+
+
+
 }
 
 //when a user sends a chat it is added to the database so theat perssitance works
