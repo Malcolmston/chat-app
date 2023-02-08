@@ -141,7 +141,7 @@ app.post("/login", function (request, response) {
 
   if (ussername && password) {
     validate(ussername, password).then(function (params) {
-      if (params) {
+      if (!params) {
         request.session.loggedin = true;
         request.session.ussername = ussername;
         // request.session.password = password;
