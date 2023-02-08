@@ -1,11 +1,6 @@
-var fs = require("fs");
+// these are the default make sure to change
 
+const session = 'secret'
+const algorithm = "aes-256-cbc"
 
-function readSecret(key){
-    let data = fs.readFileSync('.env.safe',{encoding:'utf8', flag:'r'})
-
-    return JSON.parse(data.toString())
-}
-module.exports = {
-	readSecret
-};
+module.exports = { session, algorithm}
