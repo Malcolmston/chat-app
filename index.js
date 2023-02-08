@@ -20,7 +20,7 @@ const {
   remove_memberA,
 } = require("./place.js");
 
-const readSecret = require("./secret.js").readSecret
+var session = require("./secret.js").session
 
 
 const { v1: uuidv1, v4: uuidv4 } = require("uuid");
@@ -42,7 +42,7 @@ const sessionMiddleware = session({
   genid: function (req) {
     return uuidv4(); // use UUIDs for session IDs
   },
-  secret: readSecret('session'),
+  secret: session,
   resave: true,
   saveUninitialized: true,
 });
