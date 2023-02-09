@@ -405,31 +405,29 @@ async function addUsertoRoom(room, ...user) {
 }
 
 async function validate(username, password, s='and') {
+  if( s == 'and' && (!username && !password)) return;
+  if( s == 'or' && (!username)) return;
   //await sequelize.sync({ force: true });
 let res;
 
-  if( s=='and'){
+switch (s){
+  case 'and':
     res = await Users.findOne({
       where: {
-        [Op.and]: [{ username: username }, { password: hide(password) }],
-      },
+        [Op.and]: [{ username: username }, { password: hide(password) }]
+      }
     });
     return res !== null;
-  }
-  if( s=='or'){
 
-
+  case 'or':
     res = await Users.findOne({
       where: {
          username: username
       },
     });
 
-
     return res !== null;
   }
-
-
 
 }
 
