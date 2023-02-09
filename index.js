@@ -23,6 +23,7 @@ const {
 var secret = require("./secret.js")//.session
 
 const { v1: uuidv1, v4: uuidv4 } = require("uuid");
+const cors = require('cors');
 
 var bodyParser = require("body-parser"),
   express = require("express"),
@@ -50,6 +51,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "static")));
 app.use(sessionMiddleware);
+app.use(cors({
+  origin: '*'
+}));
+
 
 // gets both pages as urls
 const login = "/accountPage.html";
@@ -141,7 +146,8 @@ app.post("/login", function (request, response) {
 
   if (ussername && password) {
     validate(ussername, password).then(function (params) {
-      if (!params) {
+      console.log( ) 
+      if (params) {
         request.session.loggedin = true;
         request.session.ussername = ussername;
         // request.session.password = password;
@@ -331,25 +337,31 @@ app.post("/api/account/change", function (request, response) {
       n_password: body.new_password,
     },
   });
-});
+})
+*/
 
 app.post("/api/account/validate", function (request, response) {
   // gets the input fields
-  let ussername = request.body.ussername;
+  let username = request.body.username;
   let password = request.body.password;
 
   // makes sure the input fields exists and are not empty
-  if (ussername && password) {
-    validate(ussername, password).then(function (params) {
+  if (username && password) {
+    validate(username, password).then(function (params) {
       response.json({
-        username: body.username,
-        password: body.password,
-        valid: params,
+        username: username,
+        password: hide(password),
+        // the validate checks if a account can be created. the ! checks if the account is already is created
+        valid: !params,
       });
+    });
+  }else{
+    response.json({
+      error: 'Invalid username or password'
     });
   }
 });
-*/
+
 
 /* 
 gets the server as from http 
