@@ -64,6 +64,12 @@
           <i class="fa-solid fa-house"></i>
           <a>Log out</a>
         </form>
+
+        <canvas id="myCanvas" width="240" height="30">
+          Your browser does not support the canvas tag.
+        </canvas>
+      
+        
       </div>
       <div class="flex-container">
         <div class="inputs">
@@ -109,6 +115,7 @@
       document.querySelector(".Home").style.display = "block";
 
       welcolm(username);
+      chatWelcolm(username)
 
       //
       var o = ["Question", "Home", "Chat", "Information"];
