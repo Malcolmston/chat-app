@@ -226,7 +226,7 @@ table {
 /*handles the nave bar size */
 .nav .itm {
     float: left;
-    width: calc(100%/4);
+    width: calc(100%/5);
     height: 40px;
 
     font-family: Raleway, sans-serif;

@@ -35,6 +35,9 @@
       <div class="itm inactive">
         <i class="fa-sharp fa-solid fa-magnifying-glass"></i> Information
       </div>
+      <div class="itm inactive">
+        <i class="fa-sharp fa-regular fa-gears"></i> Settings
+      </div>
     </div>
 
     <main class="Question">
@@ -92,6 +95,11 @@
     </main>
 
     <main class="Information"></main>
+
+
+    <main class="Settings"></main>
+
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script
       src="https://kit.fontawesome.com/fd76b8450f.js"
@@ -117,7 +125,7 @@
       chatWelcolm(username)
 
       //
-      var o = ["Question", "Home", "Chat", "Information"];
+      var o = ["Question", "Home", "Chat", "Information", "Settings"];
 
       document.querySelectorAll(".itm").forEach((item) => {
         item.addEventListener("click", function () {
@@ -157,6 +165,8 @@
             case "Home":
               break;
             case "How to":
+              break;
+            case "Settings":
               break;
             default:
               break;

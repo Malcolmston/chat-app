@@ -350,9 +350,7 @@ app.post("/api/account/validate", function (request, response) {
     validate(username, password).then(function (params) {
       response.json({
         username: username,
-        password: hide(password),
-        // the validate checks if a account can be created. the ! checks if the account is already is created
-        valid: !params,
+        valid: params,
       });
     });
   }else{
