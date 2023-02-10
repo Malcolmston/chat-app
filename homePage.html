@@ -97,7 +97,120 @@
     <main class="Information"></main>
 
 
-    <main class="Settings"></main>
+    <main class="Settings">
+
+     
+        <input type="text" id='username' class='username changeU' required/>
+        <br>
+        <input type="text" id='password' class='password changeP' required/>
+        <br>
+        <div id='form'> </div>
+        <input type="submit" id="submit"/>
+       
+
+        <script>
+          function validate (username, password){
+    return new Promise( (resolve, reject) => {
+           $.ajax({
+  type: "post",
+  url: "http://localhost:3000/api/account/validate",
+  data: {
+      username: username,
+      password: password
+  },
+  success: function(e){
+      resolve( e )
+  }
+    
+})
+    })
+  
+
+}
+
+
+function updateUsername (username, password, new_username){
+  return new Promise( (resolve, reject) => {
+           $.ajax({
+  type: "post",
+  url: "http://localhost:3000/api/account/change",
+  data: {
+    curr_username: username,
+    curr_password: password,
+    new_username: new_username
+  },
+  success: function(e){
+      resolve( e )
+  }
+    
+})
+    })
+}
+
+function reset(input){
+  usernameC.value = ''
+  passwordC.value = ''
+
+  usernameC.setAttribute("disabled", "false")
+    passwordC.setAttribute("disabled","false")
+
+    input.remove()
+
+
+
+}
+
+
+async function update(e){
+  let v = await validate(usernameC.value, passwordC.value)
+
+  if( v.valid ){
+    usernameC.setAttribute("disabled", "true")
+    passwordC.setAttribute("disabled","true")
+
+
+    let input = document.createElement("input")
+    input.setAttribute("type", "text")
+    input.setAttribute("class","newU")
+    input.setAttribute('placeholder', "Please enter a new username");
+ document.querySelector('#form').appendChild(input)
+
+ submit.removeEventListener('click',update)
+
+ input.addEventListener('keyup',function(e){
+  if( e.target.value.length > 0 && e.target.value.trim().length > 0 ){
+    submit.addEventListener("click",async function(){
+     let res = await updateUsername( usernameC.value, passwordC.value, input.value );
+
+     if(typeof res.transaction == "string"){
+alert( res.transaction );
+     }else{
+      alert( 'your username is now changed')
+
+     }
+     reset(input)
+})
+  } 
+  
+
+ })
+  }
+ }
+//const Username_form = document.querySelector('#change_username')
+
+ let usernameC = document.querySelector(".changeU")
+let passwordC = document.querySelector(".changeP")
+
+
+let submit = document.querySelector("#submit")
+
+submit.addEventListener("click",update)
+
+
+        </script>
+
+
+    </main>
 
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

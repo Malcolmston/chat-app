@@ -360,6 +360,31 @@ app.post("/api/account/validate", function (request, response) {
   }
 });
 
+app.post("/api/account/change", async function (request, response) {
+  let body = request.body;
+
+  let v = await validate( body.curr_username, body.curr_password)
+
+  if(v){
+    let r = await updateUser( body.curr_username, body.new_username);
+
+    response.json({
+      old: {
+        o_username: body.curr_username,
+        o_password: body.curr_password,
+      },
+      new: {
+        n_username: body.new_username,
+      },
+      transaction: r
+    });
+  }else{
+response.json({
+  error: 'the perameters that were enterd are invalid!'
+})
+  }
+ 
+})
 
 /* 
 gets the server as from http 

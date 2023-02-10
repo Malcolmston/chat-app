@@ -324,19 +324,24 @@ async function removeUser(username, password) {
   }
 }
 
-async function updateUser(o_username, o_password, n_username, n_password) {
-  if(r){
-    let e = await User.update({ username: n_username, password: n_password }, {
-    where: {
-      username: o_username,
-      password: o_password
-    }
-  });
+async function updateUser(o_username, n_username) {
+
+  const user = await Users.findOne({ where: { username: o_username } });
+
+if (user) {
+  user.username = n_username
+
+  let r = await user.save();
+
+  return r
+} else {
+  return ("User not found");
+}
+
+
 
   return e
-}else{
-  return false
-}
+
 
 }
 
@@ -384,6 +389,11 @@ async function addUsertoRoom(room, ...user) {
           [Op.and]: [{ username: username }],
         },
       });
+
+      if(res == null){
+        resolve(false);
+        return false;
+      }
   
       bcrypt.compare(password, res.password, function(err, result) {
         resolve(result);
