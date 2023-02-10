@@ -1,5 +1,4 @@
 var crypto = require("crypto");
-const algorithm = require("./secret.js").algorithm
 
 const sqlite3 = require("sqlite3");
 const { Sequelize, DataTypes, Op, QueryTypes } = require("sequelize");
@@ -36,6 +35,7 @@ function generateString(length) {
 }
 
 // Defining algorithm
+const algorithm = require("./secret.js").algorithm
 
 // Defining key
 const key = crypto.randomBytes(32);
@@ -45,18 +45,21 @@ const iv = crypto.randomBytes(16);
 
 //encripts string
 function hide(text) {
-  // Creating Cipheriv with its parameter
   let cipher = crypto.createCipheriv(algorithm, Buffer.from(key), iv);
-
-  // Updating text
   let encrypted = cipher.update(text);
-
-  // Using concatenation
   encrypted = Buffer.concat([encrypted, cipher.final()]);
-
-  // Returning iv and encrypted data
-  return encrypted.toString("hex");
+  return { iv: iv.toString('hex'), encryptedData: encrypted.toString('hex') };
 }
+
+function show(text) {
+  let iv = Buffer.from(text.iv, 'hex');
+  let encryptedText = Buffer.from(text.encryptedData, 'hex');
+  let decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(key), iv);
+  let decrypted = decipher.update(encryptedText);
+  decrypted = Buffer.concat([decrypted, decipher.final()]);
+  return decrypted.toString();
+}
+
 
 // crates the chats table
 const chats = sequelize.define(
@@ -96,15 +99,29 @@ const Users = sequelize.define("users", {
     allowNull: false,
     unique: true,
   },
+
   password: {
     type: DataTypes.TEXT,
     allowNull: false,
     unique: true,
+    
     set(value) {
       // stores the passwords not in plaintext
-      this.setDataValue("password", hide(value));
+      this.setDataValue("password", hide(value).encryptedData);
     },
   },
+  
+  pswIV: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+    unique: false,
+    
+    set(value) {
+      // stores the passwords not in plaintext
+      this.setDataValue("pswIV", hide(value).iv);
+    },
+  }
+  
 });
 
 const Rooms = sequelize.define("rooms", {
@@ -332,7 +349,7 @@ async function findRoom(...users) {
 async function addUser(username, password) {
   if (password) {
     let [user, a] = await Users.findOrCreate({
-      where: { username: username.toString(), password: password.toString() },
+      where: { username: username.toString(), password: password.toString(),  pswIV: password.toString() },
     });
 
     return user;
@@ -405,26 +422,32 @@ async function addUsertoRoom(room, ...user) {
 }
 
 async function validate(username, password, s='and') {
+
   if( s == 'and' && (!username && !password)) return;
   if( s == 'or' && (!username)) return;
   //await sequelize.sync({ force: true });
+
 let res;
 
-switch (s){
-  case 'and':
+  if( s=='and'){
     res = await Users.findOne({
       where: {
-        [Op.and]: [{ username: username }, { password: hide(password) }]
-      }
+        [Op.and]: [{ username: username }] //, { password: hide(password) }],
+      },
     });
-    return res !== null;
 
-  case 'or':
+    console.log( {encryptedData: res.password, iv: res.pswIV} )
+
+    return res !== null;
+  }
+  if( s=='or'){
+
     res = await Users.findOne({
       where: {
          username: username
       },
     });
+
 
     return res !== null;
   }
@@ -534,7 +557,8 @@ module.exports = {
   getUser,
   validate,
   getAll,
-
+  hide,
+  
   addChats,
   recalChats,
 

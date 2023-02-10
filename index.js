@@ -143,10 +143,10 @@ app.post("/login", function (request, response) {
   let ussername = request.body.ussername;
   let password = request.body.password;
   // makes sure the input fields exists and are not empty
-
   if (ussername && password) {
     validate(ussername, password).then(function (params) {
-      console.log( ) 
+      console.log(params)
+
       if (params) {
         request.session.loggedin = true;
         request.session.ussername = ussername;

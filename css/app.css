@@ -223,7 +223,7 @@ table {
     font-size: 35px;
 }
 
-
+/*handles the nave bar size */
 .nav .itm {
     float: left;
     width: calc(100%/4);
