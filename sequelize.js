@@ -1,4 +1,4 @@
-var crypto = require("crypto");
+const bcrypt = require('bcrypt');
 
 const sqlite3 = require("sqlite3");
 const { Sequelize, DataTypes, Op, QueryTypes } = require("sequelize");
@@ -33,31 +33,23 @@ function generateString(length) {
 
   return result;
 }
+//const {algorithm, key, iv } = require('./secret.js')
 
-// Defining algorithm
-const algorithm = require("./secret.js").algorithm
 
-// Defining key
-const key = crypto.randomBytes(32);
-
-// Defining iv
-const iv = crypto.randomBytes(16);
 
 //encripts string
 function hide(text) {
-  let cipher = crypto.createCipheriv(algorithm, Buffer.from(key), iv);
-  let encrypted = cipher.update(text);
-  encrypted = Buffer.concat([encrypted, cipher.final()]);
-  return { iv: iv.toString('hex'), encryptedData: encrypted.toString('hex') };
-}
+  return new Promise(function(resolve, reject) {
+    bcrypt.genSalt(10, function(err, salt) {
+      bcrypt.hash(text, salt, function(err, hash) {
+        if(err) return reject(err);
 
-function show(text) {
-  let iv = Buffer.from(text.iv, 'hex');
-  let encryptedText = Buffer.from(text.encryptedData, 'hex');
-  let decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(key), iv);
-  let decrypted = decipher.update(encryptedText);
-  decrypted = Buffer.concat([decrypted, decipher.final()]);
-  return decrypted.toString();
+          // Store hash in your password DB.
+          resolve(hash)
+      });
+  });
+  })
+ 
 }
 
 
@@ -103,23 +95,8 @@ const Users = sequelize.define("users", {
   password: {
     type: DataTypes.TEXT,
     allowNull: false,
-    unique: true,
-    
-    set(value) {
-      // stores the passwords not in plaintext
-      this.setDataValue("password", hide(value).encryptedData);
-    },
-  },
-  
-  pswIV: {
-    type: DataTypes.TEXT,
-    allowNull: false,
-    unique: false,
-    
-    set(value) {
-      // stores the passwords not in plaintext
-      this.setDataValue("pswIV", hide(value).iv);
-    },
+    unique: true
+
   }
   
 });
@@ -165,36 +142,6 @@ async function getAll(From = "users") {
   }
 }
 
-/*
-async function validateRoom(user) {
-  let result = await Users.findOne({
-    where: {
-      username: user,
-    },
-  });
-
-  let a = result.id;
-
-  //for(let i = 1, i<a[1], i++){
-  let host = await Host.findOne({
-    where: {
-      roomId: a,
-    },
-  });
-
-  let ab = await Rooms.findOne({
-    where: {
-      id: host ? host.userId : "",
-    },
-  });
-
-  try {
-    return ab.room;
-  } catch (e) {
-    return false;
-  }
-}
-*/
 
 Array.prototype.chunk = function (chunkSize) {
   var array = this;
@@ -348,8 +295,9 @@ async function findRoom(...users) {
 
 async function addUser(username, password) {
   if (password) {
+    let e = await hide(password.toString())
     let [user, a] = await Users.findOrCreate({
-      where: { username: username.toString(), password: password.toString(),  pswIV: password.toString() },
+      where: { username: username.toString(), password:  e},
     });
 
     return user;
@@ -421,36 +369,42 @@ async function addUsertoRoom(room, ...user) {
   return all; //fetchedUsers;
 }
 
-async function validate(username, password, s='and') {
-
-  if( s == 'and' && (!username && !password)) return;
-  if( s == 'or' && (!username)) return;
-  //await sequelize.sync({ force: true });
-
-let res;
-
-  if( s=='and'){
-    res = await Users.findOne({
-      where: {
-        [Op.and]: [{ username: username }] //, { password: hide(password) }],
-      },
+ function validate(username, password, s='and') {
+  return new Promise(async (resolve, reject) => {
+    if( s == 'and' && (!username && !password)) return;
+    if( s == 'or' && (!username)) return;
+    //await sequelize.sync({ force: true });
+  
+  let res;
+  
+    if( s=='and'){
+      let e = await hide(password)
+      res = await Users.findOne({
+        where: {
+          [Op.and]: [{ username: username }],
+        },
+      });
+  
+      bcrypt.compare(password, res.password, function(err, result) {
+        resolve(result);
+        // result == true
     });
+  
+      return res !== null;
+    }
+    if( s=='or'){
+  
+      res = await Users.findOne({
+        where: {
+           username: username
+        },
+      });
+  
+      resolve(res !== null );
+    }
+  })
 
-    console.log( {encryptedData: res.password, iv: res.pswIV} )
-
-    return res !== null;
-  }
-  if( s=='or'){
-
-    res = await Users.findOne({
-      where: {
-         username: username
-      },
-    });
-
-
-    return res !== null;
-  }
+ 
 
 }
 
