@@ -20,7 +20,7 @@ const sequelize = new Sequelize("uses", "", "", {
     min: 0,
     idle: 2000,
   },
-});
+}); 
 
 function generateString(length) {
   let characters =
