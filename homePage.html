@@ -188,6 +188,12 @@ async function update(e){
  input.addEventListener('keyup',function(e){
   if( e.target.value.length > 0 && e.target.value.trim().length > 0 ){
     submit.addEventListener("click",async function(){
+      if( usernameC.value == input.value){
+        alert( 'the new username is the same as the old one' );
+        reset()
+
+        window.location.reload();
+      }
      let res = await updateUsername( usernameC.value, passwordC.value, input.value );
      if(typeof res.error == "string"){
 alert( res.error );
