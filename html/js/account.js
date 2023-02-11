@@ -60,6 +60,7 @@ function reset(input) {
 }
 
 async function update(e) {
+    e.preventDefault(); 
   let v = await validate(usernameC.value, passwordC.value);
 
   if (v.valid) {
@@ -76,6 +77,7 @@ async function update(e) {
     submit.removeEventListener("click", update);
 
     input.addEventListener("keyup", function (e) {
+        e.preventDefault(); 
       if (e.target.value.length > 0 && e.target.value.trim().length > 0) {
         submit.addEventListener("click", async function () {
           if (usernameC.value == input.value) {

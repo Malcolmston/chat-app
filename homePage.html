@@ -209,7 +209,9 @@
  deleteU.value  = username
  
  
- button.addEventListener('click',function(){
+ button.addEventListener('click',function(event){
+  event.preventDefault(); 
+
    if(deleteU.value.trim().length < 0  && deleteP.value.trim().length ){
      alert('Please enter a valid username and password')
    }else{
