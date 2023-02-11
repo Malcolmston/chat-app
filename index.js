@@ -424,6 +424,16 @@ response.json({
  
 })
 
+app.post("/api/account/remove", function (request, response) {
+  let body = request.body;
+
+  removeUser(body.username, body.password).then(function (e) {
+    response.json({
+      res: e,
+    });
+  });
+});
+
 /* 
 gets the server as from http 
 use could use app.js socket.io http for listening to the server

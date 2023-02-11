@@ -309,19 +309,66 @@ async function addUser(username, password) {
 }
 
 async function removeUser(username, password) {
-  let r = await validate(username, password)
+ 
+  // get user id to get the number to delete from the forgen table
+let userID = await getUser(username)  
+userID = userID.id
 
-  if(r){
-    let e = await Users.destroy({
-      where: {
-        [Op.and]: [{ username: username }, { password: hide(password) }],
-      }
-  });
+//get all of the rooms seqences that you can join to delete
+let rooms = await Host.findAll({ where: { userId: userID } });
+//rooms.map(x => x.roomId)
+rooms = rooms.map(async function(x) {
+  let rooms = await Host.findAll({ 
+    where: { 
+    [Op.and]: [{userId: userID }, {roomId: x.roomId}]  
+    }
+   });
+   return rooms
+})
 
-  return e
-  }else{
-    return false 
+rooms =  (await Promise.all(rooms)).flat()
+
+// gets all the room codes that you have chatted with
+let codes = await Rooms.findAll({
+  where: {
+    id: {
+    [Op.or]: rooms.map(x => x.roomId)
+    }
   }
+
+})
+
+let canre = validate(username, password)
+
+if(!canre) return false;
+
+await chats.destroy({
+  where: {
+    room: {
+      [Op.or]: codes.map(x=>x.room)
+    }
+  }
+});
+
+await Rooms.destroy({
+  where: {
+    id: {
+    [Op.or]: rooms.map(x => x.roomId)
+    }
+  }
+
+})
+
+await Host.destroy({
+   where: { userId: userID } 
+});
+
+
+await Users.destroy({
+  where: { username: username } 
+});
+
+return true;
 }
 
 async function updateUser(o_username, n_username) {
@@ -510,6 +557,10 @@ function isEqual(a, b) {
 
 (async function () {
   await sequelize.sync({ force: false });
+
+
+
+
 })();
 
 module.exports = {

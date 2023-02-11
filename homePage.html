@@ -100,12 +100,20 @@
     <main class="Settings">
 
      
-        <input type="text" id='username' class='username changeU' required/>
+        <input type="text"  class='username changeU' required/>
         <br>
-        <input type="text" id='password' class='password changeP' required/>
+        <input type="text" class='password changeP' required/>
         <br>
         <div id='form'> </div>
         <input type="submit" id="submit"/>
+
+        <hr/>
+
+        <input type="text"  class='username deleteU' required/>
+        <br>
+        <input type="text" class='password deleteP' required/>
+        <br>
+        <input type="submit" id="submitD" value="delet my account"/>
        
 
         <script>
@@ -221,6 +229,53 @@ submit.addEventListener("click",update)
 
 
         </script>
+
+<script>
+      function deleteAccount (username, password){
+    return new Promise( (resolve, reject) => {
+           $.ajax({
+  type: "post",
+  url: "http://localhost:3000/api/account/remove",
+  data: {
+      username: username,
+      password: password
+  },
+  success: function(e){
+      resolve( e )
+  }
+    
+})
+    })
+  
+
+}
+
+  const deleteU = document.querySelector('.deleteU')
+  const deleteP = document.querySelector('.deleteP')
+const button = document.querySelector('#submitD')
+
+button.addEventListener('click',function(){
+  if(deleteU.value.trim().length < 0  && deleteP.value.trim().length ){
+    alert('Please enter a valid username and password')
+  }else{
+    let e = window.prompt('are you sure you want to delete this account? this is a permanant action. Type Delete to complete this action!')
+
+    if(e.trim() == 'Delete'){
+      deleteAccount( deleteU.value, deleteP.value ).then(function(e){
+        if(e.res){
+          document.querySelectorAll('#home')[0].click();
+        }else{
+          alert('there was a problem deleting this account')
+        }
+      })
+    }
+  }
+
+
+})
+
+</script>
+
 
 
     </main>
