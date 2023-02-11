@@ -109,6 +109,12 @@
        
 
         <script>
+
+ const usernameC = document.querySelector(".changeU")
+ const passwordC = document.querySelector(".changeP")
+ const submit = document.querySelector("#submit")
+
+
           function validate (username, password){
     return new Promise( (resolve, reject) => {
            $.ajax({
@@ -151,11 +157,12 @@ function reset(input){
   usernameC.value = ''
   passwordC.value = ''
 
-  usernameC.setAttribute("disabled", "false")
-    passwordC.setAttribute("disabled","false")
+  usernameC.removeAttribute("disabled")
+    passwordC.removeAttribute("disabled")
 
-    input.remove()
+    document.getElementById('hi212').remove()
 
+submit.addEventListener("click",update)
 
 
 }
@@ -173,6 +180,7 @@ async function update(e){
     input.setAttribute("type", "text")
     input.setAttribute("class","newU")
     input.setAttribute('placeholder', "Please enter a new username");
+    input.id = 'hi212'
  document.querySelector('#form').appendChild(input)
 
  submit.removeEventListener('click',update)
@@ -181,14 +189,19 @@ async function update(e){
   if( e.target.value.length > 0 && e.target.value.trim().length > 0 ){
     submit.addEventListener("click",async function(){
      let res = await updateUsername( usernameC.value, passwordC.value, input.value );
+     if(typeof res.error == "string"){
+alert( res.error );
 
-     if(typeof res.transaction == "string"){
-alert( res.transaction );
+    reset()
+
+    window.location.reload();
      }else{
       alert( 'your username is now changed')
 
+      //logout and re-login
+      window.location.reload();
      }
-     reset(input)
+    
 })
   } 
   
@@ -197,12 +210,6 @@ alert( res.transaction );
   }
  }
 //const Username_form = document.querySelector('#change_username')
-
- let usernameC = document.querySelector(".changeU")
-let passwordC = document.querySelector(".changeP")
-
-
-let submit = document.querySelector("#submit")
 
 submit.addEventListener("click",update)
 

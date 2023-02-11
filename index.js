@@ -364,9 +364,39 @@ app.post("/api/account/change", async function (request, response) {
   let body = request.body;
 
   let v = await validate( body.curr_username, body.curr_password)
+  let v1 = await validate( body.new_username, body.curr_password)
 
-  if(v){
+  console.log('valid: '+v1)
+
+  if(v && v1){
     let r = await updateUser( body.curr_username, body.new_username);
+
+    try {
+      remove_memberA(request.session.ussername);
+    } catch (e) {
+      console.log(e);
+    }
+  
+   // request.session.destroy();
+
+
+    request.session.loggedin = true;
+    request.session.ussername = body.new_username;
+    // request.session.password = password;
+
+        //next file
+    var option = {
+      headers: {
+        user: request.session.ussername,
+      },
+    };
+    //response.sendFile(path.resolve(__dirname + login));
+    response.sendFile(path.join(__dirname + chat), option);
+
+    // Output username
+    //response.send('Welcome back, ' + request.session.ussername + '!');
+
+/*
 
     response.json({
       old: {
@@ -378,10 +408,18 @@ app.post("/api/account/change", async function (request, response) {
       },
       transaction: r
     });
+    */
   }else{
+
+    if(!v){
 response.json({
   error: 'the perameters that were enterd are invalid!'
 })
+    }else if(!v1){
+      response.json({
+        error: 'the new username that you selected already exsits!'
+      })
+    }
   }
  
 })
