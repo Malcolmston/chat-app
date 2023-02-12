@@ -327,12 +327,22 @@ async function update(e) {
  deleteU.value  = username
  
  
- button.addEventListener('click',function(event){
+ button.addEventListener('click',async function(event){
   event.preventDefault(); 
 
-   if(deleteU.value.trim().length < 0  && deleteP.value.trim().length ){
-     alert('Please enter a valid username and password')
+  let v = await validate(deleteU.value, deleteP.value)
+ 
+  console.log( 
+    `
+     ${v.valid} == false 
+    `
+   )
+
+
+   if( v.valid === false && v.valid  !== undefined ){
+     alert('Please enter a valid password')
    }else{
+
      let e = window.prompt('are you sure you want to delete this account? this is a permanant action. Type Delete to complete this action!')
  
      if(e.trim() == 'Delete'){
