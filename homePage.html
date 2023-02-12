@@ -100,17 +100,19 @@
     <main class="Settings">
 
      
+     
         <input type="hidden"  class='username changeU' required/>
         <br>
+        <label for="username">Your password</label>
         <input type="text" class='password changeP' required/>
         <br>
         <div id='form'> </div>
         <input type="submit" id="submit"/>
-
         <hr/>
 
         <input type="hidden"  class='username deleteU' required/>
         <br>
+         <label for="username">Your password</label>
         <input type="text" class='password deleteP' required/>
         <br>
         <input type="submit" id="submitD" value="delet my account"/>
@@ -258,6 +260,7 @@ function reset(input) {
   passwordC.removeAttribute("disabled");
 
   document.getElementById("hi212").remove();
+  document.getElementById("label").remove();
 
   submit.addEventListener("click", update);
 }
@@ -266,48 +269,45 @@ async function update(e) {
     e.preventDefault(); 
   let v = await validate(usernameC.value, passwordC.value);
 
-  if (v.valid) {
+  if ( v.valid === true && v.valid  !== undefined  ) {
     usernameC.setAttribute("disabled", "true");
     passwordC.setAttribute("disabled", "true");
 
     let input = document.createElement("input");
+    let label = document.createElement("label");
+
     input.setAttribute("type", "text");
     input.setAttribute("class", "newU");
-    input.setAttribute("placeholder", "Please enter a new username");
     input.id = "hi212";
+
+    label.textContent = 'new username'
+    label.id='label'
+
+    document.querySelector("#form").appendChild(label);
     document.querySelector("#form").appendChild(input);
 
-    submit.removeEventListener("click", update);
+    
 
     input.addEventListener("keyup", function (e) {
         e.preventDefault(); 
       if (e.target.value.length > 0 && e.target.value.trim().length > 0) {
         submit.addEventListener("click", async function (e) {
-          e.preventDefault(); 
           if (usernameC.value == input.value) {
             
             alert("the new username is the same as the old one");
             reset();
-
-            window.location.reload();
           }
           let res = await updateUsername(
             usernameC.value,
             passwordC.value,
             input.value
           );
-          if (typeof res.error == "string") {
-            alert(res.error);
-
-            reset();
-
-            window.location.reload();
-          } else {
+          
             alert("your username is now changed");
 
             //logout and re-login
             window.location.reload();
-          }
+          
         });
       }
     });
@@ -332,11 +332,6 @@ async function update(e) {
 
   let v = await validate(deleteU.value, deleteP.value)
  
-  console.log( 
-    `
-     ${v.valid} == false 
-    `
-   )
 
 
    if( v.valid === false && v.valid  !== undefined ){
@@ -348,7 +343,10 @@ async function update(e) {
      if(e.trim() == 'Delete'){
        deleteAccount( deleteU.value, deleteP.value ).then(function(e){
          if(e.res){
-           document.querySelectorAll('#home')[0].click();
+        //  updateUsername(deleteU.value, deleteP.value, 'delete').then(function(e){
+            document.querySelectorAll('#home')[0].click();
+        //  })
+           
          }else{
            alert('there was a problem deleting this account')
          }

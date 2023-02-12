@@ -374,7 +374,7 @@ app.post("/api/account/change", async function (request, response) {
   let v = await validate(body.curr_username, body.curr_password);
   let v1 = await validate(body.new_username, body.curr_password);
 
-  if (v && v1) {
+  if (v && !v1) {
     let r = await updateUser(body.curr_username, body.new_username);
 
     try {
@@ -419,7 +419,7 @@ app.post("/api/account/change", async function (request, response) {
       response.json({
         error: "the perameters that were enterd are invalid!",
       });
-    } else if (!v1) {
+    } else if (v1) {
       response.json({
         error: "the new username that you selected already exsits!",
       });
@@ -533,7 +533,7 @@ io.on("connection", (socket) => {
 
     let t = a.concat(b);
 
-    socket.broadcast.emit("peopleO", t);
+    socket.broadcast.emit("people", t);
   });
 
   socket.on("persistence", function (a) {
