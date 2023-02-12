@@ -114,7 +114,7 @@
         <input type="text" class='password deleteP' required/>
         <br>
         <input type="submit" id="submitD" value="delet my account"/>
-       
+
 
 
 
@@ -136,8 +136,8 @@
     <script src="/js/welcolm.js"></script>
     <script src="/js/markdown.js"></script>
     <script src="/js/socket.js"></script>
-    <script src="/js/account.js"></script>
     <script>
+      
       document.querySelectorAll("main").forEach((item) => {
         item.style.display = "none";
       });
@@ -199,10 +199,128 @@
     </script>
 
 
+<script>
+  
+  function deleteAccount(username, password) {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      type: "post",
+      url: "http://localhost:3000/api/account/remove",
+      data: {
+        username: username,
+        password: password,
+      },
+      success: function (e) {
+        resolve(e);
+      },
+    });
+  });
+}
 
- <script>
-   // delete yor account 
-   const deleteU = document.querySelector('.deleteU')
+function validate(username, password) {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      type: "post",
+      url: "http://localhost:3000/api/account/validate",
+      data: {
+        username: username,
+        password: password,
+      },
+      success: function (e) {
+        resolve(e);
+      },
+    });
+  });
+}
+
+function updateUsername(username, password, new_username) {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      type: "post",
+      url: "http://localhost:3000/api/account/change",
+      data: {
+        curr_username: username,
+        curr_password: password,
+        new_username: new_username,
+      },
+      success: function (e) {
+        resolve(e);
+      },
+    });
+  });
+}
+
+function reset(input) {
+  usernameC.value = username;
+  passwordC.value = "";
+
+  usernameC.removeAttribute("disabled");
+  passwordC.removeAttribute("disabled");
+
+  document.getElementById("hi212").remove();
+
+  submit.addEventListener("click", update);
+}
+
+async function update(e) {
+    e.preventDefault(); 
+  let v = await validate(usernameC.value, passwordC.value);
+
+  if (v.valid) {
+    usernameC.setAttribute("disabled", "true");
+    passwordC.setAttribute("disabled", "true");
+
+    let input = document.createElement("input");
+    input.setAttribute("type", "text");
+    input.setAttribute("class", "newU");
+    input.setAttribute("placeholder", "Please enter a new username");
+    input.id = "hi212";
+    document.querySelector("#form").appendChild(input);
+
+    submit.removeEventListener("click", update);
+
+    input.addEventListener("keyup", function (e) {
+        e.preventDefault(); 
+      if (e.target.value.length > 0 && e.target.value.trim().length > 0) {
+        submit.addEventListener("click", async function (e) {
+          e.preventDefault(); 
+          if (usernameC.value == input.value) {
+            
+            alert("the new username is the same as the old one");
+            reset();
+
+            window.location.reload();
+          }
+          let res = await updateUsername(
+            usernameC.value,
+            passwordC.value,
+            input.value
+          );
+          if (typeof res.error == "string") {
+            alert(res.error);
+
+            reset();
+
+            window.location.reload();
+          } else {
+            alert("your username is now changed");
+
+            //logout and re-login
+            window.location.reload();
+          }
+        });
+      }
+    });
+  }
+}
+
+
+
+
+ // delete yor account 
+
+ 
+ const deleteU = document.querySelector('.deleteU')
    const deleteP = document.querySelector('.deleteP')
  const button = document.querySelector('#submitD')
  
@@ -242,9 +360,7 @@
  
  
  submit.addEventListener("click",update)
- 
- </script>
-
+</script>
 
 
   </body>

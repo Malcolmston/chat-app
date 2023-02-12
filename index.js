@@ -238,6 +238,14 @@ app.get("/js/socket.js", function (req, res) {
   res.sendFile(path.join(__dirname + "/js/socket.js"));
 });
 
+app.get("/js/account.js", function (req, res) {
+  res.sendFile(path.join(__dirname + "/js/welcolm.js"));
+});
+
+app.get("/js/custom_event.js", function (req, res) {
+  res.sendFile(path.join(__dirname + "/js/login.js"));
+});
+
 app.get("/js/welcolm.js", function (req, res) {
   res.sendFile(path.join(__dirname + "/js/welcolm.js"));
 });
@@ -245,6 +253,9 @@ app.get("/js/welcolm.js", function (req, res) {
 app.get("/js/login.js", function (req, res) {
   res.sendFile(path.join(__dirname + "/js/login.js"));
 });
+
+
+
 
 app.get("/html/js/nav.js", function (req, res) {
   res.sendFile(path.join(__dirname + "/html/js/nav.js"));
@@ -261,6 +272,8 @@ app.get("/html/js/slides.js", function (req, res) {
 app.get("/README.md", function (req, res) {
   res.sendFile(path.join(__dirname + "/README.md"));
 });
+
+
 
 // sends the user to the home page
 app.get("/home", function (request, response) {
@@ -591,6 +604,10 @@ io.on("connection", (socket) => {
   socket.on(socket.chat_room, (room) => {
     socket.broadcast.emit("sent", room);
   });
+
+  socket.on('typping',function(who){
+    socket.broadcast.emit("typping", socket.username, who);
+  })
 
   socket.on("message", async (message, who) => {
     let ids = await io.to(socket.chat_room).allSockets();

@@ -211,9 +211,20 @@ function roomThing(room) {
 var input = document.querySelector(".messageBar"),
     chats = document.querySelector(".chat"),
     home = document.querySelectorAll('#home'),
-    send = document.querySelector('.send');
+    send = document.querySelector('.send'),
+    test = document.querySelector('.messageBar');
+    
 
 
+    
+    test.addEventListener('typing', async (e)=>{
+        var key = await e.detail.key.call()
+        var text = e.detail.text.call()
+       
+        socket.emit('typping', socket.array);
+           });
+
+        
 send.addEventListener('click', function (event) {
     event.preventDefault();
     if (input.value == "" || input.value.trim() == "") return;
@@ -253,6 +264,12 @@ socket.on('sent', function (x,all){
     }
 })
 
+socket.on('typping',function(x,all){
+    if(all.includes(socket.username)){
+        test.setAttribute('placeholder',  `${socket.username} is typping`)
+    }
+})
+
 
 socket.on('message', (x,who) => {
     socket.room = x.room
@@ -262,9 +279,57 @@ socket.on('message', (x,who) => {
 })
 
 
+
 socket.on('persistence', (x) => {
         chats.innerHTML = 'this is a message just for you'
     x.map(a => message(a))
     
     
 })
+
+
+
+/*
+function key(e){
+  if( e.target.value.trim().length > 0){
+       e.place = test
+       
+       e.target.dispatchEvent(event);
+  }
+  
+  
+  }
+  
+  
+
+
+const event = new CustomEvent("typing", {
+bubbles: true,
+detail: { 
+    text: () => test.value || test.innerText ||  test.innerHTML || undefined,
+    key: function(){
+        return new Promise((resolve, reject) => {
+             window.addEventListener("keydown", (event) => { 
+            resolve(event)
+        })
+        })
+       
+    },
+
+
+},
+});
+
+  //const event = new Event("typing")
+  test.addEventListener('typing', async (e)=>{
+var key = await e.detail.key.call()
+var text = e.detail.text.call()
+
+socket.emit('typping', socket.array)
+  });
+   
+  
+test.addEventListener('keydown', key)
+test.addEventListener('click', key)
+test.addEventListener('change', key)
+*/
