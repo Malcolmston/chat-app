@@ -152,31 +152,8 @@ async function resetAuto(From = "users"){
     case "users":
       users = await Users.findAll();
 	tst = await Users.destroy({ truncate: true, restartIdentity: true })
-      break;
-
-    case "rooms":
-      users = await Rooms.findAll();
-		tst = await Rooms.destroy({ truncate: true, restartIdentity: true })
-      break;
-
-    case "Users_Rooms":
-    case "host":
-      users = await Host.findAll();
-	tst = await Host.destroy({ truncate: true, restartIdentity: true })
-      break;
-
-    default:
-      users = await Users.findAll();
-	tst = await Users.destroy({ truncate: true, restartIdentity: true })
-      break;
-  }
-
-		
-let a = users
-
-
-	
-a = a.map(async function(obj,i){
+  	
+  users.map(async function(obj,i){
 	let {username, password} = obj
 
   try{
@@ -185,11 +162,63 @@ a = a.map(async function(obj,i){
 	username: username,
 	password: password
 	});
+
+  return true;
 }catch(e){
   return false;
 }
 	
 })
+    case "rooms":
+      users = await Rooms.findAll();
+		tst = await Rooms.destroy({ truncate: true, restartIdentity: true })
+
+    users.map(async function(obj,i){
+      let {room} = obj
+    
+      try{
+      await Rooms.create({
+        id: i+1,
+        room: room,
+      });
+    
+      return true;
+    }catch(e){
+      return false;
+    }
+      
+    })
+
+
+    case "Users_Rooms":
+
+      break;
+
+    default:
+      users = await Users.findAll();
+	tst = await Users.destroy({ truncate: true, restartIdentity: true })
+  users.map(async function(obj,i){
+    let {username, password} = obj
+  
+    try{
+    await Users.create({
+      id: i+1,
+    username: username,
+    password: password
+    });
+  
+    return true;
+  }catch(e){
+    return false;
+  }
+    
+  })
+  }
+
+		
+
+
+
 	}
 
 
@@ -259,6 +288,9 @@ Array.prototype.getPermutations = function (maxLen) {
 };
 
 async function validateRoomAndGroup(...people) {
+//  let thisnwe = await resetAuto('rooms')
+
+  
   let usernames = (await getAll("users")).map((x) => x.username);
   usernames = await Promise.all(usernames);
   let rooms = (await getAll("rooms")).map((x) => x.room);
@@ -287,17 +319,7 @@ async function validateRoomAndGroup(...people) {
     );
   });
 
-  /*
-  if( c == undefined || c.length == 0 ){      
-    let r = await createRoom()
-    let p = people.map(  addUser)
-    p = await Promise.all(p)
-
-    let users = await addUsertoRoom(r.room, ...p)
-    console.log( users )
-  }
-  */
-
+  
   return c;
 
   // usernames = usernames.getPermutations(2)
@@ -584,6 +606,9 @@ function createRoomAndJoin(userA, userB, force = false) {
     let f;
     
     if (force) {
+      await resetAuto('host')
+await resetAuto('rooms')
+
       c = await addUser(userA);
 
       d = await addUser(userB);
