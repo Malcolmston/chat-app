@@ -106,8 +106,10 @@
         <label for="username">Your password</label>
         <input type="text" class='password changeP' required/>
         <br>
-        <div id='form'> </div>
-        <input type="submit" id="submit"/>
+        <label for="N-username">new username</label>
+        <input type="text" class="N-username" required disabled/>
+        <br>
+        <input type="submit" id="submit" value="check my account"/>
         <hr/>
 
         <input type="hidden"  class='username deleteU' required/>
@@ -252,69 +254,56 @@ function updateUsername(username, password, new_username) {
   });
 }
 
-function reset(input) {
+function reset() {
   usernameC.value = username;
   passwordC.value = "";
 
-  usernameC.removeAttribute("disabled");
-  passwordC.removeAttribute("disabled");
-
-  document.getElementById("hi212").remove();
-  document.getElementById("label").remove();
+  N_username.setAttribute("disabled",true);
+  passwordC.removeAttribute('disabled')
 
   submit.addEventListener("click", update);
+
 }
 
-async function update(e) {
+
+async function update(e){
+  if(N_username.value.trim().length > 0){
+    let v = await validate(N_username.value, passwordC.value);
+
+
+    if(v.valid && !(usernameC.value == N_username.value)  ){
+      updateUsername(usernameC.value, passwordC.value, N_username.value).then(function(){
+        alert('your account is updated')
+      }).then(function(){
+        reset()
+
+        socket.emit('logedin', N_username.value)
+        socket.username = N_username.value
+        window.location.reload()
+
+      })
+    }else{
+      !v.valid ? alert('Please enter a new valid username that dose not already exist') : (usernameC.value == N_username.value) ? alert("please enter a new username") : null;
+    }
+  }
+}
+
+async function valUpdate(e) {
     e.preventDefault(); 
   let v = await validate(usernameC.value, passwordC.value);
 
   if ( v.valid === true && v.valid  !== undefined  ) {
-    usernameC.setAttribute("disabled", "true");
-    passwordC.setAttribute("disabled", "true");
+    N_username.removeAttribute('disabled')
+    submit.value = 'submit'
+    passwordC.setAttribute('disabled',true)
 
-    let input = document.createElement("input");
-    let label = document.createElement("label");
+    submit.removeEventListener('click',valUpdate)
+    submit.addEventListener('click',update)
 
-    input.setAttribute("type", "text");
-    input.setAttribute("class", "newU");
-    input.id = "hi212";
 
-    label.textContent = 'new username'
-    label.id='label'
-
-    document.querySelector("#form").appendChild(label);
-    document.querySelector("#form").appendChild(input);
-
-    
-
-    input.addEventListener("keyup", function (e) {
-        e.preventDefault(); 
-      if (e.target.value.length > 0 && e.target.value.trim().length > 0) {
-        submit.addEventListener("click", async function (e) {
-          if (usernameC.value == input.value) {
-            
-            alert("the new username is the same as the old one");
-            reset();
-          }
-          let res = await updateUsername(
-            usernameC.value,
-            passwordC.value,
-            input.value
-          );
-          
-            alert("your username is now changed");
-
-            //logout and re-login
-            window.location.reload();
-          
-        });
-      }
-    });
-  }
 }
 
-
+}
 
 
  // delete yor account 
@@ -342,7 +331,7 @@ async function update(e) {
  
      if(e.trim() == 'Delete'){
        deleteAccount( deleteU.value, deleteP.value ).then(function(e){
-         if(e.res){
+         if(e.res){        
         //  updateUsername(deleteU.value, deleteP.value, 'delete').then(function(e){
             document.querySelectorAll('#home')[0].click();
         //  })
@@ -362,12 +351,14 @@ async function update(e) {
  //update you username
  const usernameC = document.querySelector(".changeU")
   const passwordC = document.querySelector(".changeP")
+  const N_username = document.querySelector(".N-username")
+
   const submit = document.querySelector("#submit")
  
   usernameC.value  = username
  
  
- submit.addEventListener("click",update)
+ submit.addEventListener("click",valUpdate)
 </script>
 
 
