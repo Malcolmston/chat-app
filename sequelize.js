@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 
 const sqlite3 = require("sqlite3");
-const { Sequelize, DataTypes, Op, QueryTypes } = require("sequelize");
+const { Sequelize, DataTypes, Op, QueryTypes, where } = require("sequelize");
 
 const db = new sqlite3.Database("uses.sqlite");
 //https://github.com/sequelize/sequelize/issues/10304
@@ -140,6 +140,19 @@ async function getAll(From = "users") {
       users = await Users.findAll();
       return users;
   }
+}
+
+async function resetUsername(o_username, n_username){
+  let arr = chats.update(
+    {name: n_username},
+    { name: o_username}
+  )
+
+
+  return arr
+
+  
+
 }
 
 async function resetAuto(From = "users"){
@@ -453,6 +466,25 @@ await resetAuto('rooms')
 return true;
 }
 
+
+async function updatePassword(o_username, n_password){
+  const user = await Users.findOne({ where: { username: o_username } });
+
+  if (user) {
+    let e = await hide(n_password.toString())
+
+    user.password = e;
+  
+    let r = await user.save();
+  
+    return r
+  } else {
+    return ("User not found");
+  }
+
+}
+
+
 async function updateUser(o_username, n_username) {
 
   const user = await Users.findOne({ where: { username: o_username } });
@@ -462,6 +494,7 @@ if (user) {
 
   let r = await user.save();
 
+  await resetUsername(o_username, n_username)
   return r
 } else {
   return ("User not found");
@@ -647,6 +680,7 @@ function isEqual(a, b) {
 })();
 
 module.exports = {
+  updatePassword,
   removeUser,
   updateUser,
 

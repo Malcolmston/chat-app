@@ -10,7 +10,8 @@ const {
   validateRoomAndGroup,
 
   removeUser,
-  updateUser,
+  updateUser, 
+  updatePassword
 } = require("./sequelize.js");
 
 const {
@@ -308,45 +309,7 @@ app.get("/home", function (request, response) {
   //response.end();
 });
 
-/*
-app.post("/api/table", async function (request, response) {
-  let r = request.body.table;
-  let a = await getAll(r);
 
-  response.json({
-    data: a,
-    table: r,
-  });
-});
-
-app.post("/api/account/remove", function (request, response) {
-  let body = request.body;
-
-  removeUser(body.username, body.password).then(function (e) {
-    response.json({
-      username: body.username,
-      password: body.password,
-      res: e,
-    });
-  });
-});
-
-app.post("/api/account/change", function (request, response) {
-  let body = request.body;
-
-  updateUser();
-  response.json({
-    old: {
-      o_username: body.curr_username,
-      o_password: body.curr_password,
-    },
-    new: {
-      n_username: body.new_username,
-      n_password: body.new_password,
-    },
-  });
-})
-*/
 
 app.post("/api/account/validate", function (request, response) {
   // gets the input fields
@@ -368,7 +331,7 @@ app.post("/api/account/validate", function (request, response) {
   }
 });
 
-app.post("/api/account/change", async function (request, response) {
+app.post("/api/account/changeUsername", async function (request, response) {
   let body = request.body;
 
   let v = await validate(body.curr_username, body.curr_password);
@@ -427,8 +390,38 @@ app.post("/api/account/change", async function (request, response) {
   }
 });
 
+app.post("/api/account/changePassword", async function (request, response) {
+  let body = request.body;
+
+  let v = await validate(body.curr_username, body.curr_password);
+
+  if (v ) {
+    let r = await updatePassword(body.curr_username, body.new_password);
+
+
+    request.session.loggedin = true;
+
+    //next file
+    var option = {
+      headers: {
+        user: request.session.ussername,
+      },
+    };
+    //response.sendFile(path.resolve(__dirname + login));
+    response.sendFile(path.join(__dirname + chat), option);
+
+  }
+});
+
+
 app.post("/api/account/remove", function (request, response) {
   let body = request.body;
+
+  try {
+    remove_memberA(request.session.ussername);
+  } catch (e) {
+    console.log(e);
+  }
 
   removeUser(body.username, body.password).then(function (e) {
     response.json({
