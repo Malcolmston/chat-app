@@ -145,7 +145,7 @@ app.post("/login", function (request, response) {
   // makes sure the input fields exists and are not empty
   if (ussername && password) {
     validate(ussername, password).then(function (params) {
-      console.log(params)
+      //console.log(params)
 
       if (params) {
         request.session.loggedin = true;
@@ -379,8 +379,6 @@ app.post("/api/account/change", async function (request, response) {
   let v = await validate( body.curr_username, body.curr_password)
   let v1 = await validate( body.new_username, body.curr_password)
 
-  console.log('valid: '+v1)
-
   if(v && v1){
     let r = await updateUser( body.curr_username, body.new_username);
 
@@ -478,7 +476,6 @@ io.use((socket, next) => {
 io.on("connection", (socket) => {
   let s = socket.request.session;
   socket.use((socket, next) => {
-    console.log(s.ussername)
     validate(s.ussername, false, 'or').then(function (x) {
       if (s && s.loggedin && s.ussername && x) {
         next();

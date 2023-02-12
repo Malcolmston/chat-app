@@ -179,11 +179,15 @@ let a = users
 a = a.map(async function(obj,i){
 	let {username, password} = obj
 
+  try{
 	await Users.create({
 		id: i+1,
 	username: username,
 	password: password
 	});
+}catch(e){
+  return false;
+}
 	
 })
 	}
@@ -460,7 +464,7 @@ async function createRoom(r) {
   let [room, c] = await Rooms.findOrCreate({
     where: { room: r || generateString(12) },
   });
-await resetAuto('rooms')
+//await resetAuto('rooms')
   return room;
 }
 
@@ -531,7 +535,7 @@ async function addChats(name, message, room) {
     room: room,
   });
 
-   await resetAuto('chats')
+   //await resetAuto('chats')
 
   //  res = await chats.findAll();
 
