@@ -509,6 +509,29 @@ io.on("connection", (socket) => {
     });
   });
 
+  socket.on("logremove",async function(user){
+    remove_memberA(user);
+    
+    var c = await getAll();
+
+    totalUsers = c.map((x) => x.username);
+    //.difference
+
+    // a is the not loged in usr
+    let a = totalUsers.difference(getAllusersA());
+    // b is all the loged in users
+    let b = totalUsers.similarity(getAllusersA());
+    a = a.map((x) => [x, false]);
+    b = b.map((x) => [x, true]);
+
+    let t = a.concat(b);
+
+    t = t.filter(x => x[0] != user)
+
+    socket.broadcast.emit("people", t);
+
+  })
+
   socket.on("logedout", async function (user) {
     remove_memberA(user);
 
