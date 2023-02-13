@@ -125,7 +125,7 @@
         <input type="submit" id="submit1" value="check my account"/>
 
         <hr/>
-        
+
         <h3 style="text-align:center">Delete your account</h3>
 
          <label for="username">Your password</label>
@@ -341,6 +341,9 @@ function resetA() {
 async function updateA(e){
   if(N_password.value.trim().length > 0){
     if(!(passwordP.value == N_password.value)  ){
+      let a = window.confirm('are you sure you want to reset your password')
+
+      if(a){
       updatePassword(usernameP.value, passwordP.value, N_password.value).then(function(){
         alert('your account is updated')
       }).then(function(){
@@ -348,6 +351,7 @@ async function updateA(e){
         window.location.reload()
 
       })
+    }
     }else{
 
       
