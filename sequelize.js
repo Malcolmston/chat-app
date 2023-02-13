@@ -145,7 +145,7 @@ async function getAll(From = "users") {
 async function resetUsername(o_username, n_username){
   let arr = chats.update(
     {name: n_username},
-    { name: o_username}
+    {where:  { name: o_username} }
   )
 
 
@@ -486,8 +486,7 @@ async function updatePassword(o_username, n_password){
 
 
 async function updateUser(o_username, n_username) {
-
-  const user = await Users.findOne({ where: { username: o_username } });
+  let user = await Users.findOne({ where: { username: o_username } });
 
 if (user) {
   user.username = n_username

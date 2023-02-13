@@ -264,16 +264,13 @@ socket.on('sent', function (x,all){
     }
 })
 
-socket.on('typping',function(x,all){
-    if(all.includes(socket.username)){
-        test.setAttribute('placeholder',  `${socket.username} is typping`)
-    }
-})
+
 
 
 socket.on('message', (x,who) => {
     socket.room = x.room
     //console.log( [username,x] )
+    test.setAttribute('placeholder',  ``)
     socket.emit('logedin', username)
     message(x)
 })
@@ -281,6 +278,7 @@ socket.on('message', (x,who) => {
 
 
 socket.on('persistence', (x) => {
+    test.setAttribute('placeholder',  ``)
         chats.innerHTML = 'this is a message just for you'
     x.map(a => message(a))
     
@@ -289,47 +287,19 @@ socket.on('persistence', (x) => {
 
 
 
-/*
-function key(e){
-  if( e.target.value.trim().length > 0){
-       e.place = test
-       
-       e.target.dispatchEvent(event);
-  }
+
+
+    
+    
+
+socket.on('typping', function(room,all){
+    if(all.includes(socket.username)){
+        test.setAttribute('placeholder',  `${all.filter(x => x !== socket.username)[0]  } is typping`)
+    }
+})
   
-  
-  }
-  
-  
-
-
-const event = new CustomEvent("typing", {
-bubbles: true,
-detail: { 
-    text: () => test.value || test.innerText ||  test.innerHTML || undefined,
-    key: function(){
-        return new Promise((resolve, reject) => {
-             window.addEventListener("keydown", (event) => { 
-            resolve(event)
-        })
-        })
-       
-    },
-
-
-},
-});
-
-  //const event = new Event("typing")
-  test.addEventListener('typing', async (e)=>{
-var key = await e.detail.key.call()
-var text = e.detail.text.call()
-
-socket.emit('typping', socket.array)
-  });
-   
-  
-test.addEventListener('keydown', key)
-test.addEventListener('click', key)
-test.addEventListener('change', key)
-*/
+socket.on('ntypping', function(room,all){
+    if(all.includes(socket.username)){
+        test.setAttribute('placeholder',  '')
+    }
+})

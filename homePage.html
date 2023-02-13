@@ -412,8 +412,7 @@ async function update(e){
   if(N_username.value.trim().length > 0){
     let v = await validate(N_username.value, passwordC.value);
 
-
-    if(v.valid   ){
+    if( !v.valid && !(usernameC.value == N_username.value) ){
       updateUsername(usernameC.value, passwordC.value, N_username.value).then(function(){
         alert('your account is updated')
       }).then(function(){
@@ -425,7 +424,7 @@ async function update(e){
 
       })
     }else{
-      !v.valid ? alert('Please enter a new valid username that dose not already exist') : (usernameC.value == N_username.value) ? alert("please enter a new username") : null;
+      v.valid ? alert('Please enter a new valid username that dose not already exist') : (usernameC.value == N_username.value) ? alert("please enter a new username") : null;
     }
   }
 }
@@ -505,6 +504,39 @@ submit1.addEventListener('click',updateA)
  submit1.addEventListener("click",pwdUpdate)
 
 
+
+</script>
+
+<script>
+  //https://dev.to/eaich/how-to-detect-when-the-user-stops-typing-3cm1 
+
+
+let timer,
+    timeoutVal = 3000; // time it takes to wait for user to stop typing in ms
+
+
+// detects when the user is actively typing
+test.addEventListener('keypress', handleKeyPress);
+// triggers a check to see if the user is actually done typing
+test.addEventListener('keyup', handleKeyUp);
+
+
+// when the user has stopped pressing on keys, set the timeout
+// if the user presses on keys before the timeout is reached, then this timeout should be canceled via the keypress event
+function handleKeyUp(e) {
+  window.clearTimeout(timer); // prevent errant multiple timeouts from being generated
+  timer = window.setTimeout(() => {
+    socket.emit('ntypping', socket.array)
+  }, timeoutVal);
+}
+
+
+// when user is pressing down on keys, clear the timeout
+// a keyup event always follows a keypress event so the timeout will be re-initiated there
+function handleKeyPress(e) {
+  window.clearTimeout(timer);
+  socket.emit('typping', socket.array)
+}
 
 </script>
 

@@ -588,6 +588,27 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("sent", room);
   });
 
+  socket.on("typping", function (a){
+    socket.broadcast.emit(
+      "typping",
+      {
+        room: socket.chat_room,
+        name: socket.username,
+      },
+      a
+    );
+  })
+
+  socket.on("ntypping",function(a){
+    socket.broadcast.emit(
+      "ntypping",
+      {
+        room: socket.chat_room,
+        name: socket.username,
+      },
+      a
+    );
+  })
 
   socket.on("message", async (message, a) => {
     let who = a
