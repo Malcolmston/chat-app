@@ -26,16 +26,16 @@
       <div class="itm inactive">
         <i class="fa-duotone fa-question"></i> Question
       </div>
-      <div class="itm active">
+      <div class="itm inactive">
         <i class="fa-duotone fa-house-user"></i> Home
       </div>
-      <div class="itm inactive">
+      <div class="itm inactive" >
         <i class="fa-duotone fa-comments"></i> Chat
       </div>
-      <div class="itm inactive">
+      <div class="itm inactive" >
         <i class="fa-sharp fa-solid fa-magnifying-glass"></i> Information
       </div>
-      <div class="itm inactive">
+      <div class="itm inactive" >
         <i class="fa-sharp fa-regular fa-gears"></i> Settings
       </div>
     </div>
@@ -156,12 +156,29 @@
     <script src="/js/markdown.js"></script>
     <script src="/js/socket.js"></script>
     <script>
-      
+     
       document.querySelectorAll("main").forEach((item) => {
         item.style.display = "none";
       });
 
-      document.querySelector(".Home").style.display = "block";
+    
+let p =  (sessionStorage.getItem('tab') || 'Home')
+/*
+document.querySelector(p).click();
+document.querySelector(p).classList.replace("inactive", "active");
+*/
+
+document.querySelector('.'+p).style.display = "block";
+
+
+
+document.querySelectorAll(".itm").forEach((item) => {
+  if( item.textContent.trim() == p ){
+    item.classList.replace("inactive", "active");
+  }
+})
+
+
 
       welcolm(username);
       chatWelcolm(username)
@@ -188,6 +205,9 @@
               item.style.display = "none";
             }
           });
+
+          sessionStorage.setItem('tab', this.innerText.trim())
+
 
           switch (this.innerText.trim()) {
             case "Information":
@@ -219,6 +239,8 @@
 
 
 <script>
+//alert(window.location)
+
    async function removeAccount (event){
   event.preventDefault(); 
 
@@ -365,7 +387,7 @@ async function update(e){
     let v = await validate(N_username.value, passwordC.value);
 
 
-    if(v.valid && !(usernameC.value == N_username.value)  ){
+    if(v.valid   ){
       updateUsername(usernameC.value, passwordC.value, N_username.value).then(function(){
         alert('your account is updated')
       }).then(function(){
@@ -418,9 +440,8 @@ submit1.addEventListener('click',updateA)
 }
 
  // delete yor account 
-
  
- const deleteU =  {value: username}
+ let deleteU =  {value: socket.username}
    const deleteP = document.querySelector('.deleteP')
  const button = document.querySelector('#submitD')
  
@@ -434,13 +455,12 @@ submit1.addEventListener('click',updateA)
 
 
  //update you username
- const usernameC =  {value: username}
+ const usernameC =  deleteU
   const passwordC = document.querySelector(".changeP")
   const N_username = document.querySelector(".N-username")
 
   const submit = document.querySelector("#submit")
  
-  usernameC.value  = username
  
 
  submit.addEventListener("click",valUpdate)
@@ -448,7 +468,7 @@ submit1.addEventListener('click',updateA)
 
  //update password
 
- const usernameP =  {value: username}
+ const usernameP =  deleteU
   const passwordP = document.querySelector(".changePP")
   const N_password = document.querySelector(".N-password")
 
