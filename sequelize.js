@@ -9,17 +9,7 @@ const sequelize = new Sequelize("uses", "", "", {
   dialect: "sqlite",
   storage: "uses.sqlite",
   logging: false,
-  retry: {
-    match: [/SQLITE_BUSY/],
-    name: "query",
-    max: 10000000000,
-  },
-  pool: {
-    maxactive: 10000000000,
-    max: 10000000000,
-    min: 0,
-    idle: 2000,
-  },
+
 }); 
 
 function generateString(length) {
@@ -248,10 +238,12 @@ Array.prototype.chunk = function (chunkSize) {
 async function validateRoom(user) {
   let r = await addUser(user);
 
-  let g = (await getAll("host")).map((x) => x.userId);
+  let f = (await getAll("host")).map((x) => [x.userId,x.roomId] );
   let h = (await getAll("users")).map((x) => x.username);
   let i = (await getAll("rooms")).map((x) => x.room);
-  let j = (await getAll("host")).map((x) => x.roomId);
+
+  let g = f.map(x =>x[0])
+  let j =f.map(x =>x[1])
   let k = [...new Set(j)][0];
 
   return (
@@ -302,16 +294,18 @@ Array.prototype.getPermutations = function (maxLen) {
 
 async function validateRoomAndGroup(...people) {
 //  let thisnwe = await resetAuto('rooms')
+let u = await getAll("users")
+let h = await getAll("host")
+let r = await getAll("rooms")
 
-  
-  let usernames = (await getAll("users")).map((x) => x.username);
+  let usernames = u.map((x) => x.username);
   usernames = await Promise.all(usernames);
-  let rooms = (await getAll("rooms")).map((x) => x.room);
+  let rooms = r.map((x) => x.room);
   rooms = await Promise.all(rooms);
 
-  let userIds = (await getAll("host")).map((x) => x.userId - 1);
+  let userIds = h.map((x) => x.userId - 1);
   userIds = await Promise.all(userIds);
-  let roomIds = (await getAll("host")).map((x) => x.roomId - 1);
+  let roomIds = h.map((x) => x.roomId - 1);
   roomIds = await Promise.all(roomIds);
 
   let a = userIds.map((x) => usernames[x]).chunk(2); //.map( x => x.sort() )
