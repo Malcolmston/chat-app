@@ -101,9 +101,7 @@
 
      
       <h3 style="text-align:center">change user name</h3>
-     
-        <input type="hidden"  class='username changeU' required/>
-        <br>
+
         <label for="username">Your password</label>
         <input type="text" class='password changeP' required/>
         <br>
@@ -114,28 +112,28 @@
 
         <hr/>
 
+      
+
+        <h3 style="text-align:center">change password</h3>
+    
+        <label for="username">Your password</label>
+        <input type="text" class='password changePP' required/>
+        <br>
+        <label for="N-username">new password</label>
+        <input type="text" class="N-password" required disabled/>
+        <br>
+        <input type="submit" id="submit1" value="check my account"/>
+
+        <hr/>
+        
         <h3 style="text-align:center">Delete your account</h3>
 
-        <input type="hidden"  class='username deleteU' required/>
-        <br>
          <label for="username">Your password</label>
         <input type="text" class='password deleteP' required/>
         <br>
         <input type="submit" id="submitD" value="delet my account"/>
 
-        <hr/>
-
-        <h3 style="text-align:center">change password</h3>
-     
-        <input type="hidden"  class='username changeP' required/>
-        <br>
-        <label for="username">Your password</label>
-        <input type="text" class='password changePP' required/>
-        <br>
-        <label for="N-username">new username</label>
-        <input type="text" class="N-password" required disabled/>
-        <br>
-        <input type="submit" id="submit1" value="check my account"/>
+        
 
 
 
@@ -328,6 +326,35 @@ function reset() {
 
 }
 
+function resetA() {
+  usernameP.value = username;
+  passwordP.value = "";
+
+  N_password.setAttribute("disabled",true);
+  passwordP.removeAttribute('disabled')
+
+  submit1.addEventListener("click", resetA);
+
+}
+
+
+async function updateA(e){
+  if(N_password.value.trim().length > 0){
+    if(!(passwordP.value == N_password.value)  ){
+      updatePassword(usernameP.value, passwordP.value, N_password.value).then(function(){
+        alert('your account is updated')
+      }).then(function(){
+        resetA()
+        window.location.reload()
+
+      })
+    }else{
+
+      
+    }
+  }
+}
+
 
 async function update(e){
   if(N_username.value.trim().length > 0){
@@ -370,24 +397,26 @@ async function valUpdate(e) {
 
 
 async function pwdUpdate(e) {
-  if(N_username.value.trim().length > 0){
-    let v = await validate(usernameP.value, passwordC.value);
+  e.preventDefault(); 
 
 
-    if(v.valid && !(passwordC.value == N_password.value)  ){
-      
-      updatePassword(usernameP.value, passwordC.value,  N_password.value ).then(function(){
+  if(passwordP.value.trim().length > 0){
+    let v = await validate(usernameP.value, passwordP.value);
 
-      })
-    
-    }
+    N_password.removeAttribute('disabled')
+    submit1.value = 'submit'
+    passwordP.setAttribute('disabled',true)
+
+submit1.removeEventListener('click', pwdUpdate)
+
+submit1.addEventListener('click',updateA)
   }
 }
 
  // delete yor account 
 
  
- const deleteU = document.querySelector('.deleteU')
+ const deleteU =  {value: username}
    const deleteP = document.querySelector('.deleteP')
  const button = document.querySelector('#submitD')
  
@@ -401,7 +430,7 @@ async function pwdUpdate(e) {
 
 
  //update you username
- const usernameC = document.querySelector(".changeU")
+ const usernameC =  {value: username}
   const passwordC = document.querySelector(".changeP")
   const N_username = document.querySelector(".N-username")
 
@@ -415,16 +444,15 @@ async function pwdUpdate(e) {
 
  //update password
 
- const usernameP = document.querySelector(".changeP")
+ const usernameP =  {value: username}
   const passwordP = document.querySelector(".changePP")
   const N_password = document.querySelector(".N-password")
 
   const submit1 = document.querySelector("#submit1")
  
-  usernameP.value  = username
  
 
- submit.addEventListener("click",pwdUpdate)
+ submit1.addEventListener("click",pwdUpdate)
 
 
 
