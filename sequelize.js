@@ -72,7 +72,10 @@ const chats = sequelize.define(
       defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
     },
   },
-  { timestamps: true }
+  { 
+    timestamps: true ,
+  paranoid: true,
+}
 );
 
 const Users = sequelize.define("users", {
@@ -89,6 +92,13 @@ const Users = sequelize.define("users", {
 
   }
   
+},
+{ 
+  timestamps: true,
+
+  deletedAt: 'deletedAt',
+paranoid: true,
+
 });
 
 const Rooms = sequelize.define("rooms", {
@@ -98,9 +108,24 @@ const Rooms = sequelize.define("rooms", {
     unique: false,
     defaultValue: generateString(12),
   },
-});
+},
+{ 
+  timestamps: true ,
+  sequelize,
+paranoid: true,
 
-const Host = sequelize.define("Users_Rooms", {}, { timestamps: false });
+// If you want to give a custom name to the deletedAt column
+deletedAt: 'destroyTime'
+}
+);
+
+const Host = sequelize.define("Users_Rooms", {}, { 
+  timestamps: false,  
+  sequelize,
+paranoid: true,
+
+// If you want to give a custom name to the deletedAt column
+deletedAt: 'destroyTime' });
 
 //https://sequelize.org/docs/v6/advanced-association-concepts/eager-loading/#eager-loading-with-many-to-many-relationships
 Users.belongsToMany(Rooms, { through: Host });
@@ -531,6 +556,10 @@ async function addUsertoRoom(room, ...user) {
 
  function validate(username, password, s='and') {
   return new Promise(async (resolve, reject) => {
+    await Users.restore();
+
+
+
     if( s == 'and' && (!username && !password)) return;
     if( s == 'or' && (!username)) return;
     //await sequelize.sync({ force: true });
@@ -538,12 +567,13 @@ async function addUsertoRoom(room, ...user) {
   let res;
   
     if( s=='and'){
-      let e = await hide(password)
       res = await Users.findOne({
         where: {
-          [Op.and]: [{ username: username }],
+          
+           username: username,
         },
       });
+
 
       if(res == null){
         resolve(false);
