@@ -175,6 +175,32 @@ document.querySelector('.'+p).style.display = "block";
 document.querySelectorAll(".itm").forEach((item) => {
   if( item.textContent.trim() == p ){
     item.classList.replace("inactive", "active");
+    
+    switch (item.textContent.trim()) {
+            case "Information":
+              getMarkdown()
+                .then((data) => {
+                  document.querySelector(".Information").innerHTML =
+                    getMarkdownText(data);
+                })
+                .catch((e) => {
+                  console.error(e);
+                  document.querySelector(".Information").innerHTML =
+                    "failed! " + e;
+                });
+              break;
+            case "Chats":
+              break;
+            case "Home":
+              break;
+            case "How to":
+              break;
+            case "Settings":
+              break;
+            default:
+              break;
+          }
+        
   }
 })
 
