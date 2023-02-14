@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 
 const sqlite3 = require("sqlite3");
 const { Sequelize, DataTypes, Op, QueryTypes, where } = require("sequelize");
@@ -9,8 +9,7 @@ const sequelize = new Sequelize("uses", "", "", {
   dialect: "sqlite",
   storage: "uses.sqlite",
   logging: false,
-
-}); 
+});
 
 function generateString(length) {
   let characters =
@@ -25,23 +24,19 @@ function generateString(length) {
 }
 //const {algorithm, key, iv } = require('./secret.js')
 
-
-
 //encripts string
 function hide(text) {
-  return new Promise(function(resolve, reject) {
-    bcrypt.genSalt(10, function(err, salt) {
-      bcrypt.hash(text, salt, function(err, hash) {
-        if(err) return reject(err);
+  return new Promise(function (resolve, reject) {
+    bcrypt.genSalt(10, function (err, salt) {
+      bcrypt.hash(text, salt, function (err, hash) {
+        if (err) return reject(err);
 
-          // Store hash in your password DB.
-          resolve(hash)
+        // Store hash in your password DB.
+        resolve(hash);
       });
+    });
   });
-  })
- 
 }
-
 
 // crates the chats table
 const chats = sequelize.define(
@@ -72,60 +67,67 @@ const chats = sequelize.define(
       defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
     },
   },
-  { 
-    timestamps: true ,
-  paranoid: true,
-}
-);
-
-const Users = sequelize.define("users", {
-  username: {
-    type: DataTypes.TEXT,
-    allowNull: false,
-    unique: true,
-  },
-
-  password: {
-    type: DataTypes.TEXT,
-    allowNull: false,
-    unique: true
-
+  {
+    timestamps: true,
+    paranoid: true,
   }
-  
-},
-{ 
-  timestamps: true,
-
-  deletedAt: 'deletedAt',
-paranoid: true,
-
-});
-
-const Rooms = sequelize.define("rooms", {
-  room: {
-    type: DataTypes.TEXT,
-    allowNull: false,
-    unique: false,
-    defaultValue: generateString(12),
-  },
-},
-{ 
-  timestamps: true ,
-  sequelize,
-paranoid: true,
-
-// If you want to give a custom name to the deletedAt column
-deletedAt: 'destroyTime'
-}
 );
 
-const Host = sequelize.define("Users_Rooms", {}, { 
-  timestamps: false,  
-  sequelize,
-paranoid: true,
+const Users = sequelize.define(
+  "users",
+  {
+    username: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      unique: true,
+    },
 
-// If you want to give a custom name to the deletedAt column
-deletedAt: 'destroyTime' });
+    password: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      unique: true,
+    },
+  },
+  {
+    timestamps: true,
+
+    deletedAt: "deletedAt",
+    paranoid: true,
+  }
+);
+
+const Rooms = sequelize.define(
+  "rooms",
+  {
+    room: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      unique: false,
+      defaultValue: generateString(12),
+    },
+  },
+  {
+    timestamps: true,
+    sequelize,
+    paranoid: true,
+
+    // If you want to give a custom name to the deletedAt column
+    deletedAt: "destroyTime",
+  }
+);
+
+const Host = sequelize.define(
+  "Users_Rooms",
+  {},
+  {
+    timestamps: false,
+    sequelize,
+    paranoid: true,
+
+    // If you want to give a custom name to the deletedAt column
+    deletedAt: "destroyTime",
+  }
+);
 
 //https://sequelize.org/docs/v6/advanced-association-concepts/eager-loading/#eager-loading-with-many-to-many-relationships
 Users.belongsToMany(Rooms, { through: Host });
@@ -157,98 +159,80 @@ async function getAll(From = "users") {
   }
 }
 
-async function resetUsername(o_username, n_username){
-  let arr = chats.update(
-    {name: n_username},
-    {where:  { name: o_username} }
-  )
+async function resetUsername(o_username, n_username) {
+  let arr = chats.update({ name: n_username }, { where: { name: o_username } });
 
-
-  return arr
-
-  
-
+  return arr;
 }
 
-async function resetAuto(From = "users"){
-		  let users;
+async function resetAuto(From = "users") {
+  let users;
   switch (From) {
     case "chats":
       users = await chats.findAll();
-	tst = await chats.destroy({ truncate: true, restartIdentity: true })
-		break;
+      tst = await chats.destroy({ truncate: true, restartIdentity: true });
+      break;
     case "users":
       users = await Users.findAll();
-	tst = await Users.destroy({ truncate: true, restartIdentity: true })
-  	
-  users.map(async function(obj,i){
-	let {username, password} = obj
+      tst = await Users.destroy({ truncate: true, restartIdentity: true });
 
-  try{
-	await Users.create({
-		id: i+1,
-	username: username,
-	password: password
-	});
+      users.map(async function (obj, i) {
+        let { username, password } = obj;
 
-  return true;
-}catch(e){
-  return false;
-}
-	
-})
+        try {
+          await Users.create({
+            id: i + 1,
+            username: username,
+            password: password,
+          });
+
+          return true;
+        } catch (e) {
+          return false;
+        }
+      });
     case "rooms":
       users = await Rooms.findAll();
-		tst = await Rooms.destroy({ truncate: true, restartIdentity: true })
+      tst = await Rooms.destroy({ truncate: true, restartIdentity: true });
 
-    users.map(async function(obj,i){
-      let {room} = obj
-    
-      try{
-      await Rooms.create({
-        id: i+1,
-        room: room,
+      users.map(async function (obj, i) {
+        let { room } = obj;
+
+        try {
+          await Rooms.create({
+            id: i + 1,
+            room: room,
+          });
+
+          return true;
+        } catch (e) {
+          return false;
+        }
       });
-    
-      return true;
-    }catch(e){
-      return false;
-    }
-      
-    })
-
 
     case "Users_Rooms":
-
       break;
 
     default:
       users = await Users.findAll();
-	tst = await Users.destroy({ truncate: true, restartIdentity: true })
-  users.map(async function(obj,i){
-    let {username, password} = obj
-  
-    try{
-    await Users.create({
-      id: i+1,
-    username: username,
-    password: password
-    });
-  
-    return true;
-  }catch(e){
-    return false;
+      tst = await Users.destroy({ truncate: true, restartIdentity: true });
+      users.map(async function (obj, i) {
+        let { username, password } = obj;
+
+        try {
+          await Users.create({
+            id: i + 1,
+            username: username,
+            password: password,
+          });
+
+          return true;
+        } catch (e) {
+          return false;
+        }
+      });
   }
-    
-  })
-  }
-
-		
-
-
-
-	}
-
+}
 
 Array.prototype.chunk = function (chunkSize) {
   var array = this;
@@ -263,12 +247,12 @@ Array.prototype.chunk = function (chunkSize) {
 async function validateRoom(user) {
   let r = await addUser(user);
 
-  let f = (await getAll("host")).map((x) => [x.userId,x.roomId] );
+  let f = (await getAll("host")).map((x) => [x.userId, x.roomId]);
   let h = (await getAll("users")).map((x) => x.username);
   let i = (await getAll("rooms")).map((x) => x.room);
 
-  let g = f.map(x =>x[0])
-  let j =f.map(x =>x[1])
+  let g = f.map((x) => x[0]);
+  let j = f.map((x) => x[1]);
   let k = [...new Set(j)][0];
 
   return (
@@ -318,10 +302,10 @@ Array.prototype.getPermutations = function (maxLen) {
 };
 
 async function validateRoomAndGroup(...people) {
-//  let thisnwe = await resetAuto('rooms')
-let u = await getAll("users")
-let h = await getAll("host")
-let r = await getAll("rooms")
+  //  let thisnwe = await resetAuto('rooms')
+  let u = await getAll("users");
+  let h = await getAll("host");
+  let r = await getAll("rooms");
 
   let usernames = u.map((x) => x.username);
   usernames = await Promise.all(usernames);
@@ -351,7 +335,6 @@ let r = await getAll("rooms")
     );
   });
 
-  
   return c;
 
   // usernames = usernames.getPermutations(2)
@@ -399,133 +382,115 @@ async function findRoom(...users) {
 
 async function addUser(username, password) {
   if (password) {
-    let e = await hide(password.toString())
+    let e = await hide(password.toString());
     let [user, a] = await Users.findOrCreate({
-      where: { username: username.toString(), password:  e},
+      where: { username: username.toString(), password: e },
     });
 
-	  await resetAuto('users')
+    await resetAuto("users");
     return user;
   } else {
     let user = await Users.findOne({ where: { username: username } });
 
-	  
     return user;
   }
-
-	 
 }
 
 async function removeUser(username, password) {
- 
   // get user id to get the number to delete from the forgen table
-let userID = await getUser(username)  
-userID = userID.id
+  let userID = await getUser(username);
+  userID = userID.id;
 
-//get all of the rooms seqences that you can join to delete
-let rooms = await Host.findAll({ where: { userId: userID } });
-//rooms.map(x => x.roomId)
-rooms = rooms.map(async function(x) {
-  let rooms = await Host.findAll({ 
-    where: { 
-    [Op.and]: [{userId: userID }, {roomId: x.roomId}]  
-    }
-   });
-   return rooms
-})
+  //get all of the rooms seqences that you can join to delete
+  let rooms = await Host.findAll({ where: { userId: userID } });
+  //rooms.map(x => x.roomId)
+  rooms = rooms.map(async function (x) {
+    let rooms = await Host.findAll({
+      where: {
+        [Op.and]: [{ userId: userID }, { roomId: x.roomId }],
+      },
+    });
+    return rooms;
+  });
 
-rooms =  (await Promise.all(rooms)).flat()
+  rooms = (await Promise.all(rooms)).flat();
 
-// gets all the room codes that you have chatted with
-let codes = await Rooms.findAll({
-  where: {
-    id: {
-    [Op.or]: rooms.map(x => x.roomId)
-    }
-  }
+  // gets all the room codes that you have chatted with
+  let codes = await Rooms.findAll({
+    where: {
+      id: {
+        [Op.or]: rooms.map((x) => x.roomId),
+      },
+    },
+  });
 
-})
+  let canre = validate(username, password);
 
-let canre = validate(username, password)
+  if (!canre) return false;
 
-if(!canre) return false;
+  await chats.destroy({
+    where: {
+      room: {
+        [Op.or]: codes.map((x) => x.room),
+      },
+    },
+  });
 
-await chats.destroy({
-  where: {
-    room: {
-      [Op.or]: codes.map(x=>x.room)
-    }
-  }
-});
+  await Rooms.destroy({
+    where: {
+      id: {
+        [Op.or]: rooms.map((x) => x.roomId),
+      },
+    },
+  });
 
-await Rooms.destroy({
-  where: {
-    id: {
-    [Op.or]: rooms.map(x => x.roomId)
-    }
-  }
+  await Host.destroy({
+    where: { userId: userID },
+  });
 
-})
+  await Users.destroy({
+    where: { username: username },
+  });
 
-await Host.destroy({
-   where: { userId: userID } 
-});
+  await resetAuto("users");
+  await resetAuto("host");
+  await resetAuto("rooms");
 
-
-await Users.destroy({
-  where: { username: username } 
-});
-
-await resetAuto('users')
-await resetAuto('host')
-await resetAuto('rooms')
-
-
-
-return true;
+  return true;
 }
 
-
-async function updatePassword(o_username, n_password){
+async function updatePassword(o_username, n_password) {
   const user = await Users.findOne({ where: { username: o_username } });
 
   if (user) {
-    let e = await hide(n_password.toString())
+    let e = await hide(n_password.toString());
 
     user.password = e;
-  
+
     let r = await user.save();
-  
-    return r
+
+    return r;
   } else {
-    return ("User not found");
+    return "User not found";
   }
-
 }
-
 
 async function updateUser(o_username, n_username) {
   let user = await Users.findOne({ where: { username: o_username } });
 
-if (user) {
-  user.username = n_username
+  if (user) {
+    user.username = n_username;
 
-  let r = await user.save();
+    let r = await user.save();
 
-  await resetUsername(o_username, n_username)
-  return r
-} else {
-  return ("User not found");
+    await resetUsername(o_username, n_username);
+    return r;
+  } else {
+    return "User not found";
+  }
+
+  return e;
 }
-
-
-
-  return e
-
-
-}
-
-
 
 async function getUser(username) {
   let user = await Users.findOne({ where: { username: username } });
@@ -537,7 +502,7 @@ async function createRoom(r) {
   let [room, c] = await Rooms.findOrCreate({
     where: { room: r || generateString(12) },
   });
-//await resetAuto('rooms')
+  //await resetAuto('rooms')
   return room;
 }
 
@@ -554,55 +519,46 @@ async function addUsertoRoom(room, ...user) {
   return all; //fetchedUsers;
 }
 
- function validate(username, password, s='and') {
+function validate(username, password, s = "and") {
   return new Promise(async (resolve, reject) => {
     await Users.restore();
 
-
-
-    if( s == 'and' && (!username && !password)) return;
-    if( s == 'or' && (!username)) return;
+    if (s == "and" && !username && !password) return;
+    if (s == "or" && !username) return;
     //await sequelize.sync({ force: true });
-  
-  let res;
-  
-    if( s=='and'){
+
+    let res;
+
+    if (s == "and") {
       res = await Users.findOne({
         where: {
-          
-           username: username,
+          username: username,
         },
       });
 
-
-      if(res == null){
+      if (res == null) {
         resolve(false);
         return false;
       }
-  
-      bcrypt.compare(password, res.password, function(err, result) {
+
+      bcrypt.compare(password, res.password, function (err, result) {
         resolve(result);
         // result == true
-    });
-  
+      });
+
       return res !== null;
     }
-    if( s=='or'){
-  
+    if (s == "or") {
       res = await Users.findOne({
         where: {
-           username: username
+          username: username,
         },
       });
-  
-      resolve(res !== null );
+
+      resolve(res !== null);
     }
-  })
-
- 
-
+  });
 }
-
 
 //when a user sends a chat it is added to the database so theat perssitance works
 async function addChats(name, message, room) {
@@ -613,7 +569,7 @@ async function addChats(name, message, room) {
     room: room,
   });
 
-   //await resetAuto('chats')
+  //await resetAuto('chats')
 
   //  res = await chats.findAll();
 
@@ -660,10 +616,10 @@ function createRoomAndJoin(userA, userB, force = false) {
     let d;
     let e;
     let f;
-    
+
     if (force) {
-      await resetAuto('host')
-await resetAuto('rooms')
+      await resetAuto("host");
+      await resetAuto("rooms");
 
       c = await addUser(userA);
 
@@ -699,7 +655,6 @@ function isEqual(a, b) {
 
 (async function () {
   await sequelize.sync({ force: false });
-
 })();
 
 module.exports = {
@@ -713,7 +668,7 @@ module.exports = {
   validate,
   getAll,
   hide,
-  
+
   addChats,
   recalChats,
 
