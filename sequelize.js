@@ -11,31 +11,7 @@ const sequelize = new Sequelize("uses", "", "", {
   logging: false,
 });
 
-function generateString(length) {
-  let characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let result = " ";
-  const charactersLength = characters.length;
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
 
-  return result;
-}
-
-//encripts string
-function hide(text) {
-  return new Promise(function (resolve, reject) {
-    bcrypt.genSalt(10, function (err, salt) {
-      bcrypt.hash(text, salt, function (err, hash) {
-        if (err) return reject(err);
-
-        // Store hash in your password DB.
-        resolve(hash);
-      });
-    });
-  });
-}
 
 // creates the Chats table
 const chats = sequelize.define(
@@ -136,6 +112,43 @@ Users.belongsToMany(Rooms, { through: Host });
 Rooms.belongsToMany(Users, { through: Host });
 
 
+
+function isEqual(a, b) {
+  return (
+    Array.isArray(a) &&
+    Array.isArray(b) &&
+    a.length === b.length &&
+    a.every((val, index) => val === b[index])
+  );
+}
+
+function generateString(length) {
+let characters =
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+let result = " ";
+const charactersLength = characters.length;
+for (let i = 0; i < length; i++) {
+  result += characters.charAt(Math.floor(Math.random() * charactersLength));
+}
+
+return result;
+}
+
+//encripts string
+function hide(text) {
+return new Promise(function (resolve, reject) {
+  bcrypt.genSalt(10, function (err, salt) {
+    bcrypt.hash(text, salt, function (err, hash) {
+      if (err) return reject(err);
+
+      // Store hash in your password DB.
+      resolve(hash);
+    });
+  });
+});
+}
+
+
 // sorts arrays into neet chunks t
 Array.prototype.chunk = function (chunkSize) {
   var array = this;
@@ -148,6 +161,50 @@ Array.prototype.chunk = function (chunkSize) {
 };
 
 
+
+//https://stackoverflow.com/questions/23305747/javascript-permutation-generator-with-permutation-length-parameter
+// gets all the possible permutation of the given array with constraints. 
+Array.prototype.getPermutations = function (maxLen) {
+  function getPermutations(list, maxLen) {
+    // Copy initial values as arrays
+    var perm = list.map(function (val) {
+      return [val];
+    });
+    // Our permutation generator
+    var generate = function (perm, maxLen, currLen) {
+      // Reached desired length
+      if (currLen === maxLen) {
+        return perm;
+      }
+      // For each existing permutation
+      for (var i = 0, len = perm.length; i < len; i++) {
+        var currPerm = perm.shift();
+        // Create new permutation
+        for (var k = 0; k < list.length; k++) {
+          perm.push(currPerm.concat(list[k]));
+        }
+      }
+      // Recurse
+      return generate(perm, maxLen, currLen + 1);
+    };
+    // Start with size 1 because of initial values
+    return [
+      ...new Set(
+        generate(perm, maxLen, 1)
+          .map((x) => x.sort())
+          .filter((arr) => [...new Set(arr)].length != 1)
+          .map((x) => x.toString())
+      ),
+    ].map((x) => x.split(","));
+  }
+
+  return getPermutations(this, maxLen);
+};
+
+
+
+
+// gets all infermatin in a Table
 async function getAll(From = "users") {
   let users;
   switch (From) {
@@ -172,12 +229,6 @@ async function getAll(From = "users") {
       users = await Users.findAll();
       return users;
   }
-}
-
-async function resetUsername(o_username, n_username) {
-  let arr = chats.update({ name: n_username }, { where: { name: o_username } });
-
-  return arr;
 }
 
 //resets your code with autoincramenst so they always start at 1
@@ -256,6 +307,11 @@ async function resetAuto(From = "users") {
 }
 
 
+
+
+
+
+
 async function validateRoom(user) {
   let r = await addUser(user);
 
@@ -274,45 +330,6 @@ async function validateRoom(user) {
   ); //isEqual( ([r]).map( x => x.id ), g )
 }
 
-
-//https://stackoverflow.com/questions/23305747/javascript-permutation-generator-with-permutation-length-parameter
-
-Array.prototype.getPermutations = function (maxLen) {
-  function getPermutations(list, maxLen) {
-    // Copy initial values as arrays
-    var perm = list.map(function (val) {
-      return [val];
-    });
-    // Our permutation generator
-    var generate = function (perm, maxLen, currLen) {
-      // Reached desired length
-      if (currLen === maxLen) {
-        return perm;
-      }
-      // For each existing permutation
-      for (var i = 0, len = perm.length; i < len; i++) {
-        var currPerm = perm.shift();
-        // Create new permutation
-        for (var k = 0; k < list.length; k++) {
-          perm.push(currPerm.concat(list[k]));
-        }
-      }
-      // Recurse
-      return generate(perm, maxLen, currLen + 1);
-    };
-    // Start with size 1 because of initial values
-    return [
-      ...new Set(
-        generate(perm, maxLen, 1)
-          .map((x) => x.sort())
-          .filter((arr) => [...new Set(arr)].length != 1)
-          .map((x) => x.toString())
-      ),
-    ].map((x) => x.split(","));
-  }
-
-  return getPermutations(this, maxLen);
-};
 
 async function validateRoomAndGroup(...people) {
   //  let thisnwe = await resetAuto('rooms')
@@ -409,6 +426,21 @@ async function addUser(username, password) {
   }
 }
 
+
+
+
+
+
+
+
+// updates the username
+async function resetUsername(o_username, n_username) {
+  let arr = chats.update({ name: n_username }, { where: { name: o_username } });
+
+  return arr;
+}
+
+// deletes the username
 async function removeUser(username, password) {
   // get user id to get the number to delete from the forgen table
   let userID = await getUser(username);
@@ -471,6 +503,7 @@ async function removeUser(username, password) {
   return true;
 }
 
+// updates the password
 async function updatePassword(o_username, n_password) {
   const user = await Users.findOne({ where: { username: o_username } });
 
@@ -487,6 +520,7 @@ async function updatePassword(o_username, n_password) {
   }
 }
 
+// updates the username for api callback
 async function updateUser(o_username, n_username) {
   let user = await Users.findOne({ where: { username: o_username } });
 
@@ -504,36 +538,16 @@ async function updateUser(o_username, n_username) {
   return e;
 }
 
+// gets a use by username
 async function getUser(username) {
   let user = await Users.findOne({ where: { username: username } });
 
   return user;
 }
 
-async function createRoom(r) {
-  let [room, c] = await Rooms.findOrCreate({
-    where: { room: r || generateString(12) },
-  });
-  //await resetAuto('rooms')
-  return room;
-}
-
-async function addUsertoRoom(room, ...user) {
-  let arr = [];
-  user.forEach(async function (user) {
-    arr.push(user.addRooms(room));
-    //await user.addRooms(room);
-  });
-
-  let all = await Promise.all(arr);
-
-  //let fetchedUsers = await getAll('host')
-  return all; //fetchedUsers;
-}
-
+//gets if an acount is available
 function validate(username, password, s = "and") {
   return new Promise(async (resolve, reject) => {
-
     if (s == "and" && !username && !password) return;
     if (s == "or" && !username) return;
     //await sequelize.sync({ force: true });
@@ -571,51 +585,28 @@ function validate(username, password, s = "and") {
   });
 }
 
-//when a user sends a chat it is added to the database so theat perssitance works
-async function addChats(name, message, room) {
-  //await sequelize.sync({ force: true });
-  let res = await chats.create({
-    name: name,
-    message: message,
-    room: room,
+
+
+
+async function createRoom(r) {
+  let [room, c] = await Rooms.findOrCreate({
+    where: { room: r || generateString(12) },
   });
-
-  //await resetAuto('chats')
-
-  //  res = await chats.findAll();
-
-  return new Date(); //res;
+  //await resetAuto('rooms')
+  return room;
 }
 
-//this function recals all of the chats.
-async function recalChats(id) {
-  //let id = await findRoom(...user)
-
-  if (id === undefined) {
-    return undefined;
-  }
-
-  //const [res, metadata] = await sequelize.query("SELECT * FROM rooms WHERE `room` = '"+id+"'  ");
-
-  let res = await chats.findAll({
-    where: {
-      room: {
-        [Op.eq]: id,
-      },
-    },
+async function addUsertoRoom(room, ...user) {
+  let arr = [];
+  user.forEach(async function (user) {
+    arr.push(user.addRooms(room));
+    //await user.addRooms(room);
   });
 
-  return res;
-}
+  let all = await Promise.all(arr);
 
-//https://stackoverflow.com/questions/55420156/get-arrays-depth-in-javascript
-
-function getArrayDepth() {
-  let value = this;
-
-  return Array.isArray(value)
-    ? 1 + Math.max(0, ...value.map(getArrayDepth))
-    : 0;
+  //let fetchedUsers = await getAll('host')
+  return all; //fetchedUsers;
 }
 
 function createRoomAndJoin(userA, userB, force = false) {
@@ -654,14 +645,50 @@ function createRoomAndJoin(userA, userB, force = false) {
   });
 }
 
-function isEqual(a, b) {
-  return (
-    Array.isArray(a) &&
-    Array.isArray(b) &&
-    a.length === b.length &&
-    a.every((val, index) => val === b[index])
-  );
+
+
+
+
+//when a user sends a chat it is added to the database so theat perssitance works
+async function addChats(name, message, room) {
+  //await sequelize.sync({ force: true });
+  let res = await chats.create({
+    name: name,
+    message: message,
+    room: room,
+  });
+
+  //await resetAuto('chats')
+
+  //  res = await chats.findAll();
+
+  return new Date(); //res;
 }
+
+//this function recals all of the chats.
+async function recalChats(id) {
+  //let id = await findRoom(...user)
+
+  if (id === undefined) {
+    return undefined;
+  }
+
+  //const [res, metadata] = await sequelize.query("SELECT * FROM rooms WHERE `room` = '"+id+"'  ");
+
+  let res = await chats.findAll({
+    where: {
+      room: {
+        [Op.eq]: id,
+      },
+    },
+  });
+
+  return res;
+}
+
+
+
+
 
 (async function () {
   await sequelize.sync({ force: false });
