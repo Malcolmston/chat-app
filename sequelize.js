@@ -98,8 +98,7 @@ const Host = sequelize.define(
   "Users_Rooms",
   {},
   {
-    timestamps: false,
-    sequelize,
+    timestamps: true,
     paranoid: true,
 
     // If you want to give a custom name to the deletedAt column
@@ -205,28 +204,28 @@ Array.prototype.getPermutations = function (maxLen) {
 
 
 // gets all infermatin in a Table
-async function getAll(From = "users") {
+async function getAll(From = "users", paranoid= true) {
   let users;
   switch (From) {
     case "chats":
-      users = await chats.findAll();
+      users = await chats.findAll({paranoid:paranoid});
       return users;
 
     case "users":
-      users = await Users.findAll();
+      users = await Users.findAll({paranoid:paranoid});
       return users;
 
     case "rooms":
-      users = await Rooms.findAll();
+      users = await Rooms.findAll({paranoid:paranoid});
       return users;
 
     case "Users_Rooms":
     case "host":
-      users = await Host.findAll();
+      users = await Host.findAll({paranoid:paranoid});
       return users;
 
     default:
-      users = await Users.findAll();
+      users = await Users.findAll({paranoid:paranoid});
       return users;
   }
 }
@@ -258,9 +257,9 @@ async function validateRoom(user) {
 
 async function validateRoomAndGroup(...people) {
   //  let thisnwe = await resetAuto('rooms')
-  let u = await getAll("users");
-  let h = await getAll("host");
-  let r = await getAll("rooms");
+  let u = await getAll("users", false);
+  let h = await getAll("host",false);
+  let r = await getAll("rooms", false);
 
   let usernames = u.map((x) => x.username);
   usernames = await Promise.all(usernames);
