@@ -22,7 +22,6 @@ function generateString(length) {
 
   return result;
 }
-//const {algorithm, key, iv } = require('./secret.js')
 
 //encripts string
 function hide(text) {
@@ -38,7 +37,7 @@ function hide(text) {
   });
 }
 
-// crates the chats table
+// creates the Chats table
 const chats = sequelize.define(
   "chats",
   {
@@ -73,6 +72,7 @@ const chats = sequelize.define(
   }
 );
 
+// creates the Users Table
 const Users = sequelize.define(
   "users",
   {
@@ -96,6 +96,7 @@ const Users = sequelize.define(
   }
 );
 
+// creates the Rooms table
 const Rooms = sequelize.define(
   "rooms",
   {
@@ -116,6 +117,7 @@ const Rooms = sequelize.define(
   }
 );
 
+// creates the Users_Rooms table that contains the ides from both Users and Rooms
 const Host = sequelize.define(
   "Users_Rooms",
   {},
@@ -132,6 +134,19 @@ const Host = sequelize.define(
 //https://sequelize.org/docs/v6/advanced-association-concepts/eager-loading/#eager-loading-with-many-to-many-relationships
 Users.belongsToMany(Rooms, { through: Host });
 Rooms.belongsToMany(Users, { through: Host });
+
+
+// sorts arrays into neet chunks t
+Array.prototype.chunk = function (chunkSize) {
+  var array = this;
+  return [].concat.apply(
+    [],
+    array.map(function (elem, i) {
+      return i % chunkSize ? [] : [array.slice(i, i + chunkSize)];
+    })
+  );
+};
+
 
 async function getAll(From = "users") {
   let users;
@@ -165,25 +180,25 @@ async function resetUsername(o_username, n_username) {
   return arr;
 }
 
+//resets your code with autoincramenst so they always start at 1
 async function resetAuto(From = "users") {
   let users;
   switch (From) {
-    case "chats":
-      users = await chats.findAll();
-      tst = await chats.destroy({ truncate: true, restartIdentity: true });
-      break;
+    
     case "users":
       users = await Users.findAll();
-      tst = await Users.destroy({ truncate: true, restartIdentity: true });
 
       users.map(async function (obj, i) {
         let { username, password } = obj;
 
         try {
-          await Users.create({
+          await Users.update({
             id: i + 1,
+          },{
+            where:{
             username: username,
-            password: password,
+            password: password
+            }
           });
 
           return true;
@@ -199,9 +214,12 @@ async function resetAuto(From = "users") {
         let { room } = obj;
 
         try {
-          await Rooms.create({
+          await Rooms.update({
             id: i + 1,
-            room: room,
+          },{
+            where:{
+              room: room
+            }
           });
 
           return true;
@@ -215,15 +233,18 @@ async function resetAuto(From = "users") {
 
     default:
       users = await Users.findAll();
-      tst = await Users.destroy({ truncate: true, restartIdentity: true });
+
       users.map(async function (obj, i) {
         let { username, password } = obj;
 
         try {
-          await Users.create({
+          await Users.update({
             id: i + 1,
+          },{
+            where:{
             username: username,
-            password: password,
+            password: password
+            }
           });
 
           return true;
@@ -234,15 +255,6 @@ async function resetAuto(From = "users") {
   }
 }
 
-Array.prototype.chunk = function (chunkSize) {
-  var array = this;
-  return [].concat.apply(
-    [],
-    array.map(function (elem, i) {
-      return i % chunkSize ? [] : [array.slice(i, i + chunkSize)];
-    })
-  );
-};
 
 async function validateRoom(user) {
   let r = await addUser(user);
@@ -261,6 +273,7 @@ async function validateRoom(user) {
     (i[Number(k) - 1] || false)
   ); //isEqual( ([r]).map( x => x.id ), g )
 }
+
 
 //https://stackoverflow.com/questions/23305747/javascript-permutation-generator-with-permutation-length-parameter
 
@@ -453,7 +466,6 @@ async function removeUser(username, password) {
   });
 
   await resetAuto("users");
-  await resetAuto("host");
   await resetAuto("rooms");
 
   return true;
@@ -521,7 +533,6 @@ async function addUsertoRoom(room, ...user) {
 
 function validate(username, password, s = "and") {
   return new Promise(async (resolve, reject) => {
-    await Users.restore();
 
     if (s == "and" && !username && !password) return;
     if (s == "or" && !username) return;
@@ -618,7 +629,6 @@ function createRoomAndJoin(userA, userB, force = false) {
     let f;
 
     if (force) {
-      await resetAuto("host");
       await resetAuto("rooms");
 
       c = await addUser(userA);
