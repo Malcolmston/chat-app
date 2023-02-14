@@ -8,9 +8,9 @@ const db = new sqlite3.Database("uses.sqlite");
 const sequelize = new Sequelize("uses", "", "", {
   dialect: "sqlite",
   storage: "uses.sqlite",
-  logging: false,
+  benchmark: true,
+  standardConformingStrings: true
 });
-
 
 
 // creates the Chats table
@@ -231,81 +231,6 @@ async function getAll(From = "users") {
   }
 }
 
-//resets your code with autoincramenst so they always start at 1
-async function resetAuto(From = "users") {
-  let users;
-  switch (From) {
-    
-    case "users":
-      users = await Users.findAll();
-
-      users.map(async function (obj, i) {
-        let { username, password } = obj;
-
-        try {
-          await Users.update({
-            id: i + 1,
-          },{
-            where:{
-            username: username,
-            password: password
-            }
-          });
-
-          return true;
-        } catch (e) {
-          return false;
-        }
-      });
-    case "rooms":
-      users = await Rooms.findAll();
-      tst = await Rooms.destroy({ truncate: true, restartIdentity: true });
-
-      users.map(async function (obj, i) {
-        let { room } = obj;
-
-        try {
-          await Rooms.update({
-            id: i + 1,
-          },{
-            where:{
-              room: room
-            }
-          });
-
-          return true;
-        } catch (e) {
-          return false;
-        }
-      });
-
-    case "Users_Rooms":
-      break;
-
-    default:
-      users = await Users.findAll();
-
-      users.map(async function (obj, i) {
-        let { username, password } = obj;
-
-        try {
-          await Users.update({
-            id: i + 1,
-          },{
-            where:{
-            username: username,
-            password: password
-            }
-          });
-
-          return true;
-        } catch (e) {
-          return false;
-        }
-      });
-  }
-}
-
 
 
 
@@ -416,8 +341,6 @@ async function addUser(username, password) {
     let [user, a] = await Users.findOrCreate({
       where: { username: username.toString(), password: e },
     });
-
-    await resetAuto("users");
     return user;
   } else {
     let user = await Users.findOne({ where: { username: username } });
@@ -496,9 +419,6 @@ async function removeUser(username, password) {
   await Users.destroy({
     where: { username: username },
   });
-
-  await resetAuto("users");
-  await resetAuto("rooms");
 
   return true;
 }
@@ -592,7 +512,6 @@ async function createRoom(r) {
   let [room, c] = await Rooms.findOrCreate({
     where: { room: r || generateString(12) },
   });
-  //await resetAuto('rooms')
   return room;
 }
 
@@ -620,8 +539,6 @@ function createRoomAndJoin(userA, userB, force = false) {
     let f;
 
     if (force) {
-      await resetAuto("rooms");
-
       c = await addUser(userA);
 
       d = await addUser(userB);
