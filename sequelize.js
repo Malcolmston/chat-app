@@ -234,7 +234,7 @@ async function getAll(From = "users", paranoid= true) {
 
 
 
-
+// gets if user should be in the room
 async function validateRoom(user) {
   let r = await addUser(user);
 
@@ -253,7 +253,7 @@ async function validateRoom(user) {
   ); //isEqual( ([r]).map( x => x.id ), g )
 }
 
-
+// gets the room people are in
 async function validateRoomAndGroup(...people) {
   //  let thisnwe = await resetAuto('rooms')
   let u = await getAll("users", false);
@@ -292,7 +292,7 @@ async function validateRoomAndGroup(...people) {
 
   // usernames = usernames.getPermutations(2)
 }
-
+// creates a room with the given users
 async function addRoom(...users) {
   let room = generateString(12);
 
@@ -312,7 +312,7 @@ async function addRoom(...users) {
 
   return [...new Set(b)].length < a.length ? [...new Set(b)] : false;
 }
-
+// finds a room the room by the users
 async function findRoom(...users) {
   let obj = await validateRoomAndGroup(...users);
   let t;
@@ -332,7 +332,7 @@ async function findRoom(...users) {
     }
   }
 }
-
+// adds the user to the users table
 async function addUser(username, password) {
   if (password) {
     let e = await hide(password.toString());
@@ -505,14 +505,14 @@ function validate(username, password, s = "and") {
 
 
 
-
+// creates or finds a room. rooms are created if the r perameter is not provided. 
 async function createRoom(r) {
   let [room, c] = await Rooms.findOrCreate({
     where: { room: r || generateString(12) },
   });
   return room;
 }
-
+// this adds users to a romm
 async function addUsertoRoom(room, ...user) {
   let arr = [];
   user.forEach(async function (user) {
@@ -525,7 +525,7 @@ async function addUsertoRoom(room, ...user) {
   //let fetchedUsers = await getAll('host')
   return all; //fetchedUsers;
 }
-
+// this adds 2 users to a room and if there is no room with the avilible data then it passes false. if the force perameter is passesd a room is created no mattere what
 function createRoomAndJoin(userA, userB, force = false) {
   return new Promise(async (resolve, reject) => {
     let a = await validateRoom(userA); //users.map(validateRoom)
@@ -604,7 +604,7 @@ async function recalChats(id) {
 
 
 
-
+// if the force perameter is enabled the table will clear all the table
 (async function () {
   await sequelize.sync({ force: false });
 })();
