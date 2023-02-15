@@ -235,7 +235,6 @@ async function getAll(From = "users", paranoid= true) {
 
 
 
-
 async function validateRoom(user) {
   let r = await addUser(user);
 

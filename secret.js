@@ -1,9 +1,5 @@
-var crypto = require("crypto");
-
-
 
 // these are the default make sure to change
-
 const session = 'mysecret'
 
 

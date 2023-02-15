@@ -29,13 +29,13 @@
       <div class="itm inactive">
         <i class="fa-duotone fa-house-user"></i> Home
       </div>
-      <div class="itm inactive" >
+      <div class="itm inactive">
         <i class="fa-duotone fa-comments"></i> Chat
       </div>
-      <div class="itm inactive" >
+      <div class="itm inactive">
         <i class="fa-sharp fa-solid fa-magnifying-glass"></i> Information
       </div>
-      <div class="itm inactive" >
+      <div class="itm inactive">
         <i class="fa-sharp fa-regular fa-gears"></i> Settings
       </div>
     </div>
@@ -71,8 +71,6 @@
         <canvas id="myCanvas" width="240" height="30">
           Your browser does not support the canvas tag.
         </canvas>
-      
-        
       </div>
       <div class="flex-container">
         <div class="inputs">
@@ -96,50 +94,38 @@
 
     <main class="Information"></main>
 
-
     <main class="Settings">
+      <h3 style="text-align: center">change user name</h3>
 
-     
-      <h3 style="text-align:center">change user name</h3>
+      <label for="username">Your password</label>
+      <input type="text" class="password changeP" required />
+      <br />
+      <label for="N-username">new username</label>
+      <input type="text" class="N-username" required disabled />
+      <br />
+      <input type="submit" id="submit" value="check my account" />
 
-        <label for="username">Your password</label>
-        <input type="text" class='password changeP' required/>
-        <br>
-        <label for="N-username">new username</label>
-        <input type="text" class="N-username" required disabled/>
-        <br>
-        <input type="submit" id="submit" value="check my account"/>
+      <hr />
 
-        <hr/>
+      <h3 style="text-align: center">change password</h3>
 
-      
+      <label for="username">Your password</label>
+      <input type="text" class="password changePP" required />
+      <br />
+      <label for="N-username">new password</label>
+      <input type="text" class="N-password" required disabled />
+      <br />
+      <input type="submit" id="submit1" value="check my account" />
 
-        <h3 style="text-align:center">change password</h3>
-    
-        <label for="username">Your password</label>
-        <input type="text" class='password changePP' required/>
-        <br>
-        <label for="N-username">new password</label>
-        <input type="text" class="N-password" required disabled/>
-        <br>
-        <input type="submit" id="submit1" value="check my account"/>
+      <hr />
 
-        <hr/>
+      <h3 style="text-align: center">Delete your account</h3>
 
-        <h3 style="text-align:center">Delete your account</h3>
-
-         <label for="username">Your password</label>
-        <input type="text" class='password deleteP' required/>
-        <br>
-        <input type="submit" id="submitD" value="delet my account"/>
-
-        
-
-
-
-
+      <label for="username">Your password</label>
+      <input type="text" class="password deleteP" required />
+      <br />
+      <input type="submit" id="submitD" value="delet my account" />
     </main>
-
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script
@@ -156,27 +142,23 @@
     <script src="/js/markdown.js"></script>
     <script src="/js/socket.js"></script>
     <script>
-     
       document.querySelectorAll("main").forEach((item) => {
         item.style.display = "none";
       });
 
-    
-let p =  (sessionStorage.getItem('tab') || 'Home')
-/*
+      let p = sessionStorage.getItem("tab") || "Home";
+      /*
 document.querySelector(p).click();
 document.querySelector(p).classList.replace("inactive", "active");
 */
 
-document.querySelector('.'+p).style.display = "block";
+      document.querySelector("." + p).style.display = "block";
 
+      document.querySelectorAll(".itm").forEach((item) => {
+        if (item.textContent.trim() == p) {
+          item.classList.replace("inactive", "active");
 
-
-document.querySelectorAll(".itm").forEach((item) => {
-  if( item.textContent.trim() == p ){
-    item.classList.replace("inactive", "active");
-    
-    switch (item.textContent.trim()) {
+          switch (item.textContent.trim()) {
             case "Information":
               getMarkdown()
                 .then((data) => {
@@ -200,14 +182,11 @@ document.querySelectorAll(".itm").forEach((item) => {
             default:
               break;
           }
-        
-  }
-})
-
-
+        }
+      });
 
       welcolm(username);
-      chatWelcolm(username)
+      chatWelcolm(username);
 
       //
       var o = ["Question", "Home", "Chat", "Information", "Settings"];
@@ -232,8 +211,7 @@ document.querySelectorAll(".itm").forEach((item) => {
             }
           });
 
-          sessionStorage.setItem('tab', this.innerText.trim())
-
+          sessionStorage.setItem("tab", this.innerText.trim());
 
           switch (this.innerText.trim()) {
             case "Information":
@@ -263,285 +241,259 @@ document.querySelectorAll(".itm").forEach((item) => {
       });
     </script>
 
-
-<script>
-//alert(window.location)
-
-   async function removeAccount (event){
-  event.preventDefault(); 
-
-  let v = await validate(deleteU.value, deleteP.value)
- 
-
-
-   if( v.valid === false && v.valid  !== undefined ){
-     alert('Please enter a valid password')
-   }else{
-
-     let e = window.prompt('are you sure you want to delete this account? this is a permanant action. Type Delete to complete this action!')
- 
-     if(e.trim() == 'Delete'){
-      socket.emit('logremove', username)  
-      
-       deleteAccount( deleteU.value, deleteP.value ).then(function(e){
-         if(e.res){      
-        //  updateUsername(deleteU.value, deleteP.value, 'delete').then(function(e){
-            document.querySelectorAll('#home')[0].click();
-        //  })
-           
-         }else{
-           alert('there was a problem deleting this account')
-         }
-       })
-     }
-   }
-  }
- 
-
-  function deleteAccount(username, password) {
-  return new Promise((resolve, reject) => {
-    $.ajax({
-      type: "post",
-      url: "http://localhost:3000/api/account/remove",
-      data: {
-        username: username,
-        password: password,
-      },
-      success: function (e) {
-        resolve(e);
-      },
-    });
-  });
-}
-
-function validate(username, password) {
-  return new Promise((resolve, reject) => {
-    $.ajax({
-      type: "post",
-      url: "http://localhost:3000/api/account/validate",
-      data: {
-        username: username,
-        password: password,
-      },
-      success: function (e) {
-        resolve(e);
-      },
-    });
-  });
-}
-
-function updateUsername(username, password, new_username) {
-  return new Promise((resolve, reject) => {
-    $.ajax({
-      type: "post",
-      url: "http://localhost:3000/api/account/changeUsername",
-      data: {
-        curr_username: username,
-        curr_password: password,
-        new_username: new_username,
-      },
-      success: function (e) {
-        resolve(e);
-      },
-    });
-  });
-}
-
-function updatePassword(username, password, new_password) {
-  return new Promise((resolve, reject) => {
-    $.ajax({
-      type: "post",
-      url: "http://localhost:3000/api/account/changePassword",
-      data: {
-        curr_username: username,
-        curr_password: password,
-        new_password: new_password,
-      },
-      success: function (e) {
-        resolve(e);
-      },
-    });
-  });
-}
-
-
-function reset() {
-  usernameC.value = username;
-  passwordC.value = "";
-
-  N_username.setAttribute("disabled",true);
-  passwordC.removeAttribute('disabled')
-
-  submit.addEventListener("click", update);
-
-}
-
-function resetA() {
-  usernameP.value = username;
-  passwordP.value = "";
-
-  N_password.setAttribute("disabled",true);
-  passwordP.removeAttribute('disabled')
-
-  submit1.addEventListener("click", resetA);
-
-}
-
-
-async function updateA(e){
-  if(N_password.value.trim().length > 0){
-    if(!(passwordP.value == N_password.value)  ){
-      let a = window.confirm('are you sure you want to reset your password')
-
-      if(a){
-      updatePassword(usernameP.value, passwordP.value, N_password.value).then(function(){
-        alert('your account is updated')
-      }).then(function(){
-        resetA()
-        window.location.reload()
-
-      })
-    }
-    }else{
-
-      
-    }
-  }
-}
-
-
-async function update(e){
-  if(N_username.value.trim().length > 0){
-    let v = await validate(N_username.value, passwordC.value);
-
-    if( !v.valid && !(usernameC.value == N_username.value) ){
-      updateUsername(usernameC.value, passwordC.value, N_username.value).then(function(){
-        alert('your account is updated')
-      }).then(function(){
-        reset()
-
-        socket.emit('logedin', N_username.value)
-        socket.username = N_username.value
-        window.location.reload()
-
-      })
-    }else{
-      v.valid ? alert('Please enter a new valid username that dose not already exist') : (usernameC.value == N_username.value) ? alert("please enter a new username") : null;
-    }
-  }
-}
-
-async function valUpdate(e) {
-    e.preventDefault(); 
-  let v = await validate(usernameC.value, passwordC.value);
-
-  if ( v.valid === true && v.valid  !== undefined  ) {
-    N_username.removeAttribute('disabled')
-    submit.value = 'submit'
-    passwordC.setAttribute('disabled',true)
-
-    submit.removeEventListener('click',valUpdate)
-    submit.addEventListener('click',update)
-
-
-}
-
-}
-
-
-async function pwdUpdate(e) {
-  e.preventDefault(); 
-
-
-  if(passwordP.value.trim().length > 0){
-    let v = await validate(usernameP.value, passwordP.value);
-
-    N_password.removeAttribute('disabled')
-    submit1.value = 'submit'
-    passwordP.setAttribute('disabled',true)
-
-submit1.removeEventListener('click', pwdUpdate)
-
-submit1.addEventListener('click',updateA)
-  }
-}
-
- // delete yor account 
- 
- let deleteU =  {value: socket.username}
-   const deleteP = document.querySelector('.deleteP')
- const button = document.querySelector('#submitD')
- 
- deleteU.value  = username
- 
- 
- button.addEventListener('click',removeAccount)
- 
-
- 
-
-
- //update you username
- const usernameC =  deleteU
-  const passwordC = document.querySelector(".changeP")
-  const N_username = document.querySelector(".N-username")
-
-  const submit = document.querySelector("#submit")
- 
- 
-
- submit.addEventListener("click",valUpdate)
-
-
- //update password
-
- const usernameP =  deleteU
-  const passwordP = document.querySelector(".changePP")
-  const N_password = document.querySelector(".N-password")
-
-  const submit1 = document.querySelector("#submit1")
- 
- 
-
- submit1.addEventListener("click",pwdUpdate)
-
-
-
-</script>
-
-<script>
-  //https://dev.to/eaich/how-to-detect-when-the-user-stops-typing-3cm1 
-
-
-let timer,
-    timeoutVal = 3000; // time it takes to wait for user to stop typing in ms
-
-
-// detects when the user is actively typing
-test.addEventListener('keypress', handleKeyPress);
-// triggers a check to see if the user is actually done typing
-test.addEventListener('keyup', handleKeyUp);
-
-
-// when the user has stopped pressing on keys, set the timeout
-// if the user presses on keys before the timeout is reached, then this timeout should be canceled via the keypress event
-function handleKeyUp(e) {
-  window.clearTimeout(timer); // prevent errant multiple timeouts from being generated
-  timer = window.setTimeout(() => {
-    socket.emit('ntypping', socket.array)
-  }, timeoutVal);
-}
-
-
-// when user is pressing down on keys, clear the timeout
-// a keyup event always follows a keypress event so the timeout will be re-initiated there
-function handleKeyPress(e) {
-  window.clearTimeout(timer);
-  socket.emit('typping', socket.array)
-}
-
-</script>
-
-
+    <script>
+      //alert(window.location)
+
+      async function removeAccount(event) {
+        event.preventDefault();
+
+        let v = await validate(deleteU.value, deleteP.value);
+
+        if (v.valid === false && v.valid !== undefined) {
+          alert("Please enter a valid password");
+        } else {
+          let e = window.prompt(
+            "are you sure you want to delete this account? this is a permanant action. Type Delete to complete this action!"
+          );
+
+          if (e.trim() == "Delete") {
+            socket.emit("logremove", username);
+
+            deleteAccount(deleteU.value, deleteP.value).then(function (e) {
+              if (e.res) {
+                //  updateUsername(deleteU.value, deleteP.value, 'delete').then(function(e){
+                document.querySelectorAll("#home")[0].click();
+                //  })
+              } else {
+                alert("there was a problem deleting this account");
+              }
+            });
+          }
+        }
+      }
+
+      function deleteAccount(username, password) {
+        return new Promise((resolve, reject) => {
+          $.ajax({
+            type: "post",
+            url: "http://localhost:3000/api/account/remove",
+            data: {
+              username: username,
+              password: password,
+            },
+            success: function (e) {
+              resolve(e);
+            },
+          });
+        });
+      }
+
+      function validate(username, password) {
+        return new Promise((resolve, reject) => {
+          $.ajax({
+            type: "post",
+            url: "http://localhost:3000/api/account/validate",
+            data: {
+              username: username,
+              password: password,
+            },
+            success: function (e) {
+              resolve(e);
+            },
+          });
+        });
+      }
+
+      function updateUsername(username, password, new_username) {
+        return new Promise((resolve, reject) => {
+          $.ajax({
+            type: "post",
+            url: "http://localhost:3000/api/account/changeUsername",
+            data: {
+              curr_username: username,
+              curr_password: password,
+              new_username: new_username,
+            },
+            success: function (e) {
+              resolve(e);
+            },
+          });
+        });
+      }
+
+      function updatePassword(username, password, new_password) {
+        return new Promise((resolve, reject) => {
+          $.ajax({
+            type: "post",
+            url: "http://localhost:3000/api/account/changePassword",
+            data: {
+              curr_username: username,
+              curr_password: password,
+              new_password: new_password,
+            },
+            success: function (e) {
+              resolve(e);
+            },
+          });
+        });
+      }
+
+      function reset() {
+        usernameC.value = username;
+        passwordC.value = "";
+
+        N_username.setAttribute("disabled", true);
+        passwordC.removeAttribute("disabled");
+
+        submit.addEventListener("click", update);
+      }
+
+      function resetA() {
+        usernameP.value = username;
+        passwordP.value = "";
+
+        N_password.setAttribute("disabled", true);
+        passwordP.removeAttribute("disabled");
+
+        submit1.addEventListener("click", resetA);
+      }
+
+      async function updateA(e) {
+        if (N_password.value.trim().length > 0) {
+          if (!(passwordP.value == N_password.value)) {
+            let a = window.confirm(
+              "are you sure you want to reset your password"
+            );
+
+            if (a) {
+              updatePassword(usernameP.value, passwordP.value, N_password.value)
+                .then(function () {
+                  alert("your account is updated");
+                })
+                .then(function () {
+                  resetA();
+                  window.location.reload();
+                });
+            }
+          } else {
+          }
+        }
+      }
+
+      async function update(e) {
+        if (N_username.value.trim().length > 0) {
+          let v = await validate(N_username.value, passwordC.value);
+
+          if (!v.valid && !(usernameC.value == N_username.value)) {
+            updateUsername(usernameC.value, passwordC.value, N_username.value)
+              .then(function () {
+                alert("your account is updated");
+              })
+              .then(function () {
+                reset();
+
+                socket.emit("logedin", N_username.value);
+                socket.username = N_username.value;
+                window.location.reload();
+              });
+          } else {
+            v.valid
+              ? alert(
+                  "Please enter a new valid username that dose not already exist"
+                )
+              : usernameC.value == N_username.value
+              ? alert("please enter a new username")
+              : null;
+          }
+        }
+      }
+
+      async function valUpdate(e) {
+        e.preventDefault();
+        let v = await validate(usernameC.value, passwordC.value);
+
+        if (v.valid === true && v.valid !== undefined) {
+          N_username.removeAttribute("disabled");
+          submit.value = "submit";
+          passwordC.setAttribute("disabled", true);
+
+          submit.removeEventListener("click", valUpdate);
+          submit.addEventListener("click", update);
+        }
+      }
+
+      async function pwdUpdate(e) {
+        e.preventDefault();
+
+        if (passwordP.value.trim().length > 0) {
+          let v = await validate(usernameP.value, passwordP.value);
+
+          N_password.removeAttribute("disabled");
+          submit1.value = "submit";
+          passwordP.setAttribute("disabled", true);
+
+          submit1.removeEventListener("click", pwdUpdate);
+
+          submit1.addEventListener("click", updateA);
+        }
+      }
+
+      // delete yor account
+
+      let deleteU = { value: socket.username };
+      const deleteP = document.querySelector(".deleteP");
+      const button = document.querySelector("#submitD");
+
+      deleteU.value = username;
+
+      button.addEventListener("click", removeAccount);
+
+      //update you username
+      const usernameC = deleteU;
+      const passwordC = document.querySelector(".changeP");
+      const N_username = document.querySelector(".N-username");
+
+      const submit = document.querySelector("#submit");
+
+      submit.addEventListener("click", valUpdate);
+
+      //update password
+
+      const usernameP = deleteU;
+      const passwordP = document.querySelector(".changePP");
+      const N_password = document.querySelector(".N-password");
+
+      const submit1 = document.querySelector("#submit1");
+
+      submit1.addEventListener("click", pwdUpdate);
+    </script>
+
+    <script>
+      //https://dev.to/eaich/how-to-detect-when-the-user-stops-typing-3cm1
+
+      let timer,
+        timeoutVal = 3000; // time it takes to wait for user to stop typing in ms
+
+      // detects when the user is actively typing
+      test.addEventListener("keypress", handleKeyPress);
+      // triggers a check to see if the user is actually done typing
+      test.addEventListener("keyup", handleKeyUp);
+
+      // when the user has stopped pressing on keys, set the timeout
+      // if the user presses on keys before the timeout is reached, then this timeout should be canceled via the keypress event
+      function handleKeyUp(e) {
+        window.clearTimeout(timer); // prevent errant multiple timeouts from being generated
+        timer = window.setTimeout(() => {
+          socket.emit("ntypping", socket.array);
+        }, timeoutVal);
+      }
+
+      // when user is pressing down on keys, clear the timeout
+      // a keyup event always follows a keypress event so the timeout will be re-initiated there
+      function handleKeyPress(e) {
+        window.clearTimeout(timer);
+        socket.emit("typping", socket.array);
+      }
+    </script>
   </body>
 </html>
