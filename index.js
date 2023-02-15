@@ -1,24 +1,30 @@
-//npm install body-parser express express-session http path socket.io sqlite3 node-fetch@2 crypto sequelize
-
-
 const {
-  addNewuser,
+  addUser,
   validate,
   getAll,
 
   addChats,
   recalChats,
-} = require("./database/sql.js");
 
+  createRoomAndJoin,
+  validateRoomAndGroup,
 
+  removeUser,
+  updateUser,
+  updatePassword,
+} = require("./sequelize.js");
 
 const {
   add_roomA,
-  find_roomA,
   add_memberA,
   getAllusersA,
   remove_memberA,
 } = require("./place.js");
+
+var secret = require("./secret.js"); //.session
+
+const { v1: uuidv1, v4: uuidv4 } = require("uuid");
+const cors = require("cors");
 
 var bodyParser = require("body-parser"),
   express = require("express"),
@@ -30,22 +36,28 @@ var bodyParser = require("body-parser"),
   router = express.Router(),
   io = socket(http);
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "static")));
-
 const sessionMiddleware = session({
-  secret: "secret",
-  resave: false,
+  genid: function (req) {
+    return uuidv4(); // use UUIDs for session IDs
+  },
+  secret: secret.session,
+  resave: true,
   saveUninitialized: true,
 });
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, "static")));
 app.use(sessionMiddleware);
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 
 // gets both pages as urls
 const login = "/accountPage.html";
 const chat = "/homePage.html";
-
 // gets the port
 const port = process.env.PORT || 3000;
 
@@ -60,9 +72,28 @@ Array.prototype.similarity = function (arr) {
 };
 
 // the home page
-app.get("/", function (_request, res) {
-  //res.sendFile(path.resolve(__dirname + login));
+app.get("/", function (req, res) {
   res.sendFile(path.resolve(__dirname + login));
+});
+
+//app.get('/userHost', onRequest)
+
+// these are the methods that if called will send you back to the login page
+app.get("/signup", function (request, response) {
+  response.redirect("/");
+  response.sendFile(path.resolve(__dirname + login));
+});
+app.get("/login", function (request, response) {
+  response.redirect("/");
+  response.sendFile(path.resolve(__dirname + login));
+});
+app.get("/logout", function (request, response) {
+  response.redirect("/");
+  response.sendFile(path.resolve(__dirname + login));
+});
+app.post("/home", function (request, response) {
+  response.redirect("/");
+  response.sendFile(path.resolve(__dirname + login));
 });
 
 // gets the inputs from the user on the sign up page
@@ -70,14 +101,17 @@ app.post("/signup", function (request, response) {
   // gets the input fields
   let ussername = request.body.ussername;
   let password = request.body.password;
+
   // makes sure the input fields exists and are not empty
   if (ussername && password) {
-    validate(ussername, password).then(function (params) {
+    validate(ussername, false, "or").then(function (params) {
       if (!params) {
         request.session.loggedin = true;
         request.session.ussername = ussername;
-        request.session.password = password;
-        addNewuser(ussername, password).then();
+        //request.session.password = password;
+        addUser(ussername, password).then(function (e) {
+          request.session.room = e;
+        });
 
         response.redirect("/home");
       } else {
@@ -86,17 +120,17 @@ app.post("/signup", function (request, response) {
           "an account with that username already exsits!";
 
         response.end(`
-				<script>
-				function removeUser() {
-					localStorage.removeItem('username');
-					localStorage.removeItem('password');
-				}
-				</script>
-				<h1>an account with that username already exsits!</h1>
-				<form id='home' action='/logout' method="post">
-				<input type="submit" value="log out" onclick='removeUser()'/>
-				</form>
-				`);
+                  <script>
+                  function removeUser() {
+                      localStorage.removeItem('username');
+                      localStorage.removeItem('password');
+                  }
+                  </script>
+                  <h1>an account with that username already exsits!</h1>
+                  <form id='home' action='/logout' method="post">
+                  <input type="submit" value="log out" onclick='removeUser()'/>
+                  </form>
+                  `);
       }
     });
   } else {
@@ -105,17 +139,17 @@ app.post("/signup", function (request, response) {
     response.statusMessage = "Please enter username and Password!";
 
     response.end(`
-		<script>
-				function removeUser() {
-					localStorage.removeItem('username');
-					localStorage.removeItem('password');
-				}
-				</script>
-				<h1>Please enter username and Password!</h1>
-				<form id='home' action='/logout' method="post">
-				<input type="submit" value="log out" onclick='removeUser()'/>
-				</form>
-				`);
+          <script>
+                  function removeUser() {
+                      localStorage.removeItem('username');
+                      localStorage.removeItem('password');
+                  }
+                  </script>
+                  <h1>Please enter username and Password!</h1>
+                  <form id='home' action='/logout' method="post">
+                  <input type="submit" value="log out" onclick='removeUser()'/>
+                  </form>
+                  `);
     //response.end();
   }
 });
@@ -126,13 +160,14 @@ app.post("/login", function (request, response) {
   let ussername = request.body.ussername;
   let password = request.body.password;
   // makes sure the input fields exists and are not empty
-
   if (ussername && password) {
     validate(ussername, password).then(function (params) {
+      //console.log(params)
+
       if (params) {
         request.session.loggedin = true;
         request.session.ussername = ussername;
-        request.session.password = password;
+        // request.session.password = password;
 
         response.redirect("/home");
         response.end();
@@ -143,17 +178,17 @@ app.post("/login", function (request, response) {
         response.statusMessage = "incorrect username and/or password!";
 
         response.end(`
-				<script>
-				function removeUser() {
-					localStorage.removeItem('username');
-					localStorage.removeItem('password');
-				}
-				</script>
-				<h1>incorrect username and/or password!</h1>
-				<form id='home' action='/logout' method="post">
-				<input type="submit" value="log out" onclick='removeUser()'/>
-				</form>
-				`);
+                  <script>
+                  function removeUser() {
+                      localStorage.removeItem('username');
+                      localStorage.removeItem('password');
+                  }
+                  </script>
+                  <h1>incorrect username and/or password!</h1>
+                  <form id='home' action='/logout' method="post">
+                  <input type="submit" value="log out" onclick='removeUser()'/>
+                  </form>
+                  `);
       }
     });
   } else {
@@ -163,17 +198,17 @@ app.post("/login", function (request, response) {
     response.statusMessage = "Please enter username and Password!";
 
     response.end(`
-		<script>
-		function removeUser() {
-			localStorage.removeItem('username');
-			localStorage.removeItem('password');
-		}
-		</script>
-				<h1>Please enter username and Password!</h1>
-				<form id='home' action='/logout' method="post">
-				<input type="submit" value="log out" onclick='removeUser()'/>
-				</form>
-				`);
+          <script>
+          function removeUser() {
+              localStorage.removeItem('username');
+              localStorage.removeItem('password');
+          }
+          </script>
+                  <h1>Please enter username and Password!</h1>
+                  <form id='home' action='/logout' method="post">
+                  <input type="submit" value="log out" onclick='removeUser()'/>
+                  </form>
+                  `);
 
     //response.end('hi');
   }
@@ -214,21 +249,209 @@ app.get("/home", function (request, response) {
     response.statusMessage = "Please login to view this page!";
 
     response.end(`
-		<script>
-		function removeUser() {
-			localStorage.removeItem('username');
-			localStorage.removeItem('password');
-		}
-		</script>
-				<h1>Please login to view this page!</h1>
-				<form id='home' action='/logout' method="post">
-				<input type="submit" value="log out" onclick='removeUser()'/>
-				</form>
-				`);
+          <script>
+          function removeUser() {
+              localStorage.removeItem('username');
+              localStorage.removeItem('password');
+          }
+          </script>
+                  <h1>Please login to view this page!</h1>
+                  <form id='home' action='/logout' method="post">
+                  <input type="submit" value="log out" onclick='removeUser()'/>
+                  </form>
+                  `);
   }
   //response.end();
 });
 
+//sets the inside of the iframe to the iframe.html
+app.get("/html/iframe.html", function (req, res) {
+  res.sendFile(path.join(__dirname + "/html/iframe.html"));
+});
+
+app.get("/css/app.css", function (req, res) {
+  res.sendFile(path.join(__dirname + "/css/app.css"));
+});
+
+app.get("/css/login.css", function (req, res) {
+  res.sendFile(path.join(__dirname + "/css/login.css"));
+});
+
+app.get("/html/css/chat.css", function (req, res) {
+  res.sendFile(path.join(__dirname + "/html/css/chat.css"));
+});
+
+app.get("/html/css/nav.css", function (req, res) {
+  res.sendFile(path.join(__dirname + "/html/css/nav.css"));
+});
+
+app.get("/js/markdown.js", function (req, res) {
+  res.sendFile(path.join(__dirname + "/js/markdown.js"));
+});
+
+app.get("/js/socket.js", function (req, res) {
+  res.sendFile(path.join(__dirname + "/js/socket.js"));
+});
+
+app.get("/js/account.js", function (req, res) {
+  res.sendFile(path.join(__dirname + "/js/welcolm.js"));
+});
+
+app.get("/js/custom_event.js", function (req, res) {
+  res.sendFile(path.join(__dirname + "/js/login.js"));
+});
+
+app.get("/js/welcolm.js", function (req, res) {
+  res.sendFile(path.join(__dirname + "/js/welcolm.js"));
+});
+
+app.get("/js/login.js", function (req, res) {
+  res.sendFile(path.join(__dirname + "/js/login.js"));
+});
+
+app.get("/html/js/nav.js", function (req, res) {
+  res.sendFile(path.join(__dirname + "/html/js/nav.js"));
+});
+
+app.get("/html/js/pill.js", function (req, res) {
+  res.sendFile(path.join(__dirname + "/html/js/pill.js"));
+});
+
+app.get("/html/js/slides.js", function (req, res) {
+  res.sendFile(path.join(__dirname + "/html/js/slides.js"));
+});
+
+app.get("/README.md", function (req, res) {
+  res.sendFile(path.join(__dirname + "/README.md"));
+});
+
+app.post("/api/table", function (request, res) {
+  let username = request.body.username;
+  let password = request.body.password;
+  let uuid = request.body.uuid;
+  let table = request.body.table;
+});
+
+app.post("/api/account/validate", function (request, response) {
+  // gets the input fields
+  let username = request.body.username;
+  let password = request.body.password;
+
+  // makes sure the input fields exists and are not empty
+  if (username && password) {
+    validate(username, password).then(function (params) {
+      response.json({
+        username: username,
+        valid: params,
+      });
+    });
+  } else {
+    response.json({
+      error: "Invalid username or password",
+    });
+  }
+});
+
+app.post("/api/account/changeUsername", async function (request, response) {
+  let body = request.body;
+
+  let v = await validate(body.curr_username, body.curr_password);
+  let v1 = await validate(body.new_username, body.curr_password);
+
+  if (v && !v1) {
+    let r = await updateUser(body.curr_username, body.new_username);
+
+    try {
+      remove_memberA(request.session.ussername);
+    } catch (e) {
+      console.log(e);
+    }
+
+    // request.session.destroy();
+
+    request.session.loggedin = true;
+    request.session.ussername = body.new_username;
+    // request.session.password = password;
+
+    //next file
+    var option = {
+      headers: {
+        user: request.session.ussername,
+      },
+    };
+    //response.sendFile(path.resolve(__dirname + login));
+    response.sendFile(path.join(__dirname + chat), option);
+
+    // Output username
+    //response.send('Welcome back, ' + request.session.ussername + '!');
+
+    /*
+
+    response.json({
+      old: {
+        o_username: body.curr_username,
+        o_password: body.curr_password,
+      },
+      new: {
+        n_username: body.new_username,
+      },
+      transaction: r
+    });
+    */
+  } else {
+    if (!v) {
+      response.json({
+        error: "the perameters that were enterd are invalid!",
+      });
+    } else if (v1) {
+      response.json({
+        error: "the new username that you selected already exsits!",
+      });
+    }
+  }
+});
+
+app.post("/api/account/changePassword", async function (request, response) {
+  let body = request.body;
+
+  let v = await validate(body.curr_username, body.curr_password);
+
+  if (v) {
+    let r = await updatePassword(body.curr_username, body.new_password);
+
+    request.session.loggedin = true;
+
+    //next file
+    var option = {
+      headers: {
+        user: request.session.ussername,
+      },
+    };
+    //response.sendFile(path.resolve(__dirname + login));
+    response.sendFile(path.join(__dirname + chat), option);
+  }
+});
+
+app.post("/api/account/remove", function (request, response) {
+  let body = request.body;
+
+  try {
+    remove_memberA(request.session.ussername);
+  } catch (e) {
+    console.log(e);
+  }
+  if (body.username != request.session.ussername) {
+    response.json({
+      error: "Invalid username",
+    });
+  } else {
+    removeUser(body.username, body.password).then(function (e) {
+      response.json({
+        res: e,
+      });
+    });
+  }
+});
 
 /* 
 gets the server as from http 
@@ -238,83 +461,84 @@ http.listen(port, () => {
   console.log(`Socket.IO server running at http://localhost:${port}/`);
 });
 
-String.prototype.replaceLast = function (old,thing) {
-  var a = this.split("");
-  a[this.lastIndexOf(old)] = thing;
-  return a.join("");
-
-  return;
-}
-
-const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
+const wrap = (middleware) => (socket, next) =>
+  middleware(socket.request, {}, next);
 
 io.use(wrap(sessionMiddleware));
 
-
 io.use((socket, next) => {
   const session = socket.request.session;
-  socket.session = session
-  validate(session.ussername, session.password).then(function(x){
-    if (session && session.loggedin && session.ussername && x ) {
+  socket.session = session;
 
-      //console.log('save')
+  validate(session.ussername, false, "or").then(function (x) {
+    if (session && session.loggedin && x) {
       next();
     } else {
       next(new Error("unauthorized"));
     }
-  })
-  
-
-
+  });
 });
-
 
 // this block will run when the client connects
 io.on("connection", (socket) => {
-  let s = socket.request.session;  
-  
-
-  socket.use( (socket, next) => {
-    validate(s.ussername, s.password).then(function(x){
-      if (s && s.loggedin && s.ussername && x ) {    
+  let s = socket.request.session;
+  socket.use((socket, next) => {
+    validate(s.ussername, false, "or").then(function (x) {
+      if (s && s.loggedin && s.ussername && x) {
         next();
       } else {
         next(new Error("unauthorized"));
       }
-    })
+    });
   });
 
   socket.on("error", (err) => {
-    console.log(err)
-    
     if (err && err.message === "unauthorized") {
       socket.disconnect();
     }
   });
 
-  
-
   const session = socket.request.session;
 
-  
   socket.username = "";
   socket.chat_room = "";
 
   socket.on("logedin", function (user) {
-//    console.log( `keyd: ${session.ussername} and username: ${user}`)
+    validate(user, false, "or").then(async function (x) {
+      if (!x && session.ussername != user) {
+        console.log("fail!!!!!!!");
 
-     validate(user, s.password).then(async function (x){
-    if(!x && session.ussername != user){
-             console.log('fail!!!!!!!')
+        socket.disconnect();
+      } else {
+        add_memberA(user);
+        socket.username = user;
 
-socket.disconnect();
-    }else{
-    add_memberA(user);
-    socket.username = user;
+        var c = await getAll();
+
+        totalUsers = c.map((x) => x.username);
+
+        // a is the not loged in usr
+        let a = totalUsers.difference(getAllusersA());
+        // b is all the loged in users
+        let b = totalUsers.similarity(getAllusersA());
+        a = a.map((x) => [x, false]);
+        b = b.map((x) => [x, true]);
+
+        let t = a.concat(b);
+
+        socket.broadcast.emit("people", t);
+        socket.emit("people", t);
+      }
+    });
+  });
+
+  socket.on("logremove", async function (user) {
+    remove_memberA(user);
 
     var c = await getAll();
 
     totalUsers = c.map((x) => x.username);
+    //.difference
 
     // a is the not loged in usr
     let a = totalUsers.difference(getAllusersA());
@@ -325,12 +549,9 @@ socket.disconnect();
 
     let t = a.concat(b);
 
+    t = t.filter((x) => x[0] != user);
+
     socket.broadcast.emit("people", t);
-    socket.emit("people", t);
-    }
-     })
-
-
   });
 
   socket.on("logedout", async function (user) {
@@ -350,45 +571,147 @@ socket.disconnect();
 
     let t = a.concat(b);
 
-    socket.broadcast.emit("peopleO", t);
+    socket.broadcast.emit("people", t);
   });
 
   socket.on("persistence", function (a) {
-        recalChats(a).then(function (arr) {
-      socket.emit("persistence", arr);
-    });
+    setTimeout(function () {
+      validateRoomAndGroup(...a).then(async function (j) {
+        if (j == undefined || j.length == 0) {
+          console.error(
+            "#1. there were no rooms with the serched peramerters. the room with the current peramerters will be created."
+          );
+
+          createRoomAndJoin(...a, true).then((x) => {
+            setTimeout(async function () {
+              validateRoomAndGroup(...a).then(async function (j) {
+                if (j == undefined || j.length == 0) {
+                  //socket.emit("persistence#1", []);
+                  console.error(
+                    "#2. there were no rooms with the serched peramerters. the room with the current peramerters will be created."
+                  );
+                } else {
+                  x = j[0].room;
+
+                  //console.log(`room: ${x} `)
+                  add_roomA(...a);
+                  socket.join(x);
+
+                  socket.chat_room = x;
+
+                  //console.log(j)
+
+                  recalChats(x).then(function (arr) {
+                    socket.emit("persistence", arr);
+                  });
+                }
+              });
+            }, 100);
+          });
+        } else {
+          createRoomAndJoin(...a).then((x) => {
+            validateRoomAndGroup(...a).then(async function (j) {
+              x = j[0].room;
+              //console.log(`room: ${x} `)
+              add_roomA(...a);
+              socket.join(x);
+
+              socket.chat_room = x;
+
+              recalChats(x).then(function (arr) {
+                socket.emit("persistence", arr);
+              });
+            });
+          });
+        }
+      });
+    }, 100);
+  });
+  //s.room
+
+  socket.on(socket.chat_room, (room) => {
+    socket.broadcast.emit("sent", room);
   });
 
-  socket.on("room", (room) => {
-    let j = add_roomA(...room);
-
-    socket.join(j);
-
-    socket.chat_room = j;
-
-    socket.emit("message", "this is a message just for you");
+  socket.on("typping", function (a) {
+    socket.to(socket.chat_room).emit(
+      "typping",
+      {
+        room: socket.chat_room,
+        name: socket.username,
+      },
+      a
+    );
   });
 
-  socket.on("find room", (room) => {
-    let other = socket.chat_room.replace(socket.username, "");
-    let j = find_roomA(room).code;
-
-    socket.join(j);
-    socket.chat_room = j;
-
-    socket.emit("message", "this is a message just for you");
+  socket.on("ntypping", function (a) {
+    socket.to(socket.chat_room).emit(
+      "ntypping",
+      {
+        room: socket.chat_room,
+        name: socket.username,
+      },
+      a
+    );
   });
 
-  socket.on("message", (message) => {
-    let other = socket.chat_room.replace(socket.username, "");
-    //socket.broadcast.emit(other, `a message was sent from ${socket.username}`);
+  socket.on("message", async (message, a) => {
+    let who = a;
+    if (!socket.chat_room) {
+      createRoomAndJoin(...a).then((x) => {
+        validateRoomAndGroup(...a).then(async function (j) {
+          x = j[0].room;
+          //console.log(`room: ${x} `)
+          add_roomA(...a);
+          socket.join(x);
 
-    socket.broadcast.emit(other, socket.username);
+          socket.chat_room = x;
 
-    addChats(socket.username, message, socket.chat_room).then((time) => {
-      //console.log(  {name: socket.username ,message: message, time: time} )
-      io.to(socket.chat_room).emit("message", {name: socket.username ,message: message, time: time} );
-    });
+          let ids = await io.to(socket.chat_room).allSockets();
+
+          // Array.from(ids).includes()
+
+          addChats(socket.username, message, socket.chat_room).then((time) => {
+            //console.log(  {name: socket.username ,message: message, time: time} )
+            io.to(socket.chat_room).emit(
+              "message",
+              {
+                room: socket.chat_room,
+                name: socket.username,
+                message: message,
+                time: time,
+              },
+              a
+            );
+
+            //console.log(  socket.id , Array.from(ids).includes(socket.id) )
+            socket.to(socket.chat_room).emit("sent", socket.username, a);
+          });
+        });
+      });
+    } else {
+      let ids = await io.to(socket.chat_room).allSockets();
+
+      // Array.from(ids).includes()
+
+      addChats(socket.username, message, socket.chat_room).then((time) => {
+        //console.log(  {name: socket.username ,message: message, time: time} )
+        io.to(socket.chat_room).emit(
+          "message",
+          {
+            room: socket.chat_room,
+            name: socket.username,
+            message: message,
+            time: time,
+          },
+          a
+        );
+
+        //console.log(  socket.id , Array.from(ids).includes(socket.id) )
+        socket.to(socket.chat_room).emit("sent", socket.username, who);
+      });
+    }
   });
 });
+
 //http://localhost:3000/

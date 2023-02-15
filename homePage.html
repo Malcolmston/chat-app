@@ -1,1543 +1,499 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title>Chat App</title>
-
-
-	<link rel="icon" type="image/x-icon"
-		href="https://images.unsplash.com/photo-1666515878427-c0a045bf03c6?crop=entropy&cs=tinysrgb&fm=jpg&ixid=MnwzMjM4NDZ8MHwxfHJhbmRvbXx8fHx8fHx8fDE2Njg3NDQ4MjM&ixlib=rb-4.0.3&q=80">
-
-	<style>
-		@import url("https://fonts.googleapis.com/css?family=Raleway:400,400i,700");
-
-		:focus {
-			outline: none;
-			box-shadow: none !important;
-		}
-
-		iframe {
-    width: 700px;
-    height: 700px;
-    
-    border: 1px solid black;
-}
-
-		.overlay {
-			height: 100%;
-			width: 100%;
-			display: none;
-			position: fixed;
-			z-index: 1;
-			top: 0;
-			left: 0;
-			background-color: rgb(0, 0, 0);
-			background-color: rgba(0, 0, 0, 0.9);
-		}
-
-		.overlay-content {
-			position: relative;
-			top: 25%;
-			width: 100%;
-			text-align: center;
-			margin-top: 30px;
-		}
-
-		.overlay a {
-			padding: 8px;
-			text-decoration: none;
-			font-size: 36px;
-			color: #818181;
-			display: block;
-			transition: 0.3s;
-		}
-
-		.overlay a:hover,
-		.overlay a:focus {
-			color: #f1f1f1;
-		}
-
-		ul {
-			list-style-type: none;
-			width: 400px;
-			height: 550px;
-			background-color: lightgray;
-
-			overflow-y: scroll;
-		}
-
-		li {
-			font: 1rem 'Fira Sans', sans-serif;
-		}
-
-		textarea {
-			resize: none;
-		}
-
-		.messageBar {
-			width: 400px;
-			height: 48px;
-			border: solid #000000 1px;
-		}
-
-		table,
-		td,
-		th {
-			border: 0px solid !important;
-		}
-
-		table {
-			width: 400px !important;
-			border-collapse: collapse !important;
-			overflow-y: scroll;
-		}
-
-		@media only screen and (max-height: 540px) {
-			ul {
-				height: 450px;
-			}
-		}
-
-		@media only screen and (max-height: 440px) {
-			ul {
-				height: 350px;
-			}
-		}
-
-		@media only screen and (max-height: 340px) {
-			ul {
-				height: 250px;
-			}
-		}
-
-		@media only screen and (max-height: 240px) {
-			.overlay {
-				display: block;
-			}
-		}
-
-		.flex-container {
-			display: grid;
-			grid-template-columns: 1fr 1fr;
-			grid-gap: 20px;
-		}
-
-
-
-		.active {
-			background-color: #00E676;
-		}
-
-		.inactive {
-			background-color: #FF1744;
-		}
-
-
-
-		.chip1 {
-			display: inline-flex;
-			flex-direction: row;
-			background-color: #e5e5e5;
-			border: none;
-			cursor: default;
-			height: 36px;
-			outline: none;
-			padding: 0;
-			font-size: 14px;
-			color: #333333;
-			font-family: "Open Sans", sans-serif;
-			white-space: nowrap;
-			align-items: center;
-			border-radius: 16px;
-			vertical-align: middle;
-			text-decoration: none;
-			justify-content: center;
-		}
-
-		.chip-head1 {
-			display: flex;
-			position: relative;
-			overflow: hidden;
-			font-size: 1.25rem;
-			flex-shrink: 0;
-			align-items: center;
-			user-select: none;
-			border-radius: 50%;
-			justify-content: center;
-			width: 36px;
-			color: #fff;
-			height: 36px;
-			font-size: 20px;
-			margin-right: -4px;
-		}
-
-		.chip-content1 {
-			cursor: inherit;
-			display: flex;
-			align-items: center;
-			user-select: none;
-			white-space: nowrap;
-			padding-left: 12px;
-			padding-right: 12px;
-		}
-
-		.chip-svg1 {
-			color: #999999;
-			cursor: pointer;
-			height: auto;
-			margin: 4px 4px 0 -8px;
-			fill: currentColor;
-			width: 1em;
-			height: 1em;
-			display: inline-block;
-			font-size: 24px;
-			transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-			user-select: none;
-			flex-shrink: 0;
-		}
-
-		.chip-svg1:hover {
-			color: #666666;
-		}
-
-
-		.tooltip1 {
-			position: relative;
-			display: inline-block;
-		}
-
-		.tooltip1 .tooltiptext1 {
-			visibility: hidden;
-			width: 120px;
-			background-color: black;
-			color: #fff;
-			text-align: center;
-			border-radius: 6px;
-			padding: 5px 0;
-
-			/* Position the tooltip */
-			position: absolute;
-			z-index: 1;
-		}
-
-		.tooltip1:hover .tooltiptext1 {
-			visibility: visible;
-		}
-
-
-		.nav {
-			width: 100%;
-			height: 40px;
-		}
-
-		.nav svg {
-			font-size: 35px;
-		}
-
-
-		.nav .itm {
-			float: left;
-			width: calc(100%/4);
-			height: 40px;
-
-			font-family: Raleway, sans-serif;
-			font-size: 30px;
-
-		}
-
-
-
-		.nav .active {
-			background-color: lime;
-		}
-
-		.nav .inactive {
-			background-color: rgb(37, 37, 37);
-			color: white;
-		}
-
-
-		.nav .active:hover {
-			background-color: #006600;
-			color: white;
-
-		}
-
-		.nav .inactive:hover {
-			background-color: #D3D3D3;
-			color: black;
-		}
-
-		/* markdown css */
-
-
-		table {
-			border: 1px solid;
-			width: 100%;
-		}
-
-		table,
-		td,
-		th {
-			border: 1px solid;
-		}
-
-
-		[alt="jellyfish"] {
-			width: 100px;
-			height: 100px;
-		}
-	</style>
-
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.3/animate.min.css" rel="stylesheet">
-	<link href="https://www.w3schools.com/w3css/4/w3.css" rel="stylesheet">
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet">
-
-
-
-</head>
-
-
-
-<body>
-
-	<div class='top nav'>
-		<div class='itm inactive'> <i class="fa-duotone fa-question"></i> Question</div>
-		<div class='itm active'><i class="fa-duotone fa-house-user"></i> Home </div>
-		<div class='itm inactive'><i class="fa-duotone fa-comments"></i> Chat</div>
-		<div class='itm inactive'><i class="fa-sharp fa-solid fa-magnifying-glass"></i> Information</div>
-	</div>
-
-	<main class="Question">
-		<iframe id="myframe" srcdoc="
-		<!DOCTYPE html>
-		<html lang='en'>
-		
-		<head>
-		  <meta charset='UTF-8'>
-		  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-		  <meta http-equiv='X-UA-Compatible' content='ie=edge'>
-		  <title>Chat App</title>
-		
-		
-		  <link rel='icon' type='image/x-icon'
-			href='https://images.unsplash.com/photo-1666515878427-c0a045bf03c6?crop=entropy&cs=tinysrgb&fm=jpg&ixid=MnwzMjM4NDZ8MHwxfHJhbmRvbXx8fHx8fHx8fDE2Njg3NDQ4MjM&ixlib=rb-4.0.3&q=80'>
-		
-		  <style>
-			@import url('https://fonts.googleapis.com/css?family=Raleway:400,400i,700');
-		
-			body {
-			  font-family: 'Lato', sans-serif;
-			}
-		
-			.nav {
-			  width: 100%;
-			  height: 40px;
-			}
-		
-			.nav svg {
-			  font-size: 35px;
-			}
-		
-			.itm {
-			  float: left;
-			  width: calc(100% / 3);
-			  height: 40px;
-			  font-family: Raleway, sans-serif;
-			  font-size: 30px;
-			}
-		
-			.active {
-			  background-color: #0f0;
-			}
-		
-			.active:hover {
-			  background-color: #060;
-			  color: #fff;
-			}
-		
-			.inactive {
-			  background-color: #252525;
-			  color: #fff;
-			}
-		
-			.inactive:hover {
-			  background-color: #d3d3d3;
-			  color: #000;
-			}
-		
-			.closebtn {
-			  padding: 8px;
-			  text-decoration: none;
-			  font-size: 36px;
-			  color: #818181;
-			  display: block;
-			  transition: 0.3s;
-			}
-		
-			.overlay .closebtn:hover,
-			.overlay .closebtn:focus {
-			  color: #f1f1f1;
-			}
-		
-			.overlay {
-			  height: 100%;
-			  width: 100%;
-			  display: none;
-			  position: fixed;
-			  z-index: 1;
-			  top: 0;
-			  left: 0;
-			  background-color: #000;
-			  background-color: rgba(0, 0, 0, 0.9);
-			}
-		
-			.overlay+a {
-			  padding: 8px;
-			  text-decoration: none;
-			  font-size: 36px;
-			  color: #818181;
-			  display: block;
-			  transition: 0.3s;
-			}
-		
-			.overlay-content {
-			  position: relative;
-			  top: 25%;
-			  width: 100%;
-			  text-align: center;
-			  margin-top: 30px;
-			}
-		
-			.text {
-			  padding-top: 8px;
-			  text-decoration: none;
-			  font-size: 24px;
-			  color: #818181;
-			  display: block;
-			  transition: 0.3s;
-			}
-		
-			.overlay a:hover,
-			.overlay a:focus {
-			  color: #f1f1f1;
-			}
-		
-			.overlay .closebtn {
-			  position: absolute;
-			  top: 20px;
-			  right: 45px;
-			  font-size: 60px;
-			}
-		
-			.slide {
-			  overflow: hidden;
-			  margin-left: auto;
-			  margin-right: auto;
-			  width: 600px;
-			  height: 450px;
-			  background-color: #fff;
-			  border: 4px solid #000;
-			}
-		
-			.slide:nth-of-type(1) .nav {
-			  width: 100%;
-			  height: 40px;
-			}
-		
-			.slide:nth-of-type(1) .nav svg {
-			  font-size: 35px;
-			}
-		
-			.slide:nth-of-type(1) .helpArow {
-			  font-size: 55px;
-			  color: #d3d3d3;
-			}
-		
-			.slide:nth-of-type(1) .clicked {
-			  animation-name: mouse;
-			  animation-fill-mode: forwards;
-			  animation-duration: 1s;
-			}
-		
-			.slide:nth-of-type(1) .nav .itm {
-			  float: left;
-			  width: calc(100% / 3);
-			  height: 40px;
-			  font-family: Raleway, sans-serif;
-			  font-size: 30px;
-			}
-		
-			.slide:nth-of-type(1) .nav .active {
-			  background-color: #0f0;
-			}
-		
-			.slide:nth-of-type(1) .nav .inactive {
-			  background-color: #252525;
-			  color: #fff;
-			}
-		
-			.slide:nth-of-type(1) .nav .active:hover {
-			  background-color: #060;
-			  color: #fff;
-			}
-		
-			.slide:nth-of-type(1) .nav .inactive:hover {
-			  background-color: #d3d3d3;
-			  color: #000;
-			}
-		
-			.slide:nth-of-type(2) .bar {
-			  float: left;
-			}
-		
-			.slide:nth-of-type(2) .flex-container {
-			  float: left;
-			}
-		
-			.slide:nth-of-type(2) ul {
-			  list-style-type: none;
-			  width: 250px;
-			  height: 300px;
-			  background-color: #d3d3d3;
-			  overflow-y: scroll;
-			}
-		
-			.slide:nth-of-type(2) li {
-			  font: 15px Arial, sans-serif !important;
-			  color: #000 !important;
-			}
-		
-			.slide:nth-of-type(2) textarea {
-			  resize: none;
-			}
-		
-			.slide:nth-of-type(2) .bar svg {
-			  float: left !important;
-			}
-		
-			.slide:nth-of-type(2) .bar a {
-			  font: 15px Arial, sans-serif !important;
-			  color: #000 !important;
-			  float: left;
-			}
-		
-			.slide:nth-of-type(2) .messageBar {
-			  margin-top: -11px;
-			  width: 250px;
-			  height: 48px;
-			  border: solid #000 1px;
-			}
-		
-			.slide:nth-of-type(2) .send {
-			  float: right;
-			}
-		
-			@media screen and (max-height: 450px) {
-			  .overlay a {
-				font-size: 20px;
-			  }
-		
-			  .overlay .closebtn {
-				font-size: 40px;
-				top: 15px;
-				right: 35px;
-			  }
-			}
-		
-			@-moz-keyframes mouse {
-			  from {
-				color: #d3d3d3;
-			  }
-		
-			  to {
-				color: #000;
-			  }
-			}
-		
-			@-webkit-keyframes mouse {
-			  from {
-				color: #d3d3d3;
-			  }
-		
-			  to {
-				color: #000;
-			  }
-			}
-		
-			@-o-keyframes mouse {
-			  from {
-				color: #d3d3d3;
-			  }
-		
-			  to {
-				color: #000;
-			  }
-			}
-		
-			@keyframes mouse {
-			  from {
-				color: #d3d3d3;
-			  }
-		
-			  to {
-				color: #000;
-			  }
-			}
-		  </style>
-		
-		  <style>
-
-			:focus {
-				outline: none;
-				box-shadow: none !important;
-			}
-
-
-		
-	
-			table,
-			td,
-			th {
-				border: 0px solid !important;
-			}
-	
-			table {
-				width: 400px !important;
-				border-collapse: collapse !important;
-				overflow-y: scroll;
-			}
-	
-			.flex-container {
-				display: grid;
-				grid-template-columns: 1fr 1fr;
-				grid-gap: 20px;
-			}
-	
-	
-	
-	
-			.chip1 {
-				display: inline-flex;
-				flex-direction: row;
-				background-color: #e5e5e5;
-				border: none;
-				cursor: default;
-				height: 36px;
-				outline: none;
-				padding: 0;
-				font-size: 14px;
-				color: #333333;
-				font-family: 'Open Sans', sans-serif;
-				white-space: nowrap;
-				align-items: center;
-				border-radius: 16px;
-				vertical-align: middle;
-				text-decoration: none;
-				justify-content: center;
-			}
-	
-			.chip-head1 {
-				display: flex;
-				position: relative;
-				overflow: hidden;
-				font-size: 1.25rem;
-				flex-shrink: 0;
-				align-items: center;
-				user-select: none;
-				border-radius: 50%;
-				justify-content: center;
-				width: 36px;
-				color: #fff;
-				height: 36px;
-				font-size: 20px;
-				margin-right: -4px;
-			}
-	
-			.chip-content1 {
-				cursor: inherit;
-				display: flex;
-				align-items: center;
-				user-select: none;
-				white-space: nowrap;
-				padding-left: 12px;
-				padding-right: 12px;
-			}
-	
-			.chip-svg1 {
-				color: #999999;
-				cursor: pointer;
-				height: auto;
-				margin: 4px 4px 0 -8px;
-				fill: currentColor;
-				width: 1em;
-				height: 1em;
-				display: inline-block;
-				font-size: 24px;
-				transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-				user-select: none;
-				flex-shrink: 0;
-			}
-	
-			.chip-svg1:hover {
-				color: #666666;
-			}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-			.tooltip1 {
-				position: relative;
-				display: inline-block;
-			}
-	
-			.tooltip1 .tooltiptext1 {
-				visibility: hidden;
-				width: 120px;
-				background-color: black;
-				color: #fff;
-				text-align: center;
-				border-radius: 6px;
-				padding: 5px 0;
-	
-				/* Position the tooltip */
-				position: absolute;
-				z-index: 1;
-			}
-	
-			.tooltip1:hover .tooltiptext1 {
-				visibility: visible;
-			}
-
-
-.nav {
-    width: 100%;
-    height: 40px;
-} 
-
-.nav svg {
-  font-size:35px;
-}
-
-
-.nav .itm {
-    float: left;
-    width: calc(100%/3);
-     height: 40px;
-  
-    font-family: Raleway, sans-serif;
-  font-size: 30px;
-  
-}
-
-
-
-.nav .active {
-    background-color: lime;
-}
-
-.nav .inactive {
-    background-color: rgb(37,37,37);
-    color: white;
-}
-
-
-.nav .active:hover {
-    background-color: #006600;
-    color: white;
-    
-}
-.nav .inactive:hover {
-    background-color: #D3D3D3;
-    color: black;
-}
-</style>
-
-		</head>
-		
-		<body>
-		<div id='myNav' class='overlay'>  
-		  <div class='text'>text</div>
-		  
-		  <a href='javascript:void(0)' class='closebtn' onclick='closeNav()'>&times;</a>
-		  <div class='overlay-content'>
-		<div class='slide'>
-		  <div class='top nav'>
-				<div class='itm active'><i class='fa-duotone fa-house-user'></i> Home </div>
-				<div class='itm inactive'><i class='fa-duotone fa-comments'></i> Chat</div>
-				<div class='itm inactive'><i class='fa-sharp fa-solid fa-magnifying-glass'></i> Information</div>
-			</div>
-		 
-		  
-		
-		</div>
-			<div class='slide'>
-				<div class='bar'>
-					<form id='home' action='/logout' method='post'>
-						<i class='fa-solid fa-house'></i>
-						<a>Log out</a>
-					</form>
-				</div>
-				<div class='flex-container'>
-					<div class='inputs'>
-						<ul class='chat'></ul>
-						<textarea style='overflow:auto;resize:none' class='messageBar' rows='10' cols='40'></textarea>
-						<button class='send'><i class='fa-sharp fa-solid fa-paper-plane-top'></i></button>
-					</div>
-					<div class='table'>
-						<table id='allContentPeople'>
-						</table>
-					</div>
-				</div>
-			  
-			</div>
-			 <div class='slide'>3</div>
-		  </div>
-		  
-		  
-		</div>
-		
-		  <script src='https://kit.fontawesome.com/fd76b8450f.js' crossorigin='anonymous'></script>
-			  <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-		 
-		 <script>
-			class Pils {
-			  constructor() {
-				this.chip = document.createElement('div');
-				this.chip.setAttribute('class', 'chip1');
-		
-				this.tooltip = document.createElement('div');
-				this.tooltip.setAttribute('class', 'tooltip1');
-		
-				this.chip_head = document.createElement('div');
-				this.chip_head.id = 'chip_head ';
-		
-				this.tooltiptext = document.createElement('span');
-				this.tooltiptext.setAttribute('class', `tooltiptext1`);
-				this.tooltiptext.id = 'tooltiptext ';
-		
-				this.chip_content = document.createElement('div');
-				this.chip_content.setAttribute('class', 'chip-content1');
-		
-				this.chip_close = document.createElement('div');
-				this.chip_close.setAttribute('class', 'chip-close1');
-		
-				this.chip_close.innerHTML = `<svg onclick='this.parentElement.parentElement.style.display='none'' class='chip-svg1' focusable='false' viewBox='0 0 24 24' aria-hidden='true'><path d='M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z'></path></svg>`;
-			  }
-		
-			  create_pil(stus, username, t = true) {
-				this.chip_head.setAttribute('class', `chip-head1 ${stus}`);
-		
-				this.tooltiptext.innerText = stus;
-		
-				this.tooltip.append(this.chip_head, this.tooltiptext);
-		
-				this.chip_content.innerText = username;
-		
-				this.chip.append(this.tooltip, this.chip_content, this.chip_close);
-		
-				if (t) {
-				  document.querySelector('#allContentPeople').append(this.chip);
-				} else {
-				  return this.chip;
-				}
-			  }
-		
-			  change_pil(stus) {
-				//   this.className = ''
-				this.chip_head.classList.add('chip-head1');
-				this.chip_head.classList.add(stus);
-		
-				this.tooltiptext.innerText = stus;
-			  }
-		
-			  change_pilFrom(element, stus) {
-				// element.className = ''
-				let chip_head = document.getElementById('chip_head');
-				let tooltiptext = document.getElementById('tooltiptext');
-				//tooltiptext
-				chip_head.classList.add('chip-head1');
-				chip_head.classList.add(stus);
-		
-				tooltiptext.innerText = stus;
-			  }
-			}
-		
-			function openNav() {
-			  document.getElementById('myNav').style.display = 'block';
-			}
-		
-			function closeNav() {
-			  document.getElementById('myNav').style.display = 'none';
-			}
-		
-			function slide(show) {
-			  let arr = document.querySelectorAll('.slide');
-			  if (show > [...arr].length2) return;
-		
-			  arr.forEach(function (x, i) {
-				if (i == show) {
-				  x.style.display = 'block';
-				} else {
-				  x.style.display = 'none';
-				}
-			  });
-			}
-		
-			function delay(time) {
-			  return new Promise((resolve) => setTimeout(resolve, time));
-			}
-		
-			function slideone() {
-			  let clicks = 0;
-		
-			  return new Promise((resolve, reject) => {
-				let text =
-				  'Click on the tabs <br> the green bar means that it is the selected one';
-		
-				document.querySelector('.text').innerHTML = text;
-		
-				document.querySelectorAll('.itm').forEach((item) => {
-				  item.addEventListener('click', function () {
-					if (clicks == 5) {
-					  idx = 1;
-					  slide(idx);
-					  resolve(true)
-					}
-		
-					clicks += 1;
-		
-					let clicked = this.innerText.trim();
-		
-					document.querySelectorAll('.itm').forEach(function (x) {
-					  if (x.innerText.trim() == clicked) {
-						x.classList.replace('inactive', 'active');
-					  } else {
-						x.classList.replace('active', 'inactive');
-					  }
-					});
-				  });
-				});
-			  })
-			}
-		
-			function slidetwo() {
-			  return new Promise((resolve, reject) => {
-				var chats = document.querySelector('.chat');
-				var input = document.querySelector('.messageBar');
-				var pil = new Pils();
-		
-				function message(m) {
-				  let li = document.createElement('li');
-		
-				  let txt = document.createElement('a');
-				  txt.innerHTML = m;
-		
-				  li.append(txt);
-				  chats.append(li);
-		
-				  input.value = '';
-				}
-		
-				var calls = {
-				  first: function () {
-					return new Promise((resolve, reject) => {
-					  document.querySelector('#home').removeEventListener('click', () => { })
-		
-					  pil.create_pil('active', 'username');
-		
-					  text = 'Next hover your mouse over the lime green circle';
-					  document.querySelector('.text').innerHTML = text;
-		
-					  document.querySelector('.chip1').addEventListener('mouseover', function (event) {
-						document.querySelector('.chip1').removeEventListener('mouseover', () => { })
-		
-						text = 'this shows the other users status';
-						document.querySelector('.text').innerHTML = text;
-		
-						delay(2000).then((x) => {
-						  //text = 'click on the lime green button to chat with a user';
-						  //document.querySelector('.text').innerHTML = text;
-		
-						  resolve(true);
-						});
-					  });
-					});
-				  },
-				  second: function () {
-					return new Promise((resolve, reject) => {
-					  text = 'click on the lime green button to chat a user';
-					  document.querySelector('.text').innerHTML = text;
-		
-					  document.querySelector('.chip1').addEventListener('click', function (event) {
-						  //document.querySelector('.chip1').removeEventListener('click',()=>{})
-		
-						  text = 'look at the chat block to the left';
-						  document.querySelector('.text').innerHTML = text;
-						  delay(2000).then((x) => {
-							chats.innerHTML = '';
-							text =
-							  'once you have seen the message: this is a message just for you you may start chatting';
-							message('this is a message just for you');
-							document.querySelector('.text').innerHTML = text;
-							document.querySelector('.chip1').removeEventListener('click', () => { })
-							resolve(true)
-						  })
-						})
-					})
-				  },
-				  third: function () {
-					return new Promise((resolve, reject) => {
-					  delay(2500).then((x) => {
-						text = 'You can start typing in the textarea on the bottom left';
-		
-						document.querySelector('.text').innerHTML = text;
-		
-		
-						document.querySelector('.messageBar').addEventListener('keydown', function () {
-						  document.querySelector('.messageBar').addEventListener('mouseout', function () {
-							text = 'if you hit the button next to the textarea that will send a message';
-		
-							document.querySelector('.text').innerHTML = text;
-		
-							document.querySelector('.send').addEventListener('click', function () {
-							  resolve(true)
-							})
-						  });
-						});
-		
-					  });
-		
-					})
-				  }
-				}
-		
-				let text = 'Click on Log out';
-		
-				document.querySelector('.text').innerHTML = text;
-		
-				document.querySelector('#home').addEventListener('click', function (event) {
-				  calls.first.call().then((x) => {
-					calls.second.call().then((x) => {
-					  calls.third.call().then((x) => {
-						resolve(true)
-					  })
-					});
-				  });
-				})
-			  })
-			}
-		
-		
-		
-		
-			window.addEventListener('load', function () {
-			  Swal.fire({
-				title: 'Would you like to use the interactive tutorial?',
-				showCancelButton: true,
-				confirmButtonText: 'sure',
-				cancelButtonText: `Nope`,
-			  }).then((result) => {
-				/* Read more about isConfirmed, isDenied below */
-				if (result.isConfirmed) {
-				  openNav();
-				  let idx = 0;
-				  slide(idx);
-		
-				  slideone().then(function () {
-					slidetwo().then(function () {
-						alert('you have completed the tutorial! good job!');
-					})
-		
-				  })
-				} else if (result.isDenied) {
-		
-				}
-			  })
-		
-		
-		
-			  //slideone()
-			});
-		
-		  </script>
-		</body>
-		</html>
-		">
-	</iframe>
-
-	</main>
-
-	<main class="Home">
-		<div class='bar'>
-			<form id='home' action='/logout' method="post">
-				<i class="fa-solid fa-house"></i>
-				<a>Log out</a>
-			</form>
-			<canvas id="myCanvas" width="240" height="30">
-				Your browser does not support the canvas tag.
-			</canvas>
-	</main>
-
-	<main class="Chat">
-		<div id="myNav" class="overlay">
-			<div class="overlay-content">
-				<a href="#">Page is too small</a>
-			</div>
-		</div>
-		<div class='bar'>
-			<form id='home' action='/logout' method="post">
-				<i class="fa-solid fa-house"></i>
-				<a>Log out</a>
-			</form>
-		</div>
-		<div class="flex-container">
-			<div class="inputs">
-				<p class="roomNameId" style="font-size: 18px;">room: ?</p>
-				<ul class='chat'></ul>
-				<textarea style="overflow:auto;resize:none" class='messageBar' rows="10" cols="40"></textarea>
-				<button class="send"><i class="fa-sharp fa-solid fa-paper-plane-top"></i></button>
-			</div>
-			<div class="table">
-				<table id="allContentPeople">
-				</table>
-			</div>
-		</div>
-	</main>
-
-	<main class="Information"></main>
-
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-	<script src="https://kit.fontawesome.com/fd76b8450f.js" crossorigin="anonymous"></script>
-	<script src='https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js'></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-	<script src="/socket.io/socket.io.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/mouse0270-bootstrap-notify/3.1.5/bootstrap-notify.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
-
-
-
-
-	<script>
-
-
-		// gets the web headers 
-		var xhr = new XMLHttpRequest();
-		xhr.open('GET', document.location, false);
-		xhr.send(null);
-		username = xhr.getResponseHeader("user");
-
-
-		//welcolms a user in the canvas
-		function welcolm(user) {
-
-			let canvas = document.getElementById("myCanvas");
-			let jsConfetti = new JSConfetti(canvas, { resize: false })
-
-
-			//{ resize: true }
-
-
-			let ctx = canvas.getContext("2d");
-			let fontColor = 'red';
-			let textVariable = ` Hello: ${user}`
-
-
-			ctx.font = "600 40px Proxima-nova";
-
-			canvas.width = ctx.measureText(textVariable).width;
-			canvas.style.width = canvas.width + 'px';
-
-
-			ctx.font = "600 40px Proxima-nova";
-			ctx.fillStyle = fontColor;
-			ctx.textAlign = "left";
-
-
-
-			ctx.fillText(textVariable, 0, canvas.height - 1);
-
-			jsConfetti.addConfetti({
-				confettiColors: ['#ff0a54', '#ff477e', '#ff7096', '#ff85a1', '#fbb1bd', '#f9bec7']
-			}).then(() => { jsConfetti.clearCanvas() })
-
-		}
-
-
-
-		document.querySelectorAll('main').forEach(item => {
-			item.style.display = "none"
-		})
-
-		document.querySelector('.Home').style.display = 'block'
-
-		welcolm(username)
-
-
-		async function getMarkdown() {
-			let info = $.ajax({
-				method: 'get',
-				url: 'https://raw.githubusercontent.com/Malcolmston/chat-app/main/README.md'
-			})
-
-			console.log(info)
-			return info
-		}
-
-		function getMarkdownText(arg) {
-			return marked(arg, { sanitize: true });
-		}
-
-
-		//
-		var o = ['Question','Home', 'Chat', 'Information']
-
-		document.querySelectorAll('.itm').forEach(item => {
-			item.addEventListener('click', function () {
-
-				let clicked = this.innerText.trim()
-
-
-				document.querySelectorAll('.itm').forEach(function (x) {
-					if (x.innerText.trim() == clicked) {
-						x.classList.replace('inactive', 'active')
-					} else {
-						x.classList.replace('active', 'inactive')
-					}
-
-
-				})
-
-
-
-				document.querySelectorAll('main').forEach(item => {
-					if (item.className == this.innerText.trim()) {
-						item.style.display = "block"
-					} else {
-						item.style.display = "none"
-					}
-				})
-
-				switch (this.innerText.trim()) {
-					case "Information":
-
-						getMarkdown().then((data) => {
-
-							document.querySelector('.Information').innerHTML = getMarkdownText(data)
-
-						}).catch((e) => {
-							console.error(e)
-							document.querySelector('.Information').innerHTML = 'failed! ' + e
-						})
-						break;
-					case "Chats":
-						break;
-					case "Home":
-						break;
-					case "How to":
-						break;
-					default:
-						break;
-				}
-
-			})
-
-		})
-
-
-	</script>
-
-	<script> 	
-			const socket = io();
-
-	
-
-
-
-		// gets date in mm/dd/yyy format
-		function getDay() {
-			var today = new Date();
-			var dd = today.getDate();
-			var mm = today.getMonth() + 1; //January is 0!
-			var yyyy = today.getFullYear();
-
-			if (dd < 10) {
-				dd = '0' + dd
-			}
-
-			if (mm < 10) {
-				mm = '0' + mm
-			}
-			return mm + '/' + dd + '/' + yyyy;
-		}
-
-		//the class Pill creats the pill html element and will also allow for state changes
-		class Pils {
-			constructor() {
-				this.chip = document.createElement('div')
-				this.chip.setAttribute('class', 'chip1')
-
-				this.tooltip = document.createElement('div')
-				this.tooltip.setAttribute('class', 'tooltip1')
-
-				this.chip_head = document.createElement('div')
-				this.chip_head.id = 'chip_head '
-
-				this.tooltiptext = document.createElement('span')
-				this.tooltiptext.setAttribute('class', `tooltiptext1`)
-				this.tooltiptext.id = 'tooltiptext '
-
-				this.chip_content = document.createElement('div')
-				this.chip_content.setAttribute('class', 'chip-content1')
-
-				this.chip_close = document.createElement('div')
-				this.chip_close.setAttribute('class', 'chip-close1')
-
-				this.chip_close.innerHTML = `<svg onclick="this.parentElement.parentElement.style.display='none'" class="chip-svg1" focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"></path></svg>`
-				//onclick="this.parentElement.style.display='none'"
-			}
-
-			create_pil(stus, username, t = true) {
-				this.chip_head.setAttribute('class', `chip-head1 ${stus}`)
-
-				this.tooltiptext.innerText = stus
-
-
-				this.tooltip.append(this.chip_head, this.tooltiptext)
-
-				this.chip_content.innerText = username
-
-				this.chip.append(this.tooltip, this.chip_content, this.chip_close)
-
-				if (t) {
-					document.querySelector('#allContentPeople').append(this.chip)
-				} else {
-					return this.chip
-				}
-			}
-
-			change_pil(stus) {
-				//   this.className = ""
-				this.chip_head.classList.add('chip-head1')
-				this.chip_head.classList.add(stus)
-
-				this.tooltiptext.innerText = stus
-			}
-
-			change_pilFrom(element, stus) {
-				// element.className = ''
-				let chip_head = document.getElementById('chip_head ')
-				let tooltiptext = document.getElementById('tooltiptext ')
-				//tooltiptext
-				chip_head.classList.add('chip-head1')
-				chip_head.classList.add(stus)
-
-				tooltiptext.innerText = stus
-			}
-
-		}
-
-		// this will send 'notifications' to the user. 
-		var infoClick = function (id) {
-			$.notify({
-				// options
-				title: '<strong>Info</strong>',
-				message: `<br> <input value='${id}'></input> has sent you a message`,
-			}, {
-				// settings
-				element: 'body',
-				position: null,
-				type: "info",
-				allow_dismiss: true,
-				newest_on_top: false,
-				showProgressbar: false,
-				placement: {
-					from: "top",
-					align: "right"
-				},
-				offset: 20,
-				spacing: 10,
-				z_index: 1031,
-				delay: 3300,
-				timer: 1000,
-				url_target: '_blank',
-				mouse_over: null,
-				animate: {
-					enter: 'animated bounceInDown',
-					exit: 'animated bounceOutUp'
-				},
-				onShow: null,
-				onShown: null,
-				onClose: null,
-				onClosed: null,
-				icon_type: 'class',
-			});
-		}
-
-		// turns sockets on in the server side
-
-socket.on('error',function(message,type){
-	alert(message)
-	
-})
-
-		socket.emit('logedin', username)
-		// logs the messages fpr you
-		function message(m) {
-			if( typeof m == 'string') {
-				let li = document.createElement('li')
-
-			let txt = document.createElement('a')
-			txt.innerHTML = m
-
-			li.append(txt)
-			chats.append(li)
-
-			input.value = ""
-
-				return;
-			}
-			//console.log( m )
-			let {name, message, time} = m
-			let li = document.createElement('li')
-
-			let txt = document.createElement('a')
-			txt.innerHTML = name+" : "+message+" : "+time
-
-			li.append(txt)
-			chats.append(li)
-
-			input.value = ""
-
-			return;
-		}
-		// a short cut to add pills in the contacts list
-		function add_row(room, active) {
-
-			var tr = document.createElement('tr')
-
-
-			let pill = new Pils()
-			let pil;
-
-
-			let s = active == "offPage" ? active : (active ? 'active' : 'inactive')
-
-			pil = pill.create_pil(s, room, false)
-
-			pil.addEventListener('click', function (a) {
-				if (a.target.tagName !== 'path') {
-					roomThing(room, pil)
-				}
-			})
-
-			tdb = document.createElement('td')
-			tdb.append(pil)
-
-			tr.append(tdb)
-
-			document.querySelector('table').append(tr)
-
-			//pill.change_pilFrom(document.getElementById(id), s)
-
-			//}
-
-		}
-		// joins each room wen you click the contact card. persetence is called
-		function roomThing(room, pil) {
-			let to = room
-
-
-			document.getElementsByClassName('roomNameId')[0].innerHTML = to ? 'room: '+to : 'room: ?'
-			
-			socket.array = [username, to]
-			socket.emit('room', socket.array)
-			socket.emit('persistence', socket.array, pil)
-
-		}
-
-		function removeUser() {
-        Cookies.remove('username')
-        Cookies.remove('password')
-
-
-        //localStorage.removeItem("username");
-        //localStorage.removeItem("password");
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Chat App</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="https://images.unsplash.com/photo-1666515878427-c0a045bf03c6?crop=entropy&cs=tinysrgb&fm=jpg&ixid=MnwzMjM4NDZ8MHwxfHJhbmRvbXx8fHx8fHx8fDE2Njg3NDQ4MjM&ixlib=rb-4.0.3&q=80"
+    />
+    <link rel="stylesheet" type="text/css" href="css/app.css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.3/animate.min.css"
+      rel="stylesheet"
+    />
+    <link href="https://www.w3schools.com/w3css/4/w3.css" rel="stylesheet" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="top nav">
+      <div class="itm inactive">
+        <i class="fa-duotone fa-question"></i> Question
+      </div>
+      <div class="itm inactive">
+        <i class="fa-duotone fa-house-user"></i> Home
+      </div>
+      <div class="itm inactive">
+        <i class="fa-duotone fa-comments"></i> Chat
+      </div>
+      <div class="itm inactive">
+        <i class="fa-sharp fa-solid fa-magnifying-glass"></i> Information
+      </div>
+      <div class="itm inactive">
+        <i class="fa-sharp fa-regular fa-gears"></i> Settings
+      </div>
+    </div>
+
+    <main class="Question">
+      <iframe id="myframe" src="/html/iframe.html"> </iframe>
+    </main>
+
+    <main class="Home">
+      <div class="bar">
+        <form id="home" action="/logout" method="post">
+          <i class="fa-solid fa-house"></i>
+          <a>Log out</a>
+        </form>
+        <canvas id="myCanvas" width="240" height="30">
+          Your browser does not support the canvas tag.
+        </canvas>
+      </div>
+    </main>
+
+    <main class="Chat">
+      <div id="myNav" class="overlay">
+        <div class="overlay-content">
+          <a href="#">Page is too small</a>
+        </div>
+      </div>
+      <div class="bar">
+        <form id="home" action="/logout" method="post">
+          <i class="fa-solid fa-house"></i>
+          <a>Log out</a>
+        </form>
+
+        <canvas id="myCanvas" width="240" height="30">
+          Your browser does not support the canvas tag.
+        </canvas>
+      </div>
+      <div class="flex-container">
+        <div class="inputs">
+          <p class="roomNameId" style="font-size: 18px">room: ?</p>
+          <ul class="chat"></ul>
+          <textarea
+            style="overflow: auto; resize: none"
+            class="messageBar"
+            rows="10"
+            cols="40"
+          ></textarea>
+          <button class="send">
+            <i class="fa-sharp fa-solid fa-paper-plane-top"></i>
+          </button>
+        </div>
+        <div class="table">
+          <table id="allContentPeople"></table>
+        </div>
+      </div>
+    </main>
+
+    <main class="Information"></main>
+
+    <main class="Settings">
+      <h3 style="text-align: center">change user name</h3>
+
+      <label for="username">Your password</label>
+      <input type="text" class="password changeP" required />
+      <br />
+      <label for="N-username">new username</label>
+      <input type="text" class="N-username" required disabled />
+      <br />
+      <input type="submit" id="submit" value="check my account" />
+
+      <hr />
+
+      <h3 style="text-align: center">change password</h3>
+
+      <label for="username">Your password</label>
+      <input type="text" class="password changePP" required />
+      <br />
+      <label for="N-username">new password</label>
+      <input type="text" class="N-password" required disabled />
+      <br />
+      <input type="submit" id="submit1" value="check my account" />
+
+      <hr />
+
+      <h3 style="text-align: center">Delete your account</h3>
+
+      <label for="username">Your password</label>
+      <input type="text" class="password deleteP" required />
+      <br />
+      <input type="submit" id="submitD" value="delet my account" />
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script
+      src="https://kit.fontawesome.com/fd76b8450f.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mouse0270-bootstrap-notify/3.1.5/bootstrap-notify.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
+    <script src="/js/welcolm.js"></script>
+    <script src="/js/markdown.js"></script>
+    <script src="/js/socket.js"></script>
+    <script>
+      document.querySelectorAll("main").forEach((item) => {
+        item.style.display = "none";
+      });
+
+      let p = sessionStorage.getItem("tab") || "Home";
+      /*
+document.querySelector(p).click();
+document.querySelector(p).classList.replace("inactive", "active");
+*/
+
+      document.querySelector("." + p).style.display = "block";
+
+      document.querySelectorAll(".itm").forEach((item) => {
+        if (item.textContent.trim() == p) {
+          item.classList.replace("inactive", "active");
+
+          switch (item.textContent.trim()) {
+            case "Information":
+              getMarkdown()
+                .then((data) => {
+                  document.querySelector(".Information").innerHTML =
+                    getMarkdownText(data);
+                })
+                .catch((e) => {
+                  console.error(e);
+                  document.querySelector(".Information").innerHTML =
+                    "failed! " + e;
+                });
+              break;
+            case "Chats":
+              break;
+            case "Home":
+              break;
+            case "How to":
+              break;
+            case "Settings":
+              break;
+            default:
+              break;
+          }
+        }
+      });
+
+      welcolm(username);
+      chatWelcolm(username);
+
+      //
+      var o = ["Question", "Home", "Chat", "Information", "Settings"];
+
+      document.querySelectorAll(".itm").forEach((item) => {
+        item.addEventListener("click", function () {
+          let clicked = this.innerText.trim();
+
+          document.querySelectorAll(".itm").forEach(function (x) {
+            if (x.innerText.trim() == clicked) {
+              x.classList.replace("inactive", "active");
+            } else {
+              x.classList.replace("active", "inactive");
+            }
+          });
+
+          document.querySelectorAll("main").forEach((item) => {
+            if (item.className == this.innerText.trim()) {
+              item.style.display = "block";
+            } else {
+              item.style.display = "none";
+            }
+          });
+
+          sessionStorage.setItem("tab", this.innerText.trim());
+
+          switch (this.innerText.trim()) {
+            case "Information":
+              getMarkdown()
+                .then((data) => {
+                  document.querySelector(".Information").innerHTML =
+                    getMarkdownText(data);
+                })
+                .catch((e) => {
+                  console.error(e);
+                  document.querySelector(".Information").innerHTML =
+                    "failed! " + e;
+                });
+              break;
+            case "Chats":
+              break;
+            case "Home":
+              break;
+            case "How to":
+              break;
+            case "Settings":
+              break;
+            default:
+              break;
+          }
+        });
+      });
+    </script>
+
+    <script>
+      //alert(window.location)
+
+      async function removeAccount(event) {
+        event.preventDefault();
+
+        let v = await validate(deleteU.value, deleteP.value);
+
+        if (v.valid === false && v.valid !== undefined) {
+          alert("Please enter a valid password");
+        } else {
+          let e = window.prompt(
+            "are you sure you want to delete this account? this is a permanant action. Type Delete to complete this action!"
+          );
+
+          if (e.trim() == "Delete") {
+            socket.emit("logremove", username);
+
+            deleteAccount(deleteU.value, deleteP.value).then(function (e) {
+              if (e.res) {
+                //  updateUsername(deleteU.value, deleteP.value, 'delete').then(function(e){
+                document.querySelectorAll("#home")[0].click();
+                //  })
+              } else {
+                alert("there was a problem deleting this account");
+              }
+            });
+          }
+        }
       }
-		// Get the input field
-		var input = document.querySelector(".messageBar"),
-			chats = document.querySelector(".chat"),
-			home = document.querySelectorAll('#home'),
-			send = document.querySelector('.send');
 
+      function deleteAccount(username, password) {
+        return new Promise((resolve, reject) => {
+          $.ajax({
+            type: "post",
+            url: "http://localhost:3000/api/account/remove",
+            data: {
+              username: username,
+              password: password,
+            },
+            success: function (e) {
+              resolve(e);
+            },
+          });
+        });
+      }
 
-		send.addEventListener('click', function () {
-			event.preventDefault();
-			if (input.value == "" || input.value.trim() == "") return;
-			//socket.emit('message', username + ":  " + input.value.replaceAll('\n', '<br>') + ": " + getDay());
-		//alert(socket.array)
-			socket.emit('message',input.value.replaceAll('\n', '<br>'), socket.array);
-	})
+      function validate(username, password) {
+        return new Promise((resolve, reject) => {
+          $.ajax({
+            type: "post",
+            url: "http://localhost:3000/api/account/validate",
+            data: {
+              username: username,
+              password: password,
+            },
+            success: function (e) {
+              resolve(e);
+            },
+          });
+        });
+      }
 
+      function updateUsername(username, password, new_username) {
+        return new Promise((resolve, reject) => {
+          $.ajax({
+            type: "post",
+            url: "http://localhost:3000/api/account/changeUsername",
+            data: {
+              curr_username: username,
+              curr_password: password,
+              new_username: new_username,
+            },
+            success: function (e) {
+              resolve(e);
+            },
+          });
+        });
+      }
 
-		home.forEach(function (element) {
-			element.addEventListener('click', function (event) {
-				socket.emit('logedout', username)
-				removeUser()
-				document.querySelector('#home').submit()
-			})
-		})
+      function updatePassword(username, password, new_password) {
+        return new Promise((resolve, reject) => {
+          $.ajax({
+            type: "post",
+            url: "http://localhost:3000/api/account/changePassword",
+            data: {
+              curr_username: username,
+              curr_password: password,
+              new_password: new_password,
+            },
+            success: function (e) {
+              resolve(e);
+            },
+          });
+        });
+      }
 
+      function reset() {
+        usernameC.value = username;
+        passwordC.value = "";
 
-		//console.log( socket )
-		socket.on('people', (arr) => {
-			document.getElementById('allContentPeople').innerHTML = ''
+        N_username.setAttribute("disabled", true);
+        passwordC.removeAttribute("disabled");
 
-			arr.map(function (x) {
-				if (username != x[0]) {
-					//offPage
-					add_row(x[0], x[1])
-				}
-			})
+        submit.addEventListener("click", update);
+      }
 
+      function resetA() {
+        usernameP.value = username;
+        passwordP.value = "";
 
-		})
+        N_password.setAttribute("disabled", true);
+        passwordP.removeAttribute("disabled");
 
-		/*
+        submit1.addEventListener("click", resetA);
+      }
 
-		socket.on('sent', (sender,who) => {
-			socket.emit('logedin', username)
+      async function updateA(e) {
+        if (N_password.value.trim().length > 0) {
+          if (!(passwordP.value == N_password.value)) {
+            let a = window.confirm(
+              "are you sure you want to reset your password"
+            );
 
-				infoClick(sender)
-				roomThing(sender)
-			
-		})
-		*/
+            if (a) {
+              updatePassword(usernameP.value, passwordP.value, N_password.value)
+                .then(function () {
+                  alert("your account is updated");
+                })
+                .then(function () {
+                  resetA();
+                  window.location.reload();
+                });
+            }
+          } else {
+          }
+        }
+      }
 
-		socket.on('message', x => {
-			//console.log( [username,x] )
-			socket.emit('logedin', username)
-			message(x)
-		})
+      async function update(e) {
+        if (N_username.value.trim().length > 0) {
+          let v = await validate(N_username.value, passwordC.value);
 
-		
-		socket.on('persistence', (x) => {
-			chats.innerHTML = 'this is a message just for you'
-			x.map(a => message(a))
-		})
-		
-	</script>
+          if (!v.valid && !(usernameC.value == N_username.value)) {
+            updateUsername(usernameC.value, passwordC.value, N_username.value)
+              .then(function () {
+                alert("your account is updated");
+              })
+              .then(function () {
+                reset();
 
-</body>
+                socket.emit("logedin", N_username.value);
+                socket.username = N_username.value;
+                window.location.reload();
+              });
+          } else {
+            v.valid
+              ? alert(
+                  "Please enter a new valid username that dose not already exist"
+                )
+              : usernameC.value == N_username.value
+              ? alert("please enter a new username")
+              : null;
+          }
+        }
+      }
 
+      async function valUpdate(e) {
+        e.preventDefault();
+        let v = await validate(usernameC.value, passwordC.value);
+
+        if (v.valid === true && v.valid !== undefined) {
+          N_username.removeAttribute("disabled");
+          submit.value = "submit";
+          passwordC.setAttribute("disabled", true);
+
+          submit.removeEventListener("click", valUpdate);
+          submit.addEventListener("click", update);
+        }
+      }
+
+      async function pwdUpdate(e) {
+        e.preventDefault();
+
+        if (passwordP.value.trim().length > 0) {
+          let v = await validate(usernameP.value, passwordP.value);
+
+          N_password.removeAttribute("disabled");
+          submit1.value = "submit";
+          passwordP.setAttribute("disabled", true);
+
+          submit1.removeEventListener("click", pwdUpdate);
+
+          submit1.addEventListener("click", updateA);
+        }
+      }
+
+      // delete yor account
+
+      let deleteU = { value: socket.username };
+      const deleteP = document.querySelector(".deleteP");
+      const button = document.querySelector("#submitD");
+
+      deleteU.value = username;
+
+      button.addEventListener("click", removeAccount);
+
+      //update you username
+      const usernameC = deleteU;
+      const passwordC = document.querySelector(".changeP");
+      const N_username = document.querySelector(".N-username");
+
+      const submit = document.querySelector("#submit");
+
+      submit.addEventListener("click", valUpdate);
+
+      //update password
+
+      const usernameP = deleteU;
+      const passwordP = document.querySelector(".changePP");
+      const N_password = document.querySelector(".N-password");
+
+      const submit1 = document.querySelector("#submit1");
+
+      submit1.addEventListener("click", pwdUpdate);
+    </script>
+
+    <script>
+      //https://dev.to/eaich/how-to-detect-when-the-user-stops-typing-3cm1
+
+      let timer,
+        timeoutVal = 3000; // time it takes to wait for user to stop typing in ms
+
+      // detects when the user is actively typing
+      test.addEventListener("keypress", handleKeyPress);
+      // triggers a check to see if the user is actually done typing
+      test.addEventListener("keyup", handleKeyUp);
+
+      // when the user has stopped pressing on keys, set the timeout
+      // if the user presses on keys before the timeout is reached, then this timeout should be canceled via the keypress event
+      function handleKeyUp(e) {
+        window.clearTimeout(timer); // prevent errant multiple timeouts from being generated
+        timer = window.setTimeout(() => {
+          socket.emit("ntypping", socket.array);
+        }, timeoutVal);
+      }
+
+      // when user is pressing down on keys, clear the timeout
+      // a keyup event always follows a keypress event so the timeout will be re-initiated there
+      function handleKeyPress(e) {
+        window.clearTimeout(timer);
+        socket.emit("typping", socket.array);
+      }
+    </script>
+  </body>
 </html>

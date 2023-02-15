@@ -32,16 +32,22 @@ creates a simple 1:1 chat app theat users can use
         this is what is in the Information tab.
         by reading this you are shown the markdown
 
+    #### Settings
+        this is where you can change settings.
+        you may change you username
+        you may change your password
+        you may Delete you account.
+
 
 
 
 
 #### node assets
-|body-parser | express| express-session | http | path | socket.io | sqlite3| node-fetch@2| crypto| sequelize|
-|------------|--------|-----------------|------|------|-----------|--------|-------------|-------|----------|
+|body-parser | express| express-session | http | path | socket.io | sqlite3| node-fetch@2| crypto| sequelize| bcrypt|
+|------------|--------|-----------------|------|------|-----------|--------|-------------|-------|----------|-------|
 
 termanal 
-`npm install body-parser express express-session http path socket.io sqlite3 node-fetch@2 crypto sequelize`
+`npm install bcrypt body-parser express express-session http path socket.io sqlite3 node-fetch@2 crypto sequelize`
 
 
 
@@ -56,19 +62,18 @@ termanal
 |  	|  	| [socket.io](/socket.io/socket.io.js) 	|
 |   |   | [marked 0.3.2](https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js) |
 |   |   | [confetti latest](https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js) |
-|   |   | [cookie 3.0.1](https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js) |
-
-html installs
 
 
-Node Virsions
+
+Node Versions
 -------------
 
 ```json
 {
   "dependencies": {
+    "bcrypt": "^5.1.0",
     "body-parser": "^1.20.1",
-    "crypto": "^1.0.1",
+    "cookie": "^0.5.0",
     "ejs": "^3.1.8",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
@@ -81,7 +86,8 @@ Node Virsions
     "promise": "^8.3.0",
     "sequelize": "^6.28.0",
     "socket.io": "^4.5.4",
-    "sqlite3": "^5.1.4"
+    "sqlite3": "^5.1.4",
+    "url": "^0.11.0"
   }
 }
 ```

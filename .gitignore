@@ -13,3 +13,7 @@ uses.sqlite
 chat-app/
 *.DS_Store
 
+#secrets
+!*.safe.hash
+*.env.*.safe
+*.env
