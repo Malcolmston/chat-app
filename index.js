@@ -76,7 +76,6 @@ app.get("/", function (req, res) {
   res.sendFile(path.resolve(__dirname + login));
 });
 
-//app.get('/userHost', onRequest)
 
 // these are the methods that if called will send you back to the login page
 app.get("/signup", function (request, response) {
@@ -264,67 +263,70 @@ app.get("/home", function (request, response) {
   //response.end();
 });
 
-//sets the inside of the iframe to the iframe.html
+// retrives the html/iframe.html file
 app.get("/html/iframe.html", function (req, res) {
   res.sendFile(path.join(__dirname + "/html/iframe.html"));
 });
-
+// retrives the css/app.css"file
 app.get("/css/app.css", function (req, res) {
   res.sendFile(path.join(__dirname + "/css/app.css"));
 });
-
+// retrives the css/login.css file
 app.get("/css/login.css", function (req, res) {
   res.sendFile(path.join(__dirname + "/css/login.css"));
 });
-
+// retrives the html/css/chat.css file
 app.get("/html/css/chat.css", function (req, res) {
   res.sendFile(path.join(__dirname + "/html/css/chat.css"));
 });
-
+// retrives the html/css/nav.css file
 app.get("/html/css/nav.css", function (req, res) {
   res.sendFile(path.join(__dirname + "/html/css/nav.css"));
 });
-
+// retrives the js/markdown.js file
 app.get("/js/markdown.js", function (req, res) {
   res.sendFile(path.join(__dirname + "/js/markdown.js"));
 });
-
+// retrives the js/socket.js file
 app.get("/js/socket.js", function (req, res) {
   res.sendFile(path.join(__dirname + "/js/socket.js"));
 });
-
+// retrives the js/account.js file
 app.get("/js/account.js", function (req, res) {
   res.sendFile(path.join(__dirname + "/js/welcolm.js"));
 });
-
+// retrives the js/custom_event.js file
 app.get("/js/custom_event.js", function (req, res) {
   res.sendFile(path.join(__dirname + "/js/login.js"));
 });
-
+// retrives the js/welcolm.js file
 app.get("/js/welcolm.js", function (req, res) {
   res.sendFile(path.join(__dirname + "/js/welcolm.js"));
 });
-
+// retrives the js/login.js file
 app.get("/js/login.js", function (req, res) {
   res.sendFile(path.join(__dirname + "/js/login.js"));
 });
-
+// retrives the html/js/nav.js file
 app.get("/html/js/nav.js", function (req, res) {
   res.sendFile(path.join(__dirname + "/html/js/nav.js"));
 });
-
+// retrives the html/js/pill.js file
 app.get("/html/js/pill.js", function (req, res) {
   res.sendFile(path.join(__dirname + "/html/js/pill.js"));
 });
-
+// retrives the html/js/slides.js file
 app.get("/html/js/slides.js", function (req, res) {
   res.sendFile(path.join(__dirname + "/html/js/slides.js"));
 });
-
+// retrives the .md file
 app.get("/README.md", function (req, res) {
   res.sendFile(path.join(__dirname + "/README.md"));
 });
 
+
+
+// this curently dose nothing, however it will handle admin stuff 
 app.post("/api/table", function (request, res) {
   let username = request.body.username;
   let password = request.body.password;
@@ -332,6 +334,7 @@ app.post("/api/table", function (request, res) {
   let table = request.body.table;
 });
 
+//this will validate the account if the user needs athentication 
 app.post("/api/account/validate", function (request, response) {
   // gets the input fields
   let username = request.body.username;
@@ -352,6 +355,7 @@ app.post("/api/account/validate", function (request, response) {
   }
 });
 
+//when a user wants to change there username this will handle this. 
 app.post("/api/account/changeUsername", async function (request, response) {
   let body = request.body;
 
@@ -411,6 +415,7 @@ app.post("/api/account/changeUsername", async function (request, response) {
   }
 });
 
+//when a user want to change their passwor this will do that
 app.post("/api/account/changePassword", async function (request, response) {
   let body = request.body;
 
@@ -432,6 +437,7 @@ app.post("/api/account/changePassword", async function (request, response) {
   }
 });
 
+//when the user wants to remove there account the perameters of the delete reqest are located and handle
 app.post("/api/account/remove", function (request, response) {
   let body = request.body;
 
@@ -466,6 +472,7 @@ const wrap = (middleware) => (socket, next) =>
 
 io.use(wrap(sessionMiddleware));
 
+// on enitial log in this will use the session to identify the user
 io.use((socket, next) => {
   const session = socket.request.session;
   socket.session = session;
@@ -482,6 +489,8 @@ io.use((socket, next) => {
 // this block will run when the client connects
 io.on("connection", (socket) => {
   let s = socket.request.session;
+
+  // on enitial log in this will use the session to identify the user
   socket.use((socket, next) => {
     validate(s.ussername, false, "or").then(function (x) {
       if (s && s.loggedin && s.ussername && x) {
@@ -492,6 +501,7 @@ io.on("connection", (socket) => {
     });
   });
 
+// makes sure the user is logged in
   socket.on("error", (err) => {
     if (err && err.message === "unauthorized") {
       socket.disconnect();
@@ -503,6 +513,7 @@ io.on("connection", (socket) => {
   socket.username = "";
   socket.chat_room = "";
 
+// connects the user to sockets if there account is authenticated. if the account is invalid there sockets are turned off, otherwise they may chat 
   socket.on("logedin", function (user) {
     validate(user, false, "or").then(async function (x) {
       if (!x && session.ussername != user) {
@@ -532,6 +543,7 @@ io.on("connection", (socket) => {
     });
   });
 
+  // when a usere delets there account this updates the user list so users no longer see the pill
   socket.on("logremove", async function (user) {
     remove_memberA(user);
 
@@ -554,6 +566,7 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("people", t);
   });
 
+  // when a user logs out it dose a less derastic version of logremove. This function just sets your pill to inactive
   socket.on("logedout", async function (user) {
     remove_memberA(user);
 
@@ -574,6 +587,8 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("people", t);
   });
 
+
+// will eitere join or create a room when called. if the room is called then it will join it and send all of the messages to the client.
   socket.on("persistence", function (a) {
     setTimeout(function () {
       validateRoomAndGroup(...a).then(async function (j) {
@@ -627,12 +642,12 @@ io.on("connection", (socket) => {
       });
     }, 100);
   });
-  //s.room
 
   socket.on(socket.chat_room, (room) => {
     socket.broadcast.emit("sent", room);
   });
 
+  // when a user is typing this will send that message to the chat room
   socket.on("typping", function (a) {
     socket.to(socket.chat_room).emit(
       "typping",
@@ -643,7 +658,7 @@ io.on("connection", (socket) => {
       a
     );
   });
-
+  // when a user is done typing this will send that message to the chat room
   socket.on("ntypping", function (a) {
     socket.to(socket.chat_room).emit(
       "ntypping",
@@ -655,6 +670,7 @@ io.on("connection", (socket) => {
     );
   });
 
+  // once a message is sent this will check if the server is unable to connect to a room. if the room is unavailable then it will retrieve it. If the room is available it will just join it. when either are true then this will send a message to the room.
   socket.on("message", async (message, a) => {
     let who = a;
     if (!socket.chat_room) {
