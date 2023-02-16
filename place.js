@@ -3,6 +3,7 @@ const users = [];
 const rooms = []
 const members = []
 
+// removes ittem by the index of a ittem. 
 Array.prototype.revoveItem = function(i){
     let array = this
 let index = this.indexOf(i);

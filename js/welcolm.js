@@ -4,7 +4,7 @@ xhr.open("GET", document.location, false);
 xhr.send(null);
 username = xhr.getResponseHeader("user");
 
-//welcolms a user in the canvas
+//welcolms a user in a canvas of the home page
 function welcolm(user) {
   let canvas = document.querySelectorAll("#myCanvas")[0];
   let jsConfetti = new JSConfetti(canvas, { resize: false });
@@ -42,6 +42,7 @@ function welcolm(user) {
     });
 }
 
+//welcolms a user in a canvas of the chat page
 function chatWelcolm(user) {
   let canvas = document.querySelectorAll("#myCanvas")[1];
 

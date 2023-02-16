@@ -213,6 +213,7 @@ test.addEventListener("typing", async (e) => {
   socket.emit("typping", socket.array);
 });
 
+// send the message when you click the sent button
 send.addEventListener("click", function (event) {
   event.preventDefault();
   if (input.value == "" || input.value.trim() == "") return;
@@ -221,14 +222,15 @@ send.addEventListener("click", function (event) {
   socket.emit("message", input.value.replaceAll("\n", "<br>"), socket.array);
 });
 
+// on any home button pressed this will sent you home.
 home.forEach(function (element) {
   element.addEventListener("click", function (event) {
     socket.emit("logedout", username);
     document.querySelector("#home").submit();
   });
-}) /
-  //console.log( socket )
-  socket.on("people", (arr) => {
+}) 
+//gets an array of users both active and inactive
+socket.on("people", (arr) => {
     document.getElementById("allContentPeople").innerHTML = "";
 
     arr.map(function (x) {
@@ -237,8 +239,8 @@ home.forEach(function (element) {
         add_row(x[0], x[1]);
       }
     });
-  });
-
+});
+//gets if a message was sent to a room
 socket.on("sent", function (x, all) {
   if (all.includes(socket.username)) {
     socket.emit("logedin", username);
@@ -246,7 +248,7 @@ socket.on("sent", function (x, all) {
     roomThing(x);
   }
 });
-
+// retrives the message
 socket.on("message", (x, who) => {
   socket.room = x.room;
   //console.log( [username,x] )
@@ -254,13 +256,13 @@ socket.on("message", (x, who) => {
   socket.emit("logedin", username);
   message(x);
 });
-
+// retrives all old chats form a server
 socket.on("persistence", (x) => {
   test.setAttribute("placeholder", ``);
   chats.innerHTML = "this is a message just for you";
   x.map((a) => message(a));
 });
-
+// gets if a user is typing
 socket.on("typping", function (room, all) {
   if (all.includes(socket.username)) {
     test.setAttribute(
@@ -269,7 +271,7 @@ socket.on("typping", function (room, all) {
     );
   }
 });
-
+//sends when a user is done typing 
 socket.on("ntypping", function (room, all) {
   if (all.includes(socket.username)) {
     test.setAttribute("placeholder", "");

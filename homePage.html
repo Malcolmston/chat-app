@@ -244,6 +244,7 @@ document.querySelector(p).classList.replace("inactive", "active");
     <script>
       //alert(window.location)
 
+
       async function removeAccount(event) {
         event.preventDefault();
 
@@ -272,6 +273,7 @@ document.querySelector(p).classList.replace("inactive", "active");
         }
       }
 
+      // delets an account
       function deleteAccount(username, password) {
         return new Promise((resolve, reject) => {
           $.ajax({
@@ -288,6 +290,7 @@ document.querySelector(p).classList.replace("inactive", "active");
         });
       }
 
+      //gets if the account is valid
       function validate(username, password) {
         return new Promise((resolve, reject) => {
           $.ajax({
@@ -304,6 +307,7 @@ document.querySelector(p).classList.replace("inactive", "active");
         });
       }
 
+      //resets a username
       function updateUsername(username, password, new_username) {
         return new Promise((resolve, reject) => {
           $.ajax({
@@ -321,6 +325,7 @@ document.querySelector(p).classList.replace("inactive", "active");
         });
       }
 
+      //resets password
       function updatePassword(username, password, new_password) {
         return new Promise((resolve, reject) => {
           $.ajax({
@@ -338,6 +343,7 @@ document.querySelector(p).classList.replace("inactive", "active");
         });
       }
 
+      // resets the change username form
       function reset() {
         usernameC.value = username;
         passwordC.value = "";
@@ -348,6 +354,7 @@ document.querySelector(p).classList.replace("inactive", "active");
         submit.addEventListener("click", update);
       }
 
+      // resets the change password for,
       function resetA() {
         usernameP.value = username;
         passwordP.value = "";
@@ -357,7 +364,7 @@ document.querySelector(p).classList.replace("inactive", "active");
 
         submit1.addEventListener("click", resetA);
       }
-
+      // the event for updating password
       async function updateA(e) {
         if (N_password.value.trim().length > 0) {
           if (!(passwordP.value == N_password.value)) {
@@ -379,7 +386,7 @@ document.querySelector(p).classList.replace("inactive", "active");
           }
         }
       }
-
+      // the event for updating userna,e
       async function update(e) {
         if (N_username.value.trim().length > 0) {
           let v = await validate(N_username.value, passwordC.value);
@@ -407,7 +414,7 @@ document.querySelector(p).classList.replace("inactive", "active");
           }
         }
       }
-
+      // a function to help with the changing of username
       async function valUpdate(e) {
         e.preventDefault();
         let v = await validate(usernameC.value, passwordC.value);
@@ -421,7 +428,7 @@ document.querySelector(p).classList.replace("inactive", "active");
           submit.addEventListener("click", update);
         }
       }
-
+      // a function to help with the changing of passwords
       async function pwdUpdate(e) {
         e.preventDefault();
 

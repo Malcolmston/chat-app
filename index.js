@@ -26,8 +26,7 @@ var secret = require("./secret.js"); //.session
 const { v1: uuidv1, v4: uuidv4 } = require("uuid");
 const cors = require("cors");
 
-var bodyParser = require("body-parser"),
-  express = require("express"),
+var express = require("express"),
   session = require("express-session"),
   app = express(),
   http = require("http").Server(app),
@@ -644,7 +643,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on(socket.chat_room, (room) => {
-    socket.broadcast.emit("sent", room);
+    socket.to(socket.chat_room).emit("sent", room);
   });
 
   // when a user is typing this will send that message to the chat room

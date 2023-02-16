@@ -121,7 +121,12 @@ table {
     background-color: #FF1744;
 }
 
-
+/*
+for pills 
+for pills ==> https://www.w3schools.com/howto/howto_css_pill_button.asp
+for cicles ==> https://www.w3schools.com/howto/howto_css_circles.asp
+for transition ==> https://www.w3schools.com/css/tryit.asp?filename=trycss3_transition1
+*/
 
 .chip1 {
     display: inline-flex;

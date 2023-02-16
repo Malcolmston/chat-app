@@ -1,53 +1,177 @@
 
 
-home page
+# Logging in
+
+On this page, the user will log in. The user must log in with both username and password. The user will be redirected to a new page if the password and username are incorrect. 
+
+![login](https://assets.codepen.io/5594200/Screen+Shot+2023-02-15+at+1.44.50+PM.png)
+
+
+
+ >> If a user tries to log in and has no page, they will be sent a **401** error code. 
+
+ >> ![login](https://assets.codepen.io/5594200/Screen+Shot+2023-02-16+at+6.56.47+AM.png)
+ 
+ 
+--------------------------------------------
+# Signing up
+
+
+On this page, the user will sign up. If the username is already used, the account will not be created. Users may have the same password. Passwords are not stored in the table as raw text but as a hash. 
+
+password hashing is done by the
+
+```javascript
+function hide(text) {
+return new Promise(function (resolve, reject) {
+  bcrypt.genSalt(10, function (err, salt) {
+    bcrypt.hash(text, salt, function (err, hash) {
+      if (err) return reject(err);
+
+      // Store hash in your password DB.
+      resolve(hash);
+    });
+  });
+});
+}
+```
+
+![signup](https://assets.codepen.io/5594200/Screen+Shot+2023-02-15+at+9.54.23+PM.png)
+
+>> If a user tries to sign up and the username entered already exists, then a user is sent a **400** error message.
+
+>> ![signup](https://assets.codepen.io/5594200/Screen+Shot+2023-02-16+at+7.02.32+AM.png)
+
+--------------------------------------------
+
+# Node 
+```javascript
+require("uuid"); 
+```
+the uuid module is used to create UUIDs for session IDs.
+
+```javascript
+require("cors")
+```
+the cors or the cross-origen module alows for post a get reqests to be cross-origen
+
+```javascript
+require("express")
+```
+The express module does a ton, from using get/post requests to handling the HTTP server. 
+
+>> ``` require("express-session") ```
+express-session is a module that alows a user to create sessions in express
+
+```javascript
+require("http")
+```
+http in this project creates the http server. Express handles the reqests and sessions
+
+```javascript
+require("path")
+```
+path allows for express to have /**name**
+
+```javascript
+require("socket.io")
+```
+socket are what allow for chats to work
+
+```javascript
+require("bcrypt")
+```
+hides the passwords in the Database
+
+```javascript
+require("sequelize")
+```
+sequelize is a huge module that allows coders to create sql requests easily 
+
+>> ``` require("sqlite3") ```
+>> the sqlite3 is reqired to allow the sequelize module to work
+
+>> ## local install
+
+```bash
+npm install uuid cors express express-session http path socket.io bcrypt sequelize
+```
+# sockets
+  >> ## client side
+  >> 1. people 
+      >>    1. gets all of the active and inactive members on the site.
+
+  >> 2. sent
+      >>    1. gets wether or not a message was sent
+
+  >> 3. message
+      >>    1. logs the **HTML** message
+
+  >> 4. persistence
+      >>    1. gets all of the chat in that room
+
+  >> 5. typping
+      >>    1. gets if the user is typping 
+
+  >> 6. ntypping
+      >>    1. gets if the user is done typping
+
+  ## server side 
+   >>  1. error
+    >>      1. dissconects the user from the sockets if the error is resolting in the user being unauthorized
+    
+   >> 2. logedin
+      >>    1. validates the user on the serviside with sockets
+ 
+   >> 3. logremove
+    >>      1. gets if the user has removed there account and removes them completly from the member listing
+   
+   >> 4. logedout
+    >>      1. gets if the user has logged out and changes there statatus to inactive 
+    
+   >> 5. persistence
+    >>      1. Returns the room code for users. If the users do not have a room code, they will create a room
+    
+   >> 6. ``` socket.chat_room ```
+    >>      1. brodcasts that a message has been sent. This is sent to the room
+    
+   >> 7. typping
+    >>      1. emits to the room that there is a member typing 
+    
+   >> 8. ntypping
+    >>      1. send back to the client if they are finnised typping
+    
+   >> 9. message
+    >>      1. adds messages to the messages table
+  
+  
+  
+    
+ ----------
+ 
+ 
+ # Diagrams
+ ----------
+
+>> ## login page
+>> ![svg](https://assets.codepen.io/5594200/login.svg)
 ---------
+>> ## signup page
+>> ![svg](https://assets.codepen.io/5594200/signup.svg)
+---------
+>> ## sockets page
 
-creates a simple loging and sign up page theat a user can use to create and sign in to aconts
-
-1.  using node there is a simple login page that alows a user to log in and sign up
-
-1.  log in uses validate witch cheks the databace for that user
-2.  sign up uses both validate and add user to make sure there are not mutible of the same user, and adds the user to the databace
-
-Chat app
---------
-
-creates a simple 1:1 chat app theat users can use
-
-1.  chats sent directly to the sent user
-2.  chats are saved and recorded for both simple and persistant messages
-3.  the page uill automaticly change the statis of a user when they loging
-
-    #### home
-        say: Hi to the user and sprays confety. 
-        this page will also alow the user to log out.
-
-    #### chat
-        the user may send and recive chats.
-        rooms are 1:1
-        chats can be multi line
-
-    #### Information
-        this is what is in the Information tab.
-        by reading this you are shown the markdown
-
-    #### Settings
-        this is where you can change settings.
-        you may change you username
-        you may change your password
-        you may Delete you account.
+| server 	| client 	| Sent 	| recived 	| Sent 2 	| recived 2 	|  	|
+|---	|---	|---	|---	|---	|---	|---	|
+| is what the code is 	| what the user will see 	| the sender of the message 	| what is colleting the data 	| the second sender that just sends back what was sent, or sends back a bool that coralates to a validation 	| recived + a bool that coralates to a validation or a deffrent thing that the reviver will collect 	|  	|
 
 
+>> ![pdf](https://assets.codepen.io/5594200/users.pdf)
+>> ![svg](https://assets.codepen.io/5594200/users_1.svg)
+---------
+>> ## users page
+>> ![svg](https://assets.codepen.io/5594200/users.svg)
 
-
-
-#### node assets
-|body-parser | express| express-session | http | path | socket.io | sqlite3| node-fetch@2| crypto| sequelize| bcrypt|
-|------------|--------|-----------------|------|------|-----------|--------|-------------|-------|----------|-------|
-
-termanal 
-`npm install bcrypt body-parser express express-session http path socket.io sqlite3 node-fetch@2 crypto sequelize`
 
 
 
@@ -64,30 +188,3 @@ termanal
 |   |   | [confetti latest](https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js) |
 
 
-
-Node Versions
--------------
-
-```json
-{
-  "dependencies": {
-    "bcrypt": "^5.1.0",
-    "body-parser": "^1.20.1",
-    "cookie": "^0.5.0",
-    "ejs": "^3.1.8",
-    "express": "^4.18.2",
-    "express-session": "^1.17.3",
-    "html": "^1.0.0",
-    "http": "^0.0.1-security",
-    "localStorage": "^1.0.4",
-    "node-fetch": "^2.6.8",
-    "passport-remember-me": "^0.0.1",
-    "path": "^0.12.7",
-    "promise": "^8.3.0",
-    "sequelize": "^6.28.0",
-    "socket.io": "^4.5.4",
-    "sqlite3": "^5.1.4",
-    "url": "^0.11.0"
-  }
-}
-```
