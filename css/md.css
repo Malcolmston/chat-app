@@ -1,0 +1,27 @@
+    [alt='login'] {
+        width: 300px;
+    }
+
+    [alt='signup'] {
+        width: 300px;
+    }
+
+    [alt='svg'] {
+        width: 400px;
+        max-width: 100%;
+    }
+
+    table,
+    td,
+    th {
+        background-color: 1px solid #000;
+    }
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    td {
+        text-align: center;
+    }

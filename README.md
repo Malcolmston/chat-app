@@ -1,190 +1,228 @@
+# Logging in <i class="fa-solid fa-user-lock"></i>
 
-
-# Logging in
-
-On this page, the user will log in. The user must log in with both username and password. The user will be redirected to a new page if the password and username are incorrect. 
+On this page, the user will log in. The user must log in with both username and password. The user will be redirected to a new page if the password and username are incorrect.
 
 ![login](https://assets.codepen.io/5594200/Screen+Shot+2023-02-15+at+1.44.50+PM.png)
 
+> > If a user tries to log in and has no page, they will be sent a **401** error code.
 
+> > ![login](https://assets.codepen.io/5594200/Screen+Shot+2023-02-16+at+6.56.47+AM.png)
 
- >> If a user tries to log in and has no page, they will be sent a **401** error code. 
+---
 
- >> ![login](https://assets.codepen.io/5594200/Screen+Shot+2023-02-16+at+6.56.47+AM.png)
- 
- 
---------------------------------------------
-# Signing up
+# Signing up <i class="fa-solid fa-user-plus"></i>
 
+On this page, the user will sign up. If the username is already used, the account will not be created. Users may have the same password. Passwords are not stored in the table as raw text but as a hash.
 
-On this page, the user will sign up. If the username is already used, the account will not be created. Users may have the same password. Passwords are not stored in the table as raw text but as a hash. 
-
-password hashing is done by the
+password hashing is done by the <i class="fa-duotone fa-face-hand-peeking"></i>
 
 ```javascript
 function hide(text) {
-return new Promise(function (resolve, reject) {
-  bcrypt.genSalt(10, function (err, salt) {
-    bcrypt.hash(text, salt, function (err, hash) {
-      if (err) return reject(err);
+  return new Promise(function (resolve, reject) {
+    bcrypt.genSalt(10, function (err, salt) {
+      bcrypt.hash(text, salt, function (err, hash) {
+        if (err) return reject(err);
 
-      // Store hash in your password DB.
-      resolve(hash);
+        // Store hash in your password DB.
+        resolve(hash);
+      });
     });
   });
-});
 }
 ```
 
 ![signup](https://assets.codepen.io/5594200/Screen+Shot+2023-02-15+at+9.54.23+PM.png)
 
->> If a user tries to sign up and the username entered already exists, then a user is sent a **400** error message.
+> > If a user tries to sign up and the username entered already exists, then a user is sent a **400** error message.
 
->> ![signup](https://assets.codepen.io/5594200/Screen+Shot+2023-02-16+at+7.02.32+AM.png)
+> > ![signup](https://assets.codepen.io/5594200/Screen+Shot+2023-02-16+at+7.02.32+AM.png)
 
---------------------------------------------
+---
 
-# Node 
+# Node <i class="fa-brands fa-node"></i>
+
 ```javascript
-require("uuid"); 
+require("uuid");
 ```
+
 the uuid module is used to create UUIDs for session IDs.
 
 ```javascript
-require("cors")
+require("cors");
 ```
+
 the cors or the cross-origen module alows for post a get reqests to be cross-origen
 
 ```javascript
-require("express")
+require("express");
 ```
-The express module does a ton, from using get/post requests to handling the HTTP server. 
 
->> ``` require("express-session") ```
-express-session is a module that alows a user to create sessions in express
+The express module does a ton, from using get/post requests to handling the HTTP server.
+
+> > `require("express-session")`
+> > express-session is a module that alows a user to create sessions in express
 
 ```javascript
-require("http")
+require("http");
 ```
+
 http in this project creates the http server. Express handles the reqests and sessions
 
 ```javascript
-require("path")
+require("path");
 ```
+
 path allows for express to have /**name**
 
 ```javascript
-require("socket.io")
+require("socket.io");
 ```
+
 socket are what allow for chats to work
 
 ```javascript
-require("bcrypt")
+require("bcrypt");
 ```
+
 hides the passwords in the Database
 
 ```javascript
-require("sequelize")
+require("sequelize");
 ```
-sequelize is a huge module that allows coders to create sql requests easily 
 
->> ``` require("sqlite3") ```
->> the sqlite3 is reqired to allow the sequelize module to work
+sequelize is a huge module that allows coders to create sql requests easily
 
->> ## local install
+> > `require("sqlite3")`
+> > the sqlite3 is reqired to allow the sequelize module to work
+
+> > ## local install <i class="fa-thin fa-computer"></i>
 
 ```bash
 npm install uuid cors express express-session http path socket.io bcrypt sequelize
 ```
-# sockets
-  >> ## client side
-  >> 1. people 
-      >>    1. gets all of the active and inactive members on the site.
 
-  >> 2. sent
-      >>    1. gets wether or not a message was sent
+# sockets <i class="fa-duotone fa-message-lines"></i>
 
-  >> 3. message
-      >>    1. logs the **HTML** message
+> > ## client side <i class="fa-sharp fa-solid fa-person"></i>
+> >
+> > 1.  people
+> >     1. gets all of the active and inactive members on the site.
 
-  >> 4. persistence
-      >>    1. gets all of the chat in that room
+> > 2.  sent
+> >     1. gets wether or not a message was sent
 
-  >> 5. typping
-      >>    1. gets if the user is typping 
+> > 3.  message
+> >     1. logs the **HTML** message
 
-  >> 6. ntypping
-      >>    1. gets if the user is done typping
+> > 4.  persistence
+> >     1. gets all of the chat in that room
 
-  ## server side 
-   >>  1. error
-    >>      1. dissconects the user from the sockets if the error is resolting in the user being unauthorized
-    
-   >> 2. logedin
-      >>    1. validates the user on the serviside with sockets
- 
-   >> 3. logremove
-    >>      1. gets if the user has removed there account and removes them completly from the member listing
-   
-   >> 4. logedout
-    >>      1. gets if the user has logged out and changes there statatus to inactive 
-    
-   >> 5. persistence
-    >>      1. Returns the room code for users. If the users do not have a room code, they will create a room
-    
-   >> 6. ``` socket.chat_room ```
-    >>      1. brodcasts that a message has been sent. This is sent to the room
-    
-   >> 7. typping
-    >>      1. emits to the room that there is a member typing 
-    
-   >> 8. ntypping
-    >>      1. send back to the client if they are finnised typping
-    
-   >> 9. message
-    >>      1. adds messages to the messages table
-  
-  
-  
-    
- ----------
- 
- 
- # Diagrams
- ----------
+> > 5.  typping
+> >     1. gets if the user is typping
 
->> ## login page
->> ![svg](https://assets.codepen.io/5594200/login.svg)
----------
->> ## signup page
->> ![svg](https://assets.codepen.io/5594200/signup.svg)
----------
->> ## sockets page
+> > 6.  ntypping
+> >     1. gets if the user is done typping
 
-| server 	| client 	| Sent 	| recived 	| Sent 2 	| recived 2 	|  	|
-|---	|---	|---	|---	|---	|---	|---	|
-| is what the code is 	| what the user will see 	| the sender of the message 	| what is colleting the data 	| the second sender that just sends back what was sent, or sends back a bool that coralates to a validation 	| recived + a bool that coralates to a validation or a deffrent thing that the reviver will collect 	|  	|
+## server side <i class="fa-solid fa-server"></i>
 
+> > 1.  error
+> >     1. dissconects the user from the sockets if the error is resolting in the user being unauthorized
 
->> ![pdf](https://assets.codepen.io/5594200/users.pdf)
->> ![svg](https://assets.codepen.io/5594200/users_1.svg)
----------
->> ## users page
->> ![svg](https://assets.codepen.io/5594200/users.svg)
+> > 2. logedin
+> >    1. validates the user on the serviside with sockets
 
+> > 3. logremove
+> >    1. gets if the user has removed there account and removes them completly from the member listing
 
+> > 4. logedout
+> >    1. gets if the user has logged out and changes there statatus to inactive
 
+> > 5. persistence
+> >    1. Returns the room code for users. If the users do not have a room code, they will create a room
 
-#### html assets
-| html 	| css 	| js 	|
-|---	|---	|---	|
-| icon image ![jellyfish](https://images.unsplash.com/photo-1666515878427-c0a045bf03c6?crop=entropy&cs=tinysrgb&fm=jpg&ixid=MnwzMjM4NDZ8MHwxfHJhbmRvbXx8fHx8fHx8fDE2Njg3NDQ4MjM&ixlib=rb-4.0.3&q=80) 	| [bootstrap 5 v5.2.1](https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css) 	| [bootstrap 5 v5.2.1](https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js) 	|
-|  	|  	| [swal 2](https://cdn.jsdelivr.net/npm/sweetalert2@11) 	|
-|  	|  	| [fontawesome pro](https://kit.fontawesome.com/fd76b8450f.js) 	|
-|  	|  	| [crypto 3.1.2](https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js) 	|
-|  	|  	| [jquery 3.6.0](https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js) 	|
-|  	|  	| [socket.io](/socket.io/socket.io.js) 	|
-|   |   | [marked 0.3.2](https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js) |
-|   |   | [confetti latest](https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js) |
+> > 6. `socket.chat_room`
+> >    1. brodcasts that a message has been sent. This is sent to the room
+
+> > 7. typping
+> >    1. emits to the room that there is a member typing
+
+> > 8. ntypping
+> >    1. send back to the client if they are finnised typping
+
+> > 9. message
+> >    1. adds messages to the messages table
+
+---
+
+# Diagrams <i class="fa-duotone fa-diagram-project"></i>
+
+---
+
+> > ## login page <i class="fa-solid fa-page"></i>
+
+> > ![svg](https://assets.codepen.io/5594200/login.svg)
+
+---
+
+> > ## signup page <i class="fa-solid fa-page"></i>
+
+> > ![svg](https://assets.codepen.io/5594200/signup.svg)
+
+---
+
+> > ## sockets page <i class="fa-solid fa-page"></i>
+
+| server              | client                 | Sent                      | recived                    | Sent 2                                                                                                    | recived 2                                                                                         |     |
+| ------------------- | ---------------------- | ------------------------- | -------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | --- |
+| is what the code is | what the user will see | the sender of the message | what is colleting the data | the second sender that just sends back what was sent, or sends back a bool that coralates to a validation | recived + a bool that coralates to a validation or a deffrent thing that the reviver will collect |     |
+
+> > ![pdf](https://assets.codepen.io/5594200/users.pdf)
+> > ![svg](https://assets.codepen.io/5594200/users_1.svg)
+
+---
 
 
+
+> > > ## Update Username <i class="fa-duotone fa-users"></i>
+
+> > > ![svg](https://assets.codepen.io/5594200/re-username.svg)
+
+---
+
+> > > ## Update Password <i class="fa-duotone fa-user-ninja"></i>
+
+> > > ![svg](https://assets.codepen.io/5594200/users-4.svg)
+
+
+---
+> > > ## deleting account <i class="fa-solid fa-trash"></i>
+
+> > > ![svg](https://assets.codepen.io/5594200/users-2.svg)
+
+---
+
+# html assets <i class="fa-solid fa-files"></i>
+
+## iframe page <i class="fa-solid fa-page"></i>
+
+| css | js                                                           |
+| --- | ------------------------------------------------------------ |
+|     | [fontawesome pro](https://kit.fontawesome.com/fd76b8450f.js) |
+|     | [swal 2](https://cdn.jsdelivr.net/npm/sweetalert2@11)        |
+
+## account page <i class="fa-solid fa-page"></i>
+
+| css                                                                                           | html                                                                                               |
+| --------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| [bootstrap 5 v5.2.1](https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css) | [bootstrap 5 v5.2.1](https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js) |
+
+## home page <i class="fa-solid fa-page"></i>
+
+| css                                                                                           | js                                                                                                                     |
+| --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| [animate 3.2.3](https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.3/animate.min.css)     | [crypto 3.1.2](https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js)                                  |
+| [w3schools](https://www.w3schools.com/w3css/4/w3.css)                                         | [jquery 3.6.0](https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js)                                      |
+| [bootstrap 5 v5.2.1](https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css) | [socket.io](/socket.io/socket.io.js)                                                                                   |
+|                                                                                               | [bootstrap 3 v/3.1.5](https://cdnjs.cloudflare.com/ajax/libs/mouse0270-bootstrap-notify/3.1.5/bootstrap-notify.min.js) |
+|                                                                                               | [marked 0.3.2](https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js)                                      |
+|                                                                                               | [confetti latest](https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js)                         |
