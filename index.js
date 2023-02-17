@@ -270,6 +270,10 @@ app.get("/html/iframe.html", function (req, res) {
 app.get("/css/app.css", function (req, res) {
   res.sendFile(path.join(__dirname + "/css/app.css"));
 });
+// retrives the css/md.css"file
+app.get("/css/md.css", function (req, res) {
+  res.sendFile(path.join(__dirname + "/css/md.css"));
+});
 // retrives the css/login.css file
 app.get("/css/login.css", function (req, res) {
   res.sendFile(path.join(__dirname + "/css/login.css"));
