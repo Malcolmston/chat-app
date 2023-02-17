@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+		<html lang='en'>
+		
+		<head>
+		  <meta charset='UTF-8'>
+		  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+		  <meta http-equiv='X-UA-Compatible' content='ie=edge'>
+		  <title>Chat App</title>
+		
+		
+		  <link rel='icon' type='image/x-icon'
+			href='https://images.unsplash.com/photo-1666515878427-c0a045bf03c6?crop=entropy&cs=tinysrgb&fm=jpg&ixid=MnwzMjM4NDZ8MHwxfHJhbmRvbXx8fHx8fHx8fDE2Njg3NDQ4MjM&ixlib=rb-4.0.3&q=80'>
+		
+			<link rel="stylesheet" type="text/css" href="/html/css/nav.css"/>
+			<link rel="stylesheet" type="text/css" href="/html/css/chat.css"/>
+
+
+		</head>
+		
+		<body>
+		<div id='myNav' class='overlay'>  
+		  <div class='text'>text</div>
+		  
+		  <a href='javascript:void(0)' class='closebtn' onclick='closeNav()'>&times;</a>
+		  <div class='overlay-content'>
+		<div class='slide'>
+		  <div class='top nav'>
+				<div class='itm active'><i class='fa-duotone fa-house-user'></i> Home </div>
+				<div class='itm inactive'><i class='fa-duotone fa-comments'></i> Chat</div>
+				<div class='itm inactive'><i class='fa-sharp fa-solid fa-magnifying-glass'></i> Information</div>
+			</div>
+		 
+		  
+		
+		</div>
+			<div class='slide'>
+				<div class='bar'>
+					<form id='home' action='/logout' method='post'>
+						<i class='fa-solid fa-house'></i>
+						<a>Log out</a>
+					</form>
+				</div>
+				<div class='flex-container'>
+					<div class='inputs'>
+						<ul class='chat'></ul>
+						<textarea style='overflow:auto;resize:none' class='messageBar' rows='10' cols='40'></textarea>
+						<button class='send'><i class='fa-sharp fa-solid fa-paper-plane-top'></i></button>
+					</div>
+					<div class='table'>
+						<table id='allContentPeople'>
+						</table>
+					</div>
+				</div>
+			  
+			</div>
+			 <div class='slide'>3</div>
+		  </div>
+		  
+		  
+		</div>
+		
+		  <script src='https://kit.fontawesome.com/fd76b8450f.js' crossorigin='anonymous'></script>
+			  <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+
+			  <script src='/html/js/nav.js'></script>
+			  <script src='/html/js/pill.js'></script>
+			  <script src='/html/js/slides.js'></script>
+		 
+		 <script>		
+			window.addEventListener('load', function () {
+			  Swal.fire({
+				title: 'Would you like to use the interactive tutorial?',
+				showCancelButton: true,
+				confirmButtonText: 'sure',
+				cancelButtonText: `Nope`,
+			  }).then((result) => {
+				/* Read more about isConfirmed, isDenied below */
+				if (result.isConfirmed) {
+				  openNav();
+				  let idx = 0;
+				  slide(idx);
+		
+				  slideone().then(function () {
+					slidetwo().then(function () {
+						alert('you have completed the tutorial! good job!');
+					})
+		
+				  })
+				} else if (result.isDenied) {
+		
+				}
+			  })
+		
+		
+		
+			  //slideone()
+			});
+		
+		  </script>
+		</body>
+		</html>
