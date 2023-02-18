@@ -336,9 +336,18 @@ async function findRoom(...users) {
 async function addUser(username, password) {
   if (password) {
     let e = await hide(password.toString());
-    let [user, a] = await Users.findOrCreate({
+    let user = null
+
+    try{
+      user = await Users.create({
       where: { username: username.toString(), password: e },
+      paranoid: false
     });
+  }catch(e) {
+    console.error(e);
+    
+    user = await Users.findOne({ where: { username: username },  paranoid: false });
+  }
     return user;
   } else {
     let user = await Users.findOne({ where: { username: username } });
