@@ -39,6 +39,13 @@ function hide(text) {
 
 ---
 
+> > If a user deletes their account and then try to sign up with that same username, then the user is sent a **409** error message.
+
+> > ![signup](https://assets.codepen.io/5594200/Screen+Shot+2023-02-17+at+8.41.07+PM.png)
+
+---
+
+
 # Node 
 
 `javascript require("uuid"); `
