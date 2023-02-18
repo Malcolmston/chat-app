@@ -108,10 +108,29 @@ app.post("/signup", function (request, response) {
         request.session.ussername = ussername;
         //request.session.password = password;
         addUser(ussername, password).then(function (e) {
-          request.session.room = e;
+          if(!e){
+            response.writeHead(409, { "content-type": "text/html" });
+
+            response.statusMessage =
+              "this account may have been removed!";
+    
+            response.end(`
+                      <h1>this account may have been removed!</h1>
+                      <form id='home' action='/logout' method="post">
+                      <input type="submit" value="log out" onclick='removeUser()'/>
+                      </form>
+                      `);
+
+          }else{
+            request.session.room = e;
+            response.redirect("/home");
+          }
+
+
+          
         });
 
-        response.redirect("/home");
+        
       } else {
         response.writeHead(400, { "content-type": "text/html" });
         response.statusMessage =
@@ -326,6 +345,8 @@ app.get("/html/js/slides.js", function (req, res) {
 app.get("/README.md", function (req, res) {
   res.sendFile(path.join(__dirname + "/README.md"));
 });
+
+
 
 
 
