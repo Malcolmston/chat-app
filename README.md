@@ -1,4 +1,4 @@
-# Logging in <i class="fa-solid fa-user-lock"></i>
+# Logging in
 
 On this page, the user will log in. The user must log in with both username and password. The user will be redirected to a new page if the password and username are incorrect.
 
@@ -10,11 +10,11 @@ On this page, the user will log in. The user must log in with both username and 
 
 ---
 
-# Signing up <i class="fa-solid fa-user-plus"></i>
+# Signing up 
 
 On this page, the user will sign up. If the username is already used, the account will not be created. Users may have the same password. Passwords are not stored in the table as raw text but as a hash.
 
-password hashing is done by the <i class="fa-duotone fa-face-hand-peeking"></i>
+password hashing is done by the
 
 ```javascript
 function hide(text) {
@@ -39,71 +39,56 @@ function hide(text) {
 
 ---
 
-# Node <i class="fa-brands fa-node"></i>
+# Node 
 
-```javascript
-require("uuid");
-```
+`javascript require("uuid"); `
 
 the uuid module is used to create UUIDs for session IDs.
 
-```javascript
-require("cors");
-```
+` require("cors"); `
 
 the cors or the cross-origen module alows for post a get reqests to be cross-origen
 
-```javascript
-require("express");
-```
+`require("express");`
 
 The express module does a ton, from using get/post requests to handling the HTTP server.
 
 > > `require("express-session")`
+
 > > express-session is a module that alows a user to create sessions in express
 
-```javascript
-require("http");
-```
+> > `require("http")`
 
 http in this project creates the http server. Express handles the reqests and sessions
 
-```javascript
-require("path");
-```
+` require("path"); `
 
 path allows for express to have /**name**
 
-```javascript
-require("socket.io");
-```
+` require("socket.io"); `
 
 socket are what allow for chats to work
 
-```javascript
-require("bcrypt");
-```
+`require("bcrypt"); `
 
 hides the passwords in the Database
 
-```javascript
-require("sequelize");
-```
+`require("sequelize");`
 
 sequelize is a huge module that allows coders to create sql requests easily
 
 > > `require("sqlite3")`
 > > the sqlite3 is reqired to allow the sequelize module to work
 
-> > ## local install <i class="fa-thin fa-computer"></i>
+> > ## local install 
 
 ```bash
 npm install uuid cors express express-session http path socket.io bcrypt sequelize
 ```
 
-# sockets <i class="fa-duotone fa-message-lines"></i>
+# sockets 
 
-> > ## client side <i class="fa-sharp fa-solid fa-person"></i>
+> > ## client side 
 > >
 > > 1.  people
 > >     1. gets all of the active and inactive members on the site.
@@ -123,7 +108,7 @@ npm install uuid cors express express-session http path socket.io bcrypt sequeli
 > > 6.  ntypping
 > >     1. gets if the user is done typping
 
-## server side <i class="fa-solid fa-server"></i>
+## server side 
 
 > > 1.  error
 > >     1. dissconects the user from the sockets if the error is resolting in the user being unauthorized
@@ -154,69 +139,69 @@ npm install uuid cors express express-session http path socket.io bcrypt sequeli
 
 ---
 
-# Diagrams <i class="fa-duotone fa-diagram-project"></i>
-
+# Diagrams 
 ---
 
-> > ## login page <i class="fa-solid fa-page"></i>
+> > ## login page 
 
 > > ![svg](https://assets.codepen.io/5594200/login.svg)
 
 ---
 
-> > ## signup page <i class="fa-solid fa-page"></i>
+> > ## signup page 
 
 > > ![svg](https://assets.codepen.io/5594200/signup.svg)
 
 ---
 
-> > ## sockets page <i class="fa-solid fa-page"></i>
+> > ## sockets page 
 
 | server              | client                 | Sent                      | recived                    | Sent 2                                                                                                    | recived 2                                                                                         |     |
 | ------------------- | ---------------------- | ------------------------- | -------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | --- |
 | is what the code is | what the user will see | the sender of the message | what is colleting the data | the second sender that just sends back what was sent, or sends back a bool that coralates to a validation | recived + a bool that coralates to a validation or a deffrent thing that the reviver will collect |     |
 
 > > ![pdf](https://assets.codepen.io/5594200/users.pdf)
+
+
 > > ![svg](https://assets.codepen.io/5594200/users_1.svg)
 
 ---
 
 
 
-> > > ## Update Username <i class="fa-duotone fa-users"></i>
+> > > ## Update Username 
 
 > > > ![svg](https://assets.codepen.io/5594200/re-username.svg)
 
 ---
 
-> > > ## Update Password <i class="fa-duotone fa-user-ninja"></i>
-
+> > > ## Update Password 
 > > > ![svg](https://assets.codepen.io/5594200/users-4.svg)
 
 
 ---
-> > > ## deleting account <i class="fa-solid fa-trash"></i>
+> > > ## deleting account
 
 > > > ![svg](https://assets.codepen.io/5594200/users-2.svg)
 
 ---
 
-# html assets <i class="fa-solid fa-files"></i>
+# html assets 
 
-## iframe page <i class="fa-solid fa-page"></i>
+## iframe page
 
 | css | js                                                           |
 | --- | ------------------------------------------------------------ |
 |     | [fontawesome pro](https://kit.fontawesome.com/fd76b8450f.js) |
 |     | [swal 2](https://cdn.jsdelivr.net/npm/sweetalert2@11)        |
 
-## account page <i class="fa-solid fa-page"></i>
+## account page 
 
 | css                                                                                           | html                                                                                               |
 | --------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
 | [bootstrap 5 v5.2.1](https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css) | [bootstrap 5 v5.2.1](https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js) |
 
-## home page <i class="fa-solid fa-page"></i>
+## home page 
 
 | css                                                                                           | js                                                                                                                     |
 | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
