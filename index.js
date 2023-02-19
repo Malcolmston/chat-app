@@ -102,12 +102,15 @@ app.post("/signup", function (request, response) {
 
   // makes sure the input fields exists and are not empty
   if (ussername && password) {
-    validate(ussername, false, "or").then(function (params) {
+    validate(ussername, false, 'or').then(function (params) {
       if (!params) {
         request.session.loggedin = true;
         request.session.ussername = ussername;
         //request.session.password = password;
         addUser(ussername, password).then(function (e) {
+
+          validate(ussername, false, 'or', false).then(console.log)
+
           if(!e){
             response.writeHead(409, { "content-type": "text/html" });
 

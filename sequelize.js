@@ -340,15 +340,18 @@ async function addUser(username, password) {
 
     try{
       user = await Users.create({
-      where: { username: username.toString(), password: e },
-      paranoid: false
+     username: username, password: e 
     });
+
+    return true;
+
   }catch(e) {
     console.error(e);
-    
-    user = await Users.findOne({ where: { username: username },  paranoid: false });
+
+    return false;
   }
-    return user;
+
+
   } else {
     let user = await Users.findOne({ where: { username: username } });
 
@@ -473,7 +476,7 @@ async function getUser(username) {
 }
 
 //gets if an acount is available
-function validate(username, password, s = "and") {
+function validate(username, password, s = "and", p=true) {
   return new Promise(async (resolve, reject) => {
     if (s == "and" && !username && !password) return;
     if (s == "or" && !username) return;
@@ -505,6 +508,7 @@ function validate(username, password, s = "and") {
         where: {
           username: username,
         },
+        paranoid: p
       });
 
       resolve(res !== null);
