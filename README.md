@@ -90,7 +90,7 @@ sequelize is a huge module that allows coders to create sql requests easily
 > > ## local install 
 
 ```bash
-npm install uuid cors express express-session http path socket.io bcrypt sequelize
+npm install uuid cors express express-session http path socket.io bcrypt sequelize sqlite3
 ```
 
 # sockets 
