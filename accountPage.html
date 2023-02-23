@@ -13,44 +13,7 @@
       href="https://images.unsplash.com/photo-1666515878427-c0a045bf03c6?crop=entropy&cs=tinysrgb&fm=jpg&ixid=MnwzMjM4NDZ8MHwxfHJhbmRvbXx8fHx8fHx8fDE2Njg3NDQ4MjM&ixlib=rb-4.0.3&q=80"
     />
 
-    <style>
-      form {
-        width: 400px;
-        margin-left: auto;
-        margin-right: auto;
-        margin-top: 10px;
-      }
-      .hide {
-        display: none;
-      }
-      .show {
-        display: block;
-      }
-
-      .flex {
-        display: flex;
-        justify-content: center;
-      }
-
-      .flex-item + .flex-item {
-        margin-left: 10px;
-      }
-
-      .btn {
-        margin-top: 15px;
-        margin-left: 10px;
-
-        background-color: #0066ff;
-        border: none;
-        color: white;
-        padding: 10px 20px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        cursor: pointer;
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href="/css/login.css" />
   </head>
 
   <body>
@@ -119,100 +82,9 @@
       <a class="" href="#">dont have an account yet</a>
     </form>
 
-    <script>
-      // gets if falue is not false
-      function isTrue(value) {
-        return value || false; //(value === true && value !== false) && (value != undefined && value != null)
-      }
-
-      // sets the user in localStorage
-      function setUser(user, psw) {
-        localStorage.setItem("username", user);
-        localStorage.setItem("password", psw);
-      }
-
-      // removes the user in localStorage
-      function removeUser() {
-        localStorage.removeItem("username");
-        localStorage.removeItem("password");
-      }
-      // gets if user is true
-      function getUser() {
-        return isTrue(localStorage.getItem("username")) &&
-          isTrue(localStorage.getItem("password"))
-          ? [localStorage.getItem("username"), localStorage.getItem("password")]
-          : false;
-      }
-
-      const logIn = document.querySelector("#login");
-      const signUp = document.querySelector("#signup");
-      const btnA = document.querySelector(".btn-primary");
-      const btnB = document.querySelector(".btn-secondary");
-      const signUP_Link = document.querySelector(".signup > a");
-      const logIn_Link = document.querySelector(".login > a");
-
-      function login() {
-        logIn.classList.replace("hide", "show");
-        signUp.classList.replace("show", "hide");
-        btnA.style.opacity = 0;
-        btnB.style.opacity = 0;
-      }
-
-      function signup() {
-        signUp.classList.replace("hide", "show");
-        logIn.classList.replace("show", "hide");
-        btnA.style.opacity = 0;
-        btnB.style.opacity = 0;
-      }
-
-      btnA.addEventListener("click", login);
-      btnB.addEventListener("click", signup);
-      // an event bonded to the A link in .signup
-      signUP_Link.addEventListener("click", function () {
-        signUp.classList.replace("show", "hide");
-        logIn.classList.replace("hide", "show");
-      });
-      // an event bonded to the A link in .login
-      logIn_Link.addEventListener("click", function () {
-        signUp.classList.replace("hide", "show");
-        logIn.classList.replace("show", "hide");
-      });
-
-      document.querySelectorAll(".btn-danger").forEach((x) =>
-        x.addEventListener("click", function () {
-          signUp.classList.replace("show", "hide");
-          logIn.classList.replace("show", "hide");
-          btnA.style.opacity = 1;
-          btnB.style.opacity = 1;
-        })
-      );
-
-      document.querySelectorAll("[type='submit']").forEach((x) => {
-        x.addEventListener("click", function () {
-          if (this.parentElement.id == "login") {
-            setUser(
-              document.querySelector("#ussername").value,
-              document.querySelector("#pwd").value
-            );
-          }
-
-          if (this.parentElement.id == "signup") {
-            setUser(
-              document.querySelector("#ussername1").value,
-              document.querySelector("#pwd1").value
-            );
-          }
-        });
-      });
-
-      if (getUser()) {
-        document.querySelector("#ussername").value = getUser()[0];
-        document.querySelector("#pwd").value = getUser()[1];
-
-        document.querySelector("#login").submit();
-      }
-    </script>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/login.js"></script>
+
+    <script></script>
   </body>
 </html>
