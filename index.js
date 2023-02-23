@@ -715,6 +715,9 @@ io.on("connection", (socket) => {
           // Array.from(ids).includes()
 
           addChats(socket.username, message, socket.chat_room).then((time) => {
+            if( socket.username == '' || socket.username.trim() == '' || socket.username.length == 0 || socket.username == undefined || socket.username == null ){
+              socket.emit('error','sender was not specified')
+            }else{
             //console.log(  {name: socket.username ,message: message, time: time} )
             io.to(socket.chat_room).emit(
               "message",
@@ -729,6 +732,7 @@ io.on("connection", (socket) => {
 
             //console.log(  socket.id , Array.from(ids).includes(socket.id) )
             socket.to(socket.chat_room).emit("sent", socket.username, a);
+            }
           });
         });
       });
