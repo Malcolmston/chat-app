@@ -81,13 +81,19 @@ class Pils {
   }
 }
 
+// will convert html to non html
+const escapeHtml = (unsafe) => {
+  //https://stackoverflow.com/questions/6234773/can-i-escape-html-special-chars-in-javascript
+  return unsafe.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
+}
+
 // this will send 'notifications' to the user.
 var infoClick = function (id) {
   $.notify(
     {
       // options
       title: "<strong>Info</strong>",
-      message: `<br> <input value='${id}'></input> has sent you a message`,
+      message: `<br> ${escapeHtml(id)} has sent you a message`,
     },
     {
       // settings
@@ -195,6 +201,7 @@ function roomThing(room) {
     : "room: ?";
 
   socket.array = [username, to];
+
   socket.emit("room", socket.array);
   socket.emit("persistence", [username, to]);
 }
@@ -206,12 +213,6 @@ var input = document.querySelector(".messageBar"),
   send = document.querySelector(".send"),
   test = document.querySelector(".messageBar");
 
-test.addEventListener("typing", async (e) => {
-  var key = await e.detail.key.call();
-  var text = e.detail.text.call();
-
-  socket.emit("typping", socket.array);
-});
 
 // send the message when you click the sent button
 send.addEventListener("click", function (event) {
@@ -242,11 +243,9 @@ socket.on("people", (arr) => {
 });
 //gets if a message was sent to a room
 socket.on("sent", function (x, all) {
-  if (all.includes(socket.username)) {
     socket.emit("logedin", username);
-    infoClick(x);
-    roomThing(x);
-  }
+
+    infoClick(x);  
 });
 // retrives the message
 socket.on("message", (x, who) => {
@@ -255,6 +254,8 @@ socket.on("message", (x, who) => {
   test.setAttribute("placeholder", ``);
   socket.emit("logedin", username);
   message(x);
+
+  //roomThing(who );
 });
 // retrives all old chats form a server
 socket.on("persistence", (x) => {
