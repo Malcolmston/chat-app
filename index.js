@@ -51,6 +51,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'))
 
 
+
 app.use(sessionMiddleware);
 app.use(
   cors({
@@ -77,6 +78,11 @@ Array.prototype.similarity = function (arr) {
 // the home page
 app.get("/", function (req, res) {
   res.sendFile(path.resolve(__dirname + login));
+});
+
+// retrives the .md file
+app.get("/README.md", function (req, res) {
+  res.sendFile(path.join(__dirname + "/README.md"));
 });
 
 
