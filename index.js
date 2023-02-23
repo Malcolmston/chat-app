@@ -46,7 +46,11 @@ const sessionMiddleware = session({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "static")));
+
+// https://expressjs.com/en/starter/static-files.html
+app.use(express.static('public'))
+
+
 app.use(sessionMiddleware);
 app.use(
   cors({
@@ -74,6 +78,7 @@ Array.prototype.similarity = function (arr) {
 app.get("/", function (req, res) {
   res.sendFile(path.resolve(__dirname + login));
 });
+
 
 
 // these are the methods that if called will send you back to the login page
@@ -283,73 +288,6 @@ app.get("/home", function (request, response) {
   }
   //response.end();
 });
-
-// retrives the html/iframe.html file
-app.get("/html/iframe.html", function (req, res) {
-  res.sendFile(path.join(__dirname + "/html/iframe.html"));
-});
-// retrives the css/app.css"file
-app.get("/css/app.css", function (req, res) {
-  res.sendFile(path.join(__dirname + "/css/app.css"));
-});
-// retrives the css/md.css"file
-app.get("/css/md.css", function (req, res) {
-  res.sendFile(path.join(__dirname + "/css/md.css"));
-});
-// retrives the css/login.css file
-app.get("/css/login.css", function (req, res) {
-  res.sendFile(path.join(__dirname + "/css/login.css"));
-});
-// retrives the html/css/chat.css file
-app.get("/html/css/chat.css", function (req, res) {
-  res.sendFile(path.join(__dirname + "/html/css/chat.css"));
-});
-// retrives the html/css/nav.css file
-app.get("/html/css/nav.css", function (req, res) {
-  res.sendFile(path.join(__dirname + "/html/css/nav.css"));
-});
-// retrives the js/markdown.js file
-app.get("/js/markdown.js", function (req, res) {
-  res.sendFile(path.join(__dirname + "/js/markdown.js"));
-});
-// retrives the js/socket.js file
-app.get("/js/socket.js", function (req, res) {
-  res.sendFile(path.join(__dirname + "/js/socket.js"));
-});
-// retrives the js/account.js file
-app.get("/js/account.js", function (req, res) {
-  res.sendFile(path.join(__dirname + "/js/welcolm.js"));
-});
-// retrives the js/custom_event.js file
-app.get("/js/custom_event.js", function (req, res) {
-  res.sendFile(path.join(__dirname + "/js/login.js"));
-});
-// retrives the js/welcolm.js file
-app.get("/js/welcolm.js", function (req, res) {
-  res.sendFile(path.join(__dirname + "/js/welcolm.js"));
-});
-// retrives the js/login.js file
-app.get("/js/login.js", function (req, res) {
-  res.sendFile(path.join(__dirname + "/js/login.js"));
-});
-// retrives the html/js/nav.js file
-app.get("/html/js/nav.js", function (req, res) {
-  res.sendFile(path.join(__dirname + "/html/js/nav.js"));
-});
-// retrives the html/js/pill.js file
-app.get("/html/js/pill.js", function (req, res) {
-  res.sendFile(path.join(__dirname + "/html/js/pill.js"));
-});
-// retrives the html/js/slides.js file
-app.get("/html/js/slides.js", function (req, res) {
-  res.sendFile(path.join(__dirname + "/html/js/slides.js"));
-});
-// retrives the .md file
-app.get("/README.md", function (req, res) {
-  res.sendFile(path.join(__dirname + "/README.md"));
-});
-
-
 
 
 
