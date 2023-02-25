@@ -15,7 +15,7 @@
     "passport-remember-me": "^0.0.1",
     "path": "^0.12.7",
     "promise": "^8.3.0",
-    "sequelize": "^6.28.2",
+    "sequelize": "^6.29.0",
     "socket.io": "^4.5.4",
     "sqlite3": "^5.1.4",
     "url": "^0.11.0"
