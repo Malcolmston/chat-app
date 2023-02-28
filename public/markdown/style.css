@@ -1,0 +1,31 @@
+[alt='jellyfish'] {
+  width: 100px;
+  height: 100px;
+}
+[alt='login'],
+[alt='signup'] {
+  width: 300px;
+}
+[alt='svg'] {
+  width: 400px;
+  max-height: 100%;
+}
+a {
+  background: #00e5ff;
+  background: -moz-linear-gradient(90deg, #00e5ff 0%, #304ffe 100%);
+  background: -webkit-linear-gradient(90deg, #00e5ff 0%, #304ffe 100%);
+  background: linear-gradient(90deg, #00e5ff 0%, #304ffe 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+table {
+  width: 100%;
+}
+td,
+th {
+  text-align: center;
+  border: 1px #d3d3d3 solid;
+  padding: 6px 13px;
+  display: table-cell;
+  vertical-align: inherit;
+}
