@@ -95,17 +95,28 @@
 
     <main class="Information">
       <!DOCTYPE html>
-<html lang="en" >
-<head>
-  <meta charset="UTF-8">
-  <title>CodePen - A Pen by malcolm</title>
-  		  <script src='https://kit.fontawesome.com/fd76b8450f.js' crossorigin='anonymous'></script><link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.0.10/css/all.css'>
-<link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css'><link rel="stylesheet" href="/markdown/style.css">
-
-</head>
-<body>
-<!-- partial:index.partial.html -->
-<h1>Logging in <i class="fa-solid fa-user-lock"></i></h1>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8" />
+          <title>CodePen - A Pen by malcolm</title>
+          <script
+            src="https://kit.fontawesome.com/fd76b8450f.js"
+            crossorigin="anonymous"
+          ></script>
+          <link
+            rel="stylesheet"
+            href="https://use.fontawesome.com/releases/v5.0.10/css/all.css"
+          />
+          <link
+            rel="stylesheet"
+            href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css"
+          />
+          <link rel="stylesheet" href="/markdown/style.css" />
+        </head>
+        <body>
+          <!-- partial:index.partial.html -->
+      
+          <h1>Logging in <i class="fa-solid fa-user-lock"></i></h1>
 <p>On this page, the user will log in. The user must log in with both username and password. The user will be redirected to a new page if the password and username are incorrect.</p>
 <p><img src="https://assets.codepen.io/5594200/Screen+Shot+2023-02-15+at+1.44.50+PM.png" alt="login"></p>
 <blockquote>
@@ -367,6 +378,10 @@ the sqlite3 is reqired to allow the sequelize module to work</p>
 <h2>login page <i class="fa-solid fa-page"></i></h2>
 </blockquote>
 </blockquote>
+<p>server --&gt; validate --&gt; if validate datatase &amp; home<br>
+server --&gt; validate --&gt; if not validate redirected to sever</p>
+<p>datatase --&gt; validate<br>
+home --&gt; loading &amp; sockets</p>
 <pre><code class="mermaid">---
 title: Logging in
 ---
@@ -380,14 +395,14 @@ id10[(Database)] --&gt;|sent| id2
 id2 .-&gt;|recived| id10
 
 
-    id2 --&gt;|yes| id3[home] 
+    id2 --&gt;|yes| id3[home]
 
-     id2 --&gt;|no| id4[fail] 
+     id2 --&gt;|no| id4[fail]
 
     id3 ==&gt; id5[loading...]
 
     id3 ==&gt; id6[sockets]
-   
+
 
     id4 ~~~ |redirected to sever| id1
 
@@ -405,6 +420,10 @@ note1 .-id4
 <h2>signup page <i class="fa-solid fa-page"></i></h2>
 </blockquote>
 </blockquote>
+<p>server --&gt; validate --&gt; if validate datatase &amp; home<br>
+server --&gt; validate --&gt; if not validate redirected to sever</p>
+<p>datatase --&gt; validate<br>
+home --&gt; loading &amp; sockets</p>
 <pre><code class="mermaid">---
 title: Signing up
 ---
@@ -414,12 +433,13 @@ flowchart TD
     a[server]
     b{validate}
     c[home]
-    Database[(Database)] 
+    Database[(Database)]
+    e[redirect]
 
     a --&gt; b
 
     Database --&gt;|sent| b
-    
+
     b --&gt;|yes| c
     b ---&gt;|no| e
 
@@ -434,6 +454,7 @@ flowchart TD
 <blockquote>
 <blockquote>
 <h2>sockets page <i class="fa-solid fa-page"></i></h2>
+<p>Server --&gt; People --&gt; Client</p>
 </blockquote>
 </blockquote>
 <pre><code class="mermaid">---
@@ -458,39 +479,9 @@ classDiagram
 
 </code></pre>
 <hr>
-<pre><code class="mermaid">---
-title: a simple server to client socket ping for typping and ntypping
----
-
-
-classDiagram
-
-
-    Client --&gt; typping : Sent
-    Client --&gt; ntypping : Sent
-
-   typping --&gt; Server : Recived
-   ntypping --&gt; Server : Recived
-
-
-    class Server{
-       +sends to the user
-
-    }
-    class Client{
-        +gets the message and handles it
-    }
-    class typping {
- +reiceves the message
- +sends a message back
-    }
-
-    class ntypping {
- +reiceves the message
- +sends a message back
-    }
-</code></pre>
-<hr>
+<p>Client --&gt; typping or ntypping<br>
+Server --&gt; gets typping and or ntypping</p>
+<p>block is just to show that typping and ntypping are prossesd by the Server</p>
 <pre><code class="mermaid">---
 title: a simple server to client socket ping for typping and ntypping
 ---
@@ -540,6 +531,7 @@ ntypping -- Block :sent to a non-fixed location
     }
 </code></pre>
 <hr>
+<p>Client --&gt; message --&gt; Server --&gt; Client and databace</p>
 <pre><code class="mermaid">---
 title: a simple server to client socket ping for message
 ---
@@ -563,7 +555,7 @@ Server ..|&gt; databace :Conected, but sql is sent useing seqilise
 
     class Server{
        +sends to the user
-      
+
     }
     class Client{
         +gets the message and handles it
@@ -579,6 +571,8 @@ Server ..|&gt; databace :Conected, but sql is sent useing seqilise
     }
 </code></pre>
 <hr>
+<p>Client --&gt; persistance --&gt; Server --&gt; databace<br>
+databace --&gt; Server --&gt; persistance --&gt; Client</p>
 <pre><code class="mermaid">---
 title: a simple server to client socket ping for persistance
 ---
@@ -600,7 +594,7 @@ persistance ..&gt; Client: recived
 
     class Server{
        +sends to the user
-      
+
     }
     class Client{
         +gets the message and handles it
@@ -616,13 +610,15 @@ persistance ..&gt; Client: recived
     }
 </code></pre>
 <hr>
+<p>Server --&gt; error --&gt; off<br>
+Client --&gt; error --&gt; end</p>
 <pre><code class="mermaid">---
 title: a simple server to client socket ping for persistance
 ---
 
 
 classDiagram
-direction LR 
+direction LR
 
 
 note for end &quot;there was something wrong on the server side so the code will end \n on end the sockets turn off \n this is nvere enacted&quot;
@@ -639,7 +635,7 @@ error --|&gt; off
 
     class Server{
     +sends to the user
-      
+
     }
     class Client{
         +gets the message and handles it
@@ -676,7 +672,7 @@ b --&gt;|sent| a
 
 a ---|check| d
 
-c ..-&gt;|check| d 
+c ..-&gt;|check| d
 
 d --&gt;|yes| c
 
@@ -853,18 +849,12 @@ the server side handels what is sent to the client, what a user will see, and we
 </tr>
 </tbody>
 </table>
-<!-- partial -->
-  <script type="module" src="/markdown/script.js">
-    /*
-    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
 
-mermaid.initialize({ startOnLoad: true });
-*/
-  </script>
 
-</body>
-</html>
-
+          <!-- partial -->
+          <script type="module" src="/markdown/script.js"></script>
+        </body>
+      </html>
     </main>
 
     <main class="Settings">
@@ -911,8 +901,8 @@ mermaid.initialize({ startOnLoad: true });
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
     <script src="/js/welcolm.js"></script>
-    <script src="/js/markdown.js"></script>
     <script src="/js/socket.js"></script>
+
     <script>
       document.querySelectorAll("main").forEach((item) => {
         item.style.display = "none";
@@ -932,18 +922,6 @@ document.querySelector(p).classList.replace("inactive", "active");
 
           switch (item.textContent.trim()) {
             case "Information":
-              /*
-              getMarkdown()
-                .then((data) => {
-                  document.querySelector(".Information").innerHTML =
-                    getMarkdownText(data);
-                })
-                .catch((e) => {
-                  console.error(e);
-                  document.querySelector(".Information").innerHTML =
-                    "failed! " + e;
-                });
-                */
               break;
             case "Chats":
               break;
@@ -989,18 +967,6 @@ document.querySelector(p).classList.replace("inactive", "active");
 
           switch (this.innerText.trim()) {
             case "Information":
-              /*
-              getMarkdown()
-                .then((data) => {
-                  document.querySelector(".Information").innerHTML =
-                    getMarkdownText(data);
-                })
-                .catch((e) => {
-                  console.error(e);
-                  document.querySelector(".Information").innerHTML =
-                    "failed! " + e;
-                });
-                */
               break;
             case "Chats":
               break;
@@ -1019,7 +985,6 @@ document.querySelector(p).classList.replace("inactive", "active");
 
     <script>
       //alert(window.location)
-
 
       async function removeAccount(event) {
         event.preventDefault();
