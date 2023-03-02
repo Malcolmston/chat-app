@@ -1,3 +1,7 @@
+.chat {
+  text-align: center
+}
+
 form {
     width: 400px;
     margin-left: auto;
@@ -12,8 +16,10 @@ form {
   }
 
   .flex {
-    display: flex;
     justify-content: center;
+    
+      float: left;
+
   }
 
   .flex-item + .flex-item {
@@ -34,3 +40,14 @@ form {
     font-size: 16px;
     cursor: pointer;
   }
+
+
+.Log:hover,
+.Sign:hover {
+  position: absolute;
+  width: 100%;
+  
+}
+
+
+
