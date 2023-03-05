@@ -204,6 +204,8 @@ function roomThing(room) {
 
   socket.emit("room", socket.array);
   socket.emit("persistence", [username, to]);
+
+  socket.username = username
 }
 
 // Get the input field
@@ -220,7 +222,7 @@ send.addEventListener("click", function (event) {
   if (input.value == "" || input.value.trim() == "") return;
   //socket.emit('message', username + ":  " + input.value.replaceAll('\n', '<br>') + ": " + getDay());
   //alert(socket.array)
-  socket.emit("message", input.value.replaceAll("\n", "<br>"), socket.array);
+  socket.emit("message", input.value.replaceAll("\n", "<br>"), socket.array, socket.username);
 });
 
 // on any home button pressed this will sent you home.

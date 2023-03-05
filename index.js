@@ -642,7 +642,7 @@ io.on("connection", (socket) => {
   });
 
   // once a message is sent this will check if the server is unable to connect to a room. if the room is unavailable then it will retrieve it. If the room is available it will just join it. when either are true then this will send a message to the room.
-  socket.on("message", async (message, a) => {
+  socket.on("message", async (message, a,u) => {
     let who = a;
     if (!socket.chat_room) {
       createRoomAndJoin(...a).then((x) => {
@@ -659,7 +659,7 @@ io.on("connection", (socket) => {
           // Array.from(ids).includes()
 
           addChats(socket.username, message, socket.chat_room).then((time) => {
-            if( socket.username == '' || socket.username.trim() == '' || socket.username.length == 0 || socket.username == undefined || socket.username == null ){
+            if( socket.username == '' || socket.username.trim() == '' || socket.username.length == 0 || socket.username == undefined || socket.username == null || u == '' || u == undefined ){
               socket.emit('error','sender was not specified')
             }else{
             //console.log(  {name: socket.username ,message: message, time: time} )
@@ -667,7 +667,7 @@ io.on("connection", (socket) => {
               "message",
               {
                 room: socket.chat_room,
-                name: socket.username,
+                name: u,//socket.username,
                 message: message,
                 time: time,
               },
