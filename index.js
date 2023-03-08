@@ -667,7 +667,7 @@ io.on("connection", (socket) => {
               "message",
               {
                 room: socket.chat_room,
-                name: u,//socket.username,
+                name: (u ==  socket.username && !(u == '' || socket.username == '') ) ? socket.username : u,
                 message: message,
                 time: time,
               },
