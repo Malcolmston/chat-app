@@ -149,6 +149,7 @@ return new Promise(function (resolve, reject) {
 
 
 // sorts arrays into neet chunks t
+//https://stackoverflow.com/questions/8495687/split-array-into-chunks
 Array.prototype.chunk = function (chunkSize) {
   var array = this;
   return [].concat.apply(
