@@ -112,6 +112,7 @@ Rooms.belongsToMany(Users, { through: Host });
 
 
 
+// FIXME: this looks like https://flexiple.com/javascript/javascript-array-equality/
 function isEqual(a, b) {
   return (
     Array.isArray(a) &&
@@ -148,6 +149,7 @@ return new Promise(function (resolve, reject) {
 }
 
 
+// FIXME: what does the return value look like?
 // sorts arrays into neet chunks t
 Array.prototype.chunk = function (chunkSize) {
   var array = this;
@@ -203,6 +205,7 @@ Array.prototype.getPermutations = function (maxLen) {
 
 
 
+// FIXME: what's the purpose of this?
 // gets all infermatin in a Table
 async function getAll(From = "users", paranoid= true) {
   let users;
@@ -234,8 +237,10 @@ async function getAll(From = "users", paranoid= true) {
 
 
 
+// FIXME: This says "in the room", but there's no "room" parameter??
 // gets if user should be in the room
 async function validateRoom(user) {
+  // FIXME: why are we attempting to add a user when validating?
   let r = await addUser(user);
 
   let f = (await getAll("host")).map((x) => [x.userId, x.roomId]);
@@ -253,6 +258,7 @@ async function validateRoom(user) {
   ); //isEqual( ([r]).map( x => x.id ), g )
 }
 
+// FIXME: what does this return?
 // gets the room people are in
 async function validateRoomAndGroup(...people) {
   //  let thisnwe = await resetAuto('rooms')
@@ -292,6 +298,8 @@ async function validateRoomAndGroup(...people) {
 
   // usernames = usernames.getPermutations(2)
 }
+
+// FIXME: what happens if the input isn't two users?
 // creates a room with the given users
 async function addRoom(...users) {
   let room = generateString(12);
@@ -310,8 +318,11 @@ async function addRoom(...users) {
 
   let b = await Promise.all(a);
 
+  // FIXME: What is this doing??
   return [...new Set(b)].length < a.length ? [...new Set(b)] : false;
 }
+
+// FIXME: what does this mean??
 // finds a room the room by the users
 async function findRoom(...users) {
   let obj = await validateRoomAndGroup(...users);
@@ -319,6 +330,7 @@ async function findRoom(...users) {
 
   if (obj.length == 0) {
     t = await createRoomAndJoin(...users);
+    // FIXME: why is this recursive?
     return await findRoom(...users);
   } else if (obj.length == 1 && isEqual(obj[0].users, users)) {
     return obj[0].room;
@@ -332,6 +344,8 @@ async function findRoom(...users) {
     }
   }
 }
+
+// FIXME: what does this mean?
 // adds the user to the users table
 async function addUser(username, password) {
   if (password) {
@@ -366,6 +380,7 @@ async function addUser(username, password) {
 
 
 
+// FIXME: how is this different from `updateUser`?
 // updates the username
 async function resetUsername(o_username, n_username) {
   let arr = chats.update({ name: n_username }, { where: { name: o_username } });
@@ -373,6 +388,7 @@ async function resetUsername(o_username, n_username) {
   return arr;
 }
 
+// FIXME: deletes the *username*? Why does this need a password? (Admin can't delete?)
 // deletes the username
 async function removeUser(username, password) {
   // get user id to get the number to delete from the forgen table
@@ -433,6 +449,7 @@ async function removeUser(username, password) {
   return true;
 }
 
+// FIXME: what does update mean? What do the parameters mean?
 // updates the password
 async function updatePassword(o_username, n_password) {
   const user = await Users.findOne({ where: { username: o_username } });
@@ -450,6 +467,7 @@ async function updatePassword(o_username, n_password) {
   }
 }
 
+// FIXME: what does update mean? What do the parameters mean?
 // updates the username for api callback
 async function updateUser(o_username, n_username) {
   let user = await Users.findOne({ where: { username: o_username } });
@@ -475,6 +493,7 @@ async function getUser(username) {
   return user;
 }
 
+// FIXME: parameters are not explained.
 //gets if an acount is available
 function validate(username, password, s = "and", p=true) {
   return new Promise(async (resolve, reject) => {
@@ -518,6 +537,8 @@ function validate(username, password, s = "and", p=true) {
 
 
 
+// FIXME: what does `r` mean??
+// FIXME: Also this name is misleading.
 // creates or finds a room. rooms are created if the r perameter is not provided. 
 async function createRoom(r) {
   let [room, c] = await Rooms.findOrCreate({
@@ -538,6 +559,8 @@ async function addUsertoRoom(room, ...user) {
   //let fetchedUsers = await getAll('host')
   return all; //fetchedUsers;
 }
+// FIXME: the description talks about *adding* users, misleading name?
+// FIXME: the only place this is called is by `findRoom`, what?
 // this adds 2 users to a room and if there is no room with the avilible data then it passes false. if the force perameter is passesd a room is created no mattere what
 function createRoomAndJoin(userA, userB, force = false) {
   return new Promise(async (resolve, reject) => {
@@ -590,9 +613,11 @@ async function addChats(name, message, room) {
 
   //  res = await chats.findAll();
 
+  // FIXME: why is a new date being returned? Why not the date in the database? (Causes dates to change on client.)
   return new Date(); //res;
 }
 
+// FIXME: what does this mean?? The definition just repeats the name.
 //this function recals all of the chats.
 async function recalChats(id) {
   //let id = await findRoom(...user)
@@ -622,6 +647,7 @@ async function recalChats(id) {
   await sequelize.sync({ force: false });
 })();
 
+// FIXME: Which functions are internal use only?
 module.exports = {
   updatePassword,
   removeUser,
