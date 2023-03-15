@@ -3,7 +3,6 @@ const bcrypt = require("bcrypt");
 const sqlite3 = require("sqlite3");
 const { Sequelize, DataTypes, Op, QueryTypes, where } = require("sequelize");
 
-const db = new sqlite3.Database("uses.sqlite");
 //https://github.com/sequelize/sequelize/issues/10304
 const sequelize = new Sequelize("uses", "", "", {
   dialect: "sqlite",
@@ -375,22 +374,8 @@ async function addUser(username, password) {
 
 
 
-
-
-
-
-
-// FIXME: how is this different from `updateUser`?
-// updates the username
-async function resetUsername(o_username, n_username) {
-  let arr = chats.update({ name: n_username }, { where: { name: o_username } });
-
-  return arr;
-}
-
-// FIXME: deletes the *username*? Why does this need a password? (Admin can't delete?)
 // deletes the username
-async function removeUser(username, password) {
+async function removeUser(username) {
   // get user id to get the number to delete from the forgen table
   let userID = await getUser(username);
   userID = userID.id;
@@ -418,9 +403,6 @@ async function removeUser(username, password) {
     },
   });
 
-  let canre = validate(username, password);
-
-  if (!canre) return false;
 
   await chats.destroy({
     where: {
@@ -451,6 +433,14 @@ async function removeUser(username, password) {
 
 // FIXME: what does update mean? What do the parameters mean?
 // updates the password
+
+/**
+ * re-names the given users password password
+ * @param {String} o_username is the current username
+ * @param {String | ?} n_password is the new password for your account
+ * @returns {Sequelize | String} returns a Sequelize object if the username is found otherwise it returns "User not found" 
+ * @example updatePassword(username, new_password)
+*/
 async function updatePassword(o_username, n_password) {
   const user = await Users.findOne({ where: { username: o_username } });
 
@@ -477,7 +467,6 @@ async function updateUser(o_username, n_username) {
 
     let r = await user.save();
 
-    await resetUsername(o_username, n_username);
     return r;
   } else {
     return "User not found";
@@ -495,15 +484,32 @@ async function getUser(username) {
 
 // FIXME: parameters are not explained.
 //gets if an acount is available
-function validate(username, password, s = "and", p=true) {
+/**
+@note in order to check if a user exsits in the databace you must have input a username and set typyOffunc to or
+@example validate(username,undefined, 'or')
+@note in order to check the credentals of a user you must have both a username and password given 
+@example validate(username, password)
+@note to not check the deleted users you set the p paramerter to false
+@example validate(username, password, undefined, false)
+ * 
+ * @param {String} username a users username
+ * @param {String | ?} password is the users non-hassed password
+ * @param {String | ?} typyOffunc is to change what the databace is asked for. If and then look at both username and password, while "or" just looks at username
+ * @default typyOffunc="and"
+ * @param {Boolean | ?} p or paranoid sets the databace serch to paranoid
+ * @default p="true"
+ * @returns {Promise< (undefined|Boolean) | JSON> } if typyOffunc is "or"  and all the paremerters passed are valid then true is returned otherewise false is returned. If typyOffunc is "and" and the given username is invalid then false is returned otherwise a sequelize object is returned   
+ * 
+ */
+function validate(username, password, typyOffunc = "and", p=true) {
   return new Promise(async (resolve, reject) => {
-    if (s == "and" && !username && !password) return;
-    if (s == "or" && !username) return;
+    if (typyOffunc == "and" && !username && !password) return;
+    if (typyOffunc == "or" && !username) return;
     //await sequelize.sync({ force: true });
 
     let res;
 
-    if (s == "and") {
+    if (typyOffunc == "and") {
       res = await Users.findOne({
         where: {
           username: username,
@@ -522,7 +528,7 @@ function validate(username, password, s = "and", p=true) {
 
       return res !== null;
     }
-    if (s == "or") {
+    if (typyOffunc == "or") {
       res = await Users.findOne({
         where: {
           username: username,
@@ -539,7 +545,14 @@ function validate(username, password, s = "and", p=true) {
 
 // FIXME: what does `r` mean??
 // FIXME: Also this name is misleading.
-// creates or finds a room. rooms are created if the r perameter is not provided. 
+/**
+ * creates or finds a room. If the r perameter is not provided then a new room is created.
+ * @param {String | ? } r the room code
+ * @returns {sequelize} a sequelize object if the room is given and if the room is not not given or not found then creates a new random room 
+ 
+ * @example createRoom('d378*nfrern') 
+ * @example createRoom()
+ */
 async function createRoom(r) {
   let [room, c] = await Rooms.findOrCreate({
     where: { room: r || generateString(12) },
@@ -598,8 +611,6 @@ function createRoomAndJoin(userA, userB, force = false) {
 
 
 
-
-
 //when a user sends a chat it is added to the database so theat perssitance works
 async function addChats(name, message, room) {
   //await sequelize.sync({ force: true });
@@ -647,7 +658,9 @@ async function recalChats(id) {
   await sequelize.sync({ force: false });
 })();
 
-// FIXME: Which functions are internal use only?
+/*
+chunk and isEqual are not exported
+ */
 module.exports = {
   updatePassword,
   removeUser,
