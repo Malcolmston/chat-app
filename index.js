@@ -621,12 +621,17 @@ io.on("connection", (socket) => {
   });
 
   // FIXME: this handler is not documented! And the eventName is a *variable* value.
+
+  // remove
   socket.on(socket.chat_room, (room) => {
     socket.to(socket.chat_room).emit("sent", room);
   });
 
   // FIXME: "that message" is unclear/misleading. (For example, the message being typed?)
-  // when a user is typing this will send that message to the chat room
+  /**
+   * "typping" is recived when a user is typing on the client side in the message box in html
+   * the Function will emit "typping" back to the client side, and then the client that is not typping will be notified.
+   */
   socket.on("typping", function (a) {
     socket.to(socket.chat_room).emit(
       "typping",
@@ -639,7 +644,12 @@ io.on("connection", (socket) => {
   });
 
   // FIXME: ditto about "that message".
-  // when a user is done typing this will send that message to the chat room
+    /**
+   * "ntypping" is recived when a user is done typing on the client side in the message box in html
+   * the Function will emit "ntypping" back to the client side, and then the client that is not typping will be notified.
+   */
+
+
   socket.on("ntypping", function (a) {
     socket.to(socket.chat_room).emit(
       "ntypping",
