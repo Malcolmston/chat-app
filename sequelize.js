@@ -463,6 +463,13 @@ async function updatePassword(o_username, n_password) {
 
 // FIXME: what does update mean? What do the parameters mean?
 // updates the username for api callback
+/**
+ * updates the username for a given user
+ * this is run as a api function in a POST reqest
+ * @param {String} o_username the old username
+ * @param {String} n_username the new username
+ * @returns {Sequelize | String} returns a Sequelize json object if the username that is being updated is found and able to change. It will return the string "User not found" if the username is not found
+ */
 async function updateUser(o_username, n_username) {
   let user = await Users.findOne({ where: { username: o_username } });
 
@@ -476,7 +483,7 @@ async function updateUser(o_username, n_username) {
     return "User not found";
   }
 
-  return e;
+//  return e;
 }
 
 // gets a use by username
