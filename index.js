@@ -460,6 +460,7 @@ io.use((socket, next) => {
 io.on("connection", (socket) => {
   let s = socket.request.session;
 
+  // FIXME: Question: how is different from "on logedin" handler below?
   // on enitial log in this will use the session to identify the user
   socket.use((socket, next) => {
     validate(s.ussername, false, "or").then(function (x) {
@@ -471,6 +472,7 @@ io.on("connection", (socket) => {
     });
   });
 
+  // FIXME: Question: how does this make sure? Isn't this only if the client emits a message called "error"? (So it's voluntary?)
 // makes sure the user is logged in
   socket.on("error", (err) => {
     if (err && err.message === "unauthorized") {
@@ -478,6 +480,7 @@ io.on("connection", (socket) => {
     }
   });
 
+  // FIXME: Question, how is this new 'session' variable different from 's'?
   const session = socket.request.session;
 
   socket.username = "";
@@ -487,9 +490,11 @@ io.on("connection", (socket) => {
   socket.on("logedin", function (user) {
     validate(user, false, "or").then(async function (x) {
       if (!x && session.ussername != user) {
+        // FIXME: How does this error message explain what went wrong?
         console.log("fail!!!!!!!");
 
         socket.disconnect();
+        // FIXME: How is the user notified of the problem?
       } else {
         add_memberA(user);
         socket.username = user;
@@ -536,6 +541,7 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("people", t);
   });
 
+  // FIXME: What is the practical difference between logremove and logedout? They both update the pill?
   // when a user logs out it dose a less derastic version of logremove. This function just sets your pill to inactive
   socket.on("logedout", async function (user) {
     remove_memberA(user);
@@ -562,6 +568,7 @@ io.on("connection", (socket) => {
   socket.on("persistence", function (a) {
     setTimeout(function () {
       validateRoomAndGroup(...a).then(async function (j) {
+        // FIXME: What's different about the two branches of this if-statement?
         if (j == undefined || j.length == 0) {
           console.error(
             "#1. there were no rooms with the serched peramerters. the room with the current peramerters will be created."
@@ -613,10 +620,12 @@ io.on("connection", (socket) => {
     }, 100);
   });
 
+  // FIXME: this handler is not documented! And the eventName is a *variable* value.
   socket.on(socket.chat_room, (room) => {
     socket.to(socket.chat_room).emit("sent", room);
   });
 
+  // FIXME: "that message" is unclear/misleading. (For example, the message being typed?)
   // when a user is typing this will send that message to the chat room
   socket.on("typping", function (a) {
     socket.to(socket.chat_room).emit(
@@ -628,6 +637,8 @@ io.on("connection", (socket) => {
       a
     );
   });
+
+  // FIXME: ditto about "that message".
   // when a user is done typing this will send that message to the chat room
   socket.on("ntypping", function (a) {
     socket.to(socket.chat_room).emit(

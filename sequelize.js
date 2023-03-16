@@ -210,6 +210,7 @@ async function getAll(From = "users", paranoid= true) {
   let users;
   switch (From) {
     case "chats":
+      // FIXME: why is this variable called users?
       users = await chats.findAll({paranoid:paranoid});
       return users;
 
@@ -218,15 +219,18 @@ async function getAll(From = "users", paranoid= true) {
       return users;
 
     case "rooms":
+      // FIXME: why is this variable called users?
       users = await Rooms.findAll({paranoid:paranoid});
       return users;
 
     case "Users_Rooms":
     case "host":
+      // FIXME: why is this variable called users?
       users = await Host.findAll({paranoid:paranoid});
       return users;
 
     default:
+      // FIXME: why is this separate from `case "users":` above?
       users = await Users.findAll({paranoid:paranoid});
       return users;
   }
@@ -483,6 +487,7 @@ async function getUser(username) {
 }
 
 // FIXME: parameters are not explained.
+// FIXME: This explanation doesn't seem consistent with its use?
 //gets if an acount is available
 /**
 @note in order to check if a user exsits in the databace you must have input a username and set typyOffunc to or
