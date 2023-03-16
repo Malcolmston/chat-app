@@ -435,7 +435,6 @@ async function removeUser(username) {
   return true;
 }
 
-// FIXME: what does update mean? What do the parameters mean?
 // updates the password
 
 /**
@@ -493,7 +492,6 @@ async function getUser(username) {
   return user;
 }
 
-// FIXME: parameters are not explained.
 // FIXME: This explanation doesn't seem consistent with its use?
 //gets if an acount is available
 /**
@@ -555,7 +553,6 @@ function validate(username, password, typyOffunc = "and", p=true) {
 
 
 
-// FIXME: what does `r` mean??
 // FIXME: Also this name is misleading.
 /**
  * creates or finds a room. If the r perameter is not provided then a new room is created.
