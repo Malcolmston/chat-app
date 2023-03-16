@@ -11,7 +11,7 @@ const sequelize = new Sequelize("uses", "", "", {
   standardConformingStrings: true
 });
 
-
+ 
 // creates the Chats table
 const chats = sequelize.define(
   "chats",
@@ -659,19 +659,17 @@ async function recalChats(id) {
 })();
 
 /*
-chunk and isEqual are not exported
+chunk, isEqual, generateString, hide,  are not exported
  */
 module.exports = {
   updatePassword,
   removeUser,
   updateUser,
 
-  generateString,
   addUser,
   getUser,
   validate,
   getAll,
-  hide,
 
   addChats,
   recalChats,

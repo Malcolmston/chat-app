@@ -174,7 +174,7 @@ title: Logging in
 flowchart TD
 
 
-    id1[server] --> id2{validate}
+id1[server] --> id2{validate}
 
 id10[(Database)] -->|sent| id2
 id2 .->|recived| id10
@@ -182,7 +182,7 @@ id2 .->|recived| id10
 
     id2 -->|yes| id3[home]
 
-     id2 -->|no| id4[fail]
+    id2 -->|no| id4[fail]
 
     id3 ==> id5[loading...]
 
@@ -196,8 +196,8 @@ note[validate pulls data from databace to log a user in]
 note1[fail will foce a user to re-login]
 
 
-note .-id2
-note1 .-id4
+note .- id2
+note1 .- id4
 ```
 
 ---
